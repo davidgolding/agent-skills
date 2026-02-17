@@ -13,7 +13,7 @@ Strictly confine all subsequent `grep`, `ls`, and `cat` (or file read) operation
 
 ## Step 2: Ready State
 
-After you have initialized, reply exactly with: “What is your research question? I’ll write a report based on your prompt.”
+After you have initialized, reply exactly with: *What is your research question? I’ll write a report based on your prompt.*
 
 ## Step 3: Classify User Message
 
