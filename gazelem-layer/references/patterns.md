@@ -1,0 +1,105 @@
+# Gazelem Layer Patterns
+
+This document details the patterns and protocols required to segment documents, extract metadata/knowledge, format the output in TOON, and manage the destination database files.
+
+---
+
+### **Name**
+Overlapping Context Segmentation
+### **Description**
+Read the source corpus text in overlapping windows of 8,000 tokens with a 1,000-token overlap to ensure that no boundaries are missed or split at window edges.
+### **When**
+Executing Phase 1 (Document Segmentation) on a raw text corpus.
+### **Example**
+For a source corpus containing a continuous transcription of historical letters:
+- Window 1: Tokens 0 to 8,000. Detect boundaries and extract metadata for documents ending in this range.
+- Window 2: Tokens 7,000 to 15,000. Identify the continuation of the final document from Window 1 and locate subsequent document boundaries.
+
+---
+
+### **Name**
+Logical Boundary Identification
+### **Description**
+Inspect text structure to detect transitions between separate logical documents (e.g., individual letters or entries) using specific textual markers.
+### **When**
+Scanning text windows to partition the corpus.
+### **Example**
+Identify transitions by searching for:
+- **Date headers:** E.g., `March 9, 1877` or `Salt Lake City, May 1st 1882`.
+- **Salutations & Closings:** E.g., `Dear Brother:`, `Your brother in the Gospel,`.
+- **Subject Shifts:** A transition from an administrative letter to a journal entry.
+- **Page Cues:** Document breaks matching page headers in the source publication.
+
+---
+
+### **Name**
+Structured Entity Serialization (TOON Format)
+### **Description**
+Write all extracted named entities using the typed TOON format. Specify the count of items in brackets next to the category name, followed by a colon and a comma-separated list.
+### **When**
+Formatting extracted entities in Phase 2.
+### **Example**
+```toon
+people[2]: Brigham Young,unnamed woman
+places[0]:
+dates[1]: 1877-03-09
+organizations[1]: The Church
+roles[2]: church leader,questioner
+ordinances[1]: sealing
+```
+
+---
+
+### **Name**
+Topics and Themes Serialization (TOON Format)
+### **Description**
+Represent topics under two categories: `controlled_topics` (from a taxonomy) and `free_tags` (free-form tags capturing specific nuances). Specify counts in brackets.
+### **When**
+Formatting extracted thematic concepts in Phase 2.
+### **Example**
+```toon
+controlled_topics[5]: sealing-practices,plural-marriage,family-relationships,children-custody,ecclesiastical-questions
+free_tags[3]: woman sealed to multiple men,children's patriarchal lineage,Q&A format
+```
+
+---
+
+### **Name**
+Provenance Mapping
+### **Description**
+Track the precise hierarchy mapping of each segment back to its archival or publication source (Collection > Box > Reel > Volume > Page).
+### **When**
+Recording segment metadata.
+### **Example**
+`provenance: "George Albert Smith Papers > Box 4 > Reel 2 > Volume 1 > Page 142"`
+
+---
+
+### **Name**
+Relationship Triple Extraction
+### **Description**
+Extract direct relationships between entities and concepts as standard `[subject, predicate, object]` triples for knowledge graph compilation.
+### **When**
+Building the relationship graph payload.
+### **Example**
+```json
+[
+  ["Brigham Young", "answered_question_of", "unnamed woman"],
+  ["sealing", "binds_children_to", "father"]
+]
+```
+
+---
+
+### **Name**
+Incremental Append-Only Output
+### **Description**
+Append the output records to the destination files (`document_registry.toon`, `semantic_cache.toon`, and `relationship_graph.toon`) instead of overwriting them. If a file does not exist, initialize it; otherwise, append a blank line followed by the new records.
+### **When**
+Writing the final pre-compiled knowledge layer outputs.
+### **Example**
+When writing to `document_registry.toon`:
+1. Check if the file exists.
+2. Read the end of the file.
+3. Append a newline.
+4. Write the new document record block in TOON format.

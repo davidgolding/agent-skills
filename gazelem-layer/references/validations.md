@@ -1,0 +1,89 @@
+# Gazelem Layer Validations
+
+This document defines the validation rules and regex constraints to enforce structured correctness, schema compliance, and safety when generating the knowledge layer.
+
+---
+
+## TOON Syntax Validation
+
+### **Id**
+toon-syntax-check
+### **Severity**
+error
+### **Type**
+regex
+### **Pattern**
+- `^(?!.*(?:people|places|dates|organizations|roles|ordinances)\[\d+\]:.*$).*$`
+- `^(?!.*(?:controlled_topics|free_tags)\[\d+\]:.*$).*$`
+### **Message**
+Incorrect TOON formatting syntax. Categories must match 'name[count]: val1, val2' or 'name[0]:'.
+### **Fix Action**
+Reformat the line to explicitly state category type, count of entities/topics in brackets, a colon, and comma-separated values.
+### **Applies To**
+- *.toon
+- document_registry.toon
+
+---
+
+## Required Registry Fields
+
+### **Id**
+registry-fields-missing
+### **Severity**
+error
+### **Type**
+regex
+### **Pattern**
+- `^(?!.*date:).*$`
+- `^(?!.*sender:).*$`
+- `^(?!.*recipient:).*$`
+- `^(?!.*document_type:).*$`
+- `^(?!.*page_range:).*$`
+- `^(?!.*provenance:).*$`
+### **Message**
+One or more required metadata fields are missing from the document segment.
+### **Fix Action**
+Extract and add the missing header field to the segment output in `document_registry.toon`.
+### **Applies To**
+- document_registry.toon
+
+---
+
+## Empty Output Prevention
+
+### **Id**
+empty-knowledge-block
+### **Severity**
+warning
+### **Type**
+regex
+### **Pattern**
+- `^\s*claims:\s*\[\]\s*$`
+- `^\s*summary:\s*""\s*$`
+### **Message**
+Extracted claims list or document summary is empty.
+### **Fix Action**
+Re-process the segment to draft natural language claims and a 2-3 sentence abstract summarizing the text.
+### **Applies To**
+- semantic_cache.toon
+
+---
+
+## Write Mode Safety
+
+### **Id**
+overwrite-violation
+### **Severity**
+error
+### **Type**
+regex
+### **Pattern**
+- `(?i)Overwrite:\s*true`
+### **Message**
+Write operation is set to overwrite, which risks erasing pre-existing pre-compiled knowledge indices.
+### **Fix Action**
+Configure the file system writer to use append mode, ensuring output records are appended to existing files without truncating.
+### **Applies To**
+- *.json
+- *.py
+- *.sh
