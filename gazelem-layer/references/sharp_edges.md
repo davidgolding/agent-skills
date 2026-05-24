@@ -137,3 +137,27 @@ Failing to split raw text metadata (stored in `document_registry.toon`) from pur
 ### **Detection Pattern**
 Regex matches matching alphabetic letters (e.g. `[a-zA-Z]{4,}`) inside lines that should contain only segment ID and float lists in `semantic_cache.toon`.
 
+---
+
+## Sparse Graph Extraction
+
+### **Id**
+sparse-graph-extraction
+### **Summary**
+Extracting too few relationships or failing to link relationship tuples to their source segment IDs, producing an empty or untraceable knowledge graph.
+### **Severity**
+high
+### **Situation**
+The agent processes a page packed with interactions but only extracts one relationship (e.g. sender-recipient), or writes triples without appending the `segment_id`, preventing search agents from traversing the graph to locate source documents.
+### **Why**
+Lazy extraction logic (stopping after the most obvious connection is mapped) and ignoring segment lineage links in tuples.
+### **Solution**
+- Enforce the 4-element tuple pattern: `[subject, predicate, object, segment_id]`.
+- Enforce exhaustive relational scans targeting connections between every named entity, topic, and event in the segment.
+### **Symptoms**
+- Relationship graph file has very few lines compared to the document registry.
+- Search queries traversing the graph fail to return any matching segment IDs.
+### **Detection Pattern**
+Lines in `relationship_graph.toon` containing only 3 elements (e.g. `[3]:`) instead of 4 elements (`[4]:`).
+
+

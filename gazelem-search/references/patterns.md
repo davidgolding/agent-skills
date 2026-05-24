@@ -26,12 +26,12 @@ Mode A: Metadata and Graph Precision Filtering
 ### **Description**
 Narrow down the search scope by scanning index files and traversing entity connections.
 1. Scan `document_registry.toon` for authors, recipients, dates, and `controlled_topics` matching your strategy.
-2. Scan `relationship_graph.toon` to find second-degree entity connections (e.g., if searching "John Smith", find who John Smith corresponded with or worked with, and add those names to the query candidate pool).
-3. Compile a list of candidate `segment_id`s.
+2. Scan `relationship_graph.toon` to find connections. Since relations are stored as 4-element tuples (`[subject, predicate, object, segment_id]`), you can extract matching connections for entities (e.g. John Smith) and directly read their source `segment_id`s from the fourth element.
+3. Traverse second-degree connections to expand the query candidate pool and collect all related `segment_id`s.
 ### **When**
 Restricting the query space using hard metadata filters or graph relations.
 ### **Example**
-Searching `document_registry.toon` for `controlled_topics` matching "plural-marriage" and filtering the matching list to files in `1877`.
+Searching `relationship_graph.toon` for tuples containing "plural-marriage" and directly extracting their associated source coordinates (e.g., `segment_101`).
 
 ---
 

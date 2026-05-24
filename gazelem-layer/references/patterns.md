@@ -90,16 +90,21 @@ segment_102: vector[1536]: -0.0512,0.0883,-0.0112,-0.0345,0.0092
 ---
 
 ### **Name**
-Relationship Triple Extraction
+Traceable Relationship Tuple Extraction
 ### **Description**
-Extract direct relationships between entities and concepts as standard `[subject, predicate, object]` triples for knowledge graph compilation.
+Extract direct relationships between entities and concepts as standard 4-element `[subject, predicate, object, segment_id]` tuples to build a queryable, traceable knowledge graph.
+- **Traceability**: Every tuple must append the exact `segment_id` as its fourth element.
+- **Suggested Taxonomy of Predicates**:
+  - Interpersonal: `spoke_to`, `relative_of`, `associated_with`, `ordained_by`, `instructed`, `corresponded_with`
+  - Conceptual/Organizational: `member_of`, `held_office_in`, `located_in`, `defines_practice_of`, `refers_to`, `administered`
+- **Extraction Density**: Extract exhaustively. Do not limit extraction to sender/recipient names. Identify every connection between people, places, organizations, topics, and events mentioned in the text segment. Aim to build a dense net of connections.
 ### **When**
-Building the relationship graph payload.
+Building the relationship graph payload in Phase 2.
 ### **Example**
 ```toon
 [2]:
-  - [3]: Brigham Young,answered_question_of,unnamed woman
-  - [3]: sealing,binds_children_to,father
+  - [4]: Brigham Young,spoke_to,unnamed woman,segment_101
+  - [4]: sealing,defines_practice_of,plural-marriage,segment_101
 ```
 
 ---

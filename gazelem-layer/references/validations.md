@@ -88,6 +88,25 @@ Remove the raw text entries and re-run the vectorizer to output only float vecto
 
 ---
 
+## Relationship Graph Traceability Validation
+
+### **Id**
+graph-traceability-missing
+### **Severity**
+error
+### **Type**
+regex
+### **Pattern**
+- `^(?!\s*-\s*\[4\]:\s*[^,]+,[^,]+,[^,]+,segment_\w+$)(?!\s*\[\d+\]:).+$`
+### **Message**
+Malformed relationship tuple. Every relationship record in relationship_graph.toon must be a 4-element tuple containing a valid segment_id (e.g. '[4]: subject,predicate,object,segment_id').
+### **Fix Action**
+Re-extract relationships to include the fourth element (source segment_id) in the tuple.
+### **Applies To**
+- relationship_graph.toon
+
+---
+
 ## Write Mode Safety
 
 ### **Id**
