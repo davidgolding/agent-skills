@@ -36,16 +36,18 @@ Searching `document_registry.toon` for `controlled_topics` matching "plural-marr
 ---
 
 ### **Name**
-Mode B: Semantic Concept Matching
+Mode B: Semantic Vector Similarity Matching
 ### **Description**
-Match conceptual queries and handle vocabulary mismatches using semantic summaries and claims.
-1. Translate the user's natural language question into 2-3 declarative semantic claims.
-2. Scan `semantic_cache.toon` to locate blocks containing similar claims or summaries.
-3. Output a list of candidate `segment_id`s ranked by relevance.
+Match conceptual queries and resolve vocabulary mismatches by comparing mathematical vector embeddings of queries against pre-computed vectors in the semantic cache.
+1. Translate the user's natural language question into 2-3 declarative semantic search query strings.
+2. Call the embedding generator API or tool to compute a vector embedding for these query strings.
+3. Compute the cosine similarity between the query vectors and the float vectors stored in `semantic_cache.toon`.
+4. Rank the `segment_id`s by their similarity scores and output the top candidates.
+5. Reconstruct the candidate records' text context by reading their matching claims/summaries from `document_registry.toon`.
 ### **When**
 The user's query uses abstract concepts or modern terminology that might not match the exact wording of historical records.
 ### **Example**
-Translating "how did they handle custody disputes" into claims: "children belong to their respective fathers" and searching `semantic_cache.toon`.
+Translating "how did they handle custody disputes" into the query string "children belong to their respective fathers", generating its float embedding vector, and running similarity matching against `semantic_cache.toon` to find matching segment IDs.
 
 ---
 

@@ -65,6 +65,25 @@ Extracted claims list or document summary is empty.
 ### **Fix Action**
 Re-process the segment to draft natural language claims and a 2-3 sentence abstract summarizing the text.
 ### **Applies To**
+- document_registry.toon
+
+---
+
+## Vector Cache Format Validation
+
+### **Id**
+vector-cache-non-vector-leak
+### **Severity**
+error
+### **Type**
+regex
+### **Pattern**
+- `^(?!segment_\w+:\s*vector\[\d+\]:\s*[-?\d\.]+(?:,[-?\d\.]+)*$).+$`
+### **Message**
+Raw text, claims, or malformed entries detected in semantic_cache.toon. It must strictly contain segment_id mapped to a float vector declaration.
+### **Fix Action**
+Remove the raw text entries and re-run the vectorizer to output only float vectors in the format 'segment_id: vector[dimensions]: float,float,...'.
+### **Applies To**
 - semantic_cache.toon
 
 ---

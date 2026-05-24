@@ -112,3 +112,26 @@ Failing to expand the query vocabulary with historical synonyms.
 - Search returning zero results for modern concepts that are historically documented under different vocabulary.
 ### **Detection Pattern**
 No vocabulary expansion or synonym listing in the search planning thoughts.
+
+---
+
+## Linear Text Search Fallback
+
+### **Id**
+linear-text-search-fallback
+### **Summary**
+Attempting to run substring or regex searches directly against `semantic_cache.toon` to find conceptual matches.
+### **Severity**
+high
+### **Situation**
+The agent tries to parse or grep search the semantic cache for text strings, which fails because the cache contains only numeric vector floats and no human-readable text.
+### **Why**
+Confusing semantic vector matching with raw text keyword searching.
+### **Solution**
+- Enforce the vector lookup pipeline: generate a query embedding, compute mathematical cosine similarity against the floats in `semantic_cache.toon` to rank segment IDs, then read the corresponding text metadata from `document_registry.toon`.
+### **Symptoms**
+- Empty search results.
+- Exceptions thrown due to string-matching tools failing to match numerical arrays.
+### **Detection Pattern**
+Regex search queries or `grep_search` invocations targeting `semantic_cache.toon`.
+

@@ -114,3 +114,26 @@ Allowing the language model's pre-trained weights to supplement historical detai
 - Discrepancy between the content of `semantic_cache.toon` and the corresponding source page.
 ### **Detection Pattern**
 Assertions referencing entities or dates not mentioned in the source segment.
+
+---
+
+## Semantic Cache Bloat
+
+### **Id**
+semantic-cache-bloat
+### **Summary**
+Storing raw text claims, summaries, or paragraphs inside `semantic_cache.toon` instead of vector-only floats.
+### **Severity**
+high
+### **Situation**
+The semantic cache file contains full-text strings of claims and descriptions, leading to rapid storage expansion and context window saturation.
+### **Why**
+Failing to split raw text metadata (stored in `document_registry.toon`) from pure mathematical embeddings (stored in `semantic_cache.toon`).
+### **Solution**
+- Enforce that `semantic_cache.toon` contains strictly float array vector declarations mapped to their `segment_id`.
+- Ensure all natural-language claims and summaries are mapped to `document_registry.toon` instead.
+### **Symptoms**
+- Unusually large `semantic_cache.toon` file sizes containing natural language strings.
+### **Detection Pattern**
+Regex matches matching alphabetic letters (e.g. `[a-zA-Z]{4,}`) inside lines that should contain only segment ID and float lists in `semantic_cache.toon`.
+

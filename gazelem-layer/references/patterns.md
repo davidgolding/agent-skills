@@ -76,17 +76,30 @@ Recording segment metadata.
 ---
 
 ### **Name**
+Semantic Vector Cache Serialization
+### **Description**
+Serialize semantic representations inside `semantic_cache.toon` solely as float vector arrays mapped to `segment_id`s. Do not write full-text summaries, claims, or raw text inside this file. Generate the float vector by passing the combined claims and summaries to an embedding generator, and write the output vectors to keep the cache lightweight and compressed. Save the raw claims/summaries in the `document_registry.toon` for retrieval phase reconstruction.
+### **When**
+Writing the pre-compiled semantic cache in Phase 2.
+### **Example**
+```toon
+segment_101: vector[1536]: 0.0123,-0.0456,0.1221,0.0891,-0.1102
+segment_102: vector[1536]: -0.0512,0.0883,-0.0112,-0.0345,0.0092
+```
+
+---
+
+### **Name**
 Relationship Triple Extraction
 ### **Description**
 Extract direct relationships between entities and concepts as standard `[subject, predicate, object]` triples for knowledge graph compilation.
 ### **When**
 Building the relationship graph payload.
 ### **Example**
-```json
-[
-  ["Brigham Young", "answered_question_of", "unnamed woman"],
-  ["sealing", "binds_children_to", "father"]
-]
+```toon
+[2]:
+  - [3]: Brigham Young,answered_question_of,unnamed woman
+  - [3]: sealing,binds_children_to,father
 ```
 
 ---
