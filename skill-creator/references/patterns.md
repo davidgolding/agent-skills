@@ -37,7 +37,7 @@ Optimizing prompts, adding features, or debugging failures in a skill.
   #### **Example**
     Test inputs:
       - Positive: "Help me write a git commit skill"
-      - Negative (Near-miss): "Write a git commit for my current changes" (triggers ce-commit, not skill-creator)
+      - Negative (Near-miss): "Write a git commit for my current changes" (triggers a git commit skill, not skill-creator)
     Metrics: Trigger rate (%), task success rate (%), execution latency (ms).
     
 
@@ -86,6 +86,48 @@ Writing any instructions, paths, or code scripts within a skill.
     - Check if a file exists before attempting to read it.
     - Handle command failures and log readable errors.
     
+
+---
+  #### **Name**
+  Interactive Dialogue Protocol
+  #### **Description**
+  Brainstorm requirements using one question at a time, leveraging platform-native blocking questions where possible.
+  #### **When**
+  Engaging in cooperative scoping or clarifying ambiguous developer requirements.
+  #### **Example**
+    - Good: Asking "Should X be a rule property or filter?" and presenting options using Gemini's ask_user tool.
+    - Bad: Stacking three questions in one chat message.
+
+---
+  #### **Name**
+  Two-Stage Scoping Synthesis
+  #### **Description**
+  Produce an internal three-bucket scope draft (Stated / Inferred / Out of scope) first, then derive a conversational scoping synthesis to confirm with the user.
+  #### **When**
+  Summarizing decisions made in a brainstorming session before writing a requirements doc.
+  #### **Example**
+    Formulate the internal draft in agent thoughts, then output: "Based on our dialogue, here's the scope I'm proposing..." with Trade-offs, Deferred, and Call-outs.
+
+---
+  #### **Name**
+  Conversational Scope Bullets
+  #### **Description**
+  Write scope bullets that are 1-2 lines maximum and focus entirely on product shape rather than code-level implementation details.
+  #### **When**
+  Writing the scoping synthesis or summarizing requirements.
+  #### **Example**
+    - Good: "Rule-delete silently loses pause state — confirm no warning needed"
+    - Bad: "Use existing rule entity to store pause, adding a database column is_paused"
+
+---
+  #### **Name**
+  Temporary Intermediate Artifacts
+  #### **Description**
+  Use a single, un-nested temporary file in the workspace root (e.g., `temp-requirements.md`) to capture intermediate requirements or states, deleting it immediately after drafting/writing the final skill files to avoid repository clutter.
+  #### **When**
+  Writing temporary documents during brainstorming or planning before generation is completed.
+  #### **Example**
+    Write the brainstormed requirements directly to `temp-requirements.md` in the workspace root, compile the skill, and delete `temp-requirements.md` once complete. Do not create nested folders (like `docs/brainstorms/`) for temporary files.
 
 ## Anti-Patterns
 
@@ -149,3 +191,23 @@ Modifying a skill's prompt or logic based on a single failed test run without ve
 Often introduces regressions that break other previously working test cases.
   #### **Instead**
 Maintain a diverse eval suite and run the full test suite to check for regressions before committing prompt changes.
+
+---
+  #### **Name**
+Question Stacking
+  #### **Description**
+Asking multiple distinct questions or sub-questions in a single turn.
+  #### **Why**
+Dilutes user responses, causes confusion, and makes the elicitation loop inefficient.
+  #### **Instead**
+Pick the single most critical next question, ask it, and wait for the response before asking more.
+
+---
+  #### **Name**
+Granularity Leakage
+  #### **Description**
+Documenting implementation-specific choices (e.g. database schemas, column names, code paths) inside brainstorming scopes or requirements.
+  #### **Why**
+Forces the user to make premature design decisions and complicates the requirements with unnecessary detail.
+  #### **Instead**
+Focus on product shape and behavior; defer architectural design to the planning phase.

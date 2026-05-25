@@ -51,11 +51,11 @@ error
 ### **Type**
 regex
 ### **Pattern**
-  - ^(?!.*patterns\.md)(?!.*sharp_edges\.md)(?!.*validations\.md).*$
+  - ^(?!.*patterns\.md)(?!.*sharp_edges\.md)(?!.*validations\.md)(?!.*interactions\.md).*$
 ### **Message**
-Skill does not define or link to the reference system usage files (patterns.md, sharp_edges.md, validations.md)
+Skill does not define or link to the reference system usage files (patterns.md, sharp_edges.md, validations.md, interactions.md)
 ### **Fix Action**
-Add a 'Reference System Usage' section to the SKILL.md file pointing to the three reference files as the source of truth for Creation, Diagnosis, and Review
+Add a 'Reference System Usage' section to the SKILL.md file pointing to the four reference files as the source of truth for Creation, Diagnosis, Review, and Brainstorming
 ### **Applies To**
   - SKILL.md
 
@@ -122,4 +122,63 @@ Parameterize server addresses or use environment-relative configurations instead
   - *.json
   - *.py
   - *.sh
+  - *.md
+
+
+## Question Stacking Detection
+
+### **Id**
+skill-question-stacking
+### **Severity**
+warning
+### **Type**
+regex
+### **Pattern**
+  - (?i)\b(?:ask|pose)\b.*\b(?:multiple|several|many|two|three)\b.*\bquestions?\b
+  - (?i)\bstack\b.*\bquestions?\b
+### **Message**
+Prompt contains instructions advocating question stacking (asking multiple questions at once)
+### **Fix Action**
+Ensure the prompt instructs the agent to ask exactly one question at a time
+### **Applies To**
+  - SKILL.md
+  - *.md
+
+
+## Granularity Leakage Detection
+
+### **Id**
+skill-granularity-leakage
+### **Severity**
+warning
+### **Type**
+regex
+### **Pattern**
+  - (?i)\b(?:database\s+schema|table\s+name|column\s+name|class\s+name|file\s+path|json\s+key)\b.*\bin\b.*\bbrainstorm\b
+### **Message**
+Brainstorming instructions should not mention code-level architecture details
+### **Fix Action**
+Defer code architecture and implementation details to the planning phase
+### **Applies To**
+  - SKILL.md
+  - *.md
+
+
+## Temporary File Directory Violation
+
+### **Id**
+skill-temp-dir-violation
+### **Severity**
+error
+### **Type**
+regex
+### **Pattern**
+  - (?i)\b(?:write|save|create|put)\b.*\btemporary\b.*\b(?:inside|in|under|to)\b.*\b(?:sub-?directories|folders|nested|docs|brainstorms)\b
+  - \bdocs/brainstorms/temp-requirements\.md\b
+### **Message**
+Temporary brainstorming files should not be written to nested subdirectories or create new directories; they must be stored in the workspace root
+### **Fix Action**
+Write temporary requirements or intermediate files directly to temp-requirements.md in the workspace root, and delete them immediately after use
+### **Applies To**
+  - SKILL.md
   - *.md

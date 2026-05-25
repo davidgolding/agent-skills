@@ -160,3 +160,108 @@ high
   - Failed builds due to conflicting setups.
 ### **Detection Pattern**
 Stating file properties or package existence without matching tool calls in the history.
+
+
+## Question Stacking
+
+### **Id**
+question-stacking
+### **Summary**
+  Asking multiple questions or sub-questions in a single turn, diluting user responses.
+### **Severity**
+  medium
+### **Situation**
+  The agent asks the user three separate clarification questions in the same message, causing the user to give incomplete or shallow answers.
+### **Why**
+  Eliciting requirements works best with a highly structured, single-focus dialogue. Stacking questions raises cognitive load.
+### **Solution**
+  - Ask exactly one question per turn.
+  - Pick the single most critical unknown, present clear options, and wait for the response.
+### **Symptoms**
+  - User only answers one of the questions.
+  - User ignores options and gives a short response.
+### **Detection Pattern**
+  Multiple question marks in the agent response.
+
+
+## Granularity Leakage
+
+### **Id**
+granularity-leakage
+### **Summary**
+  Introducing code-level implementation specifics (file paths, database schemas, classes) during the brainstorming or requirements phase.
+### **Severity**
+  medium
+### **Situation**
+  The agent documents specific table names or database column names in the scoping synthesis or requirements document before the product shape has been confirmed.
+### **Why**
+  Forces the user to evaluate architecture rather than behavior, and makes the requirements fragile and over-detailed.
+### **Solution**
+  - Focus on mechanism and product shape.
+  - Defer code structure, column names, and APIs to the planning phase.
+### **Symptoms**
+  - Scoping synthesis contains paths, database tables, or method names.
+### **Detection Pattern**
+  File paths, class names, schema/column patterns in requirements or synthesis.
+
+
+## Announce-Mode on Deep Scope
+
+### **Id**
+announce-mode-deep-scope
+### **Summary**
+  Proceeding straight to writing the requirements document on Standard or Deep tiers without obtaining explicit confirmation of the scope.
+### **Severity**
+  high
+### **Situation**
+  The agent generates a scoping synthesis for a Deep-tier feature, says "no open decisions", and writes the requirements document in the same turn without allowing the user to redirect or confirm.
+### **Why**
+  Standard and Deep tiers have significant ambiguity. Proceeding without a confirmation checkpoint leads to misaligned requirements that are expensive to revise.
+### **Solution**
+  - Always use Path B (with a confirmation gate) for Standard and Deep tiers, even if no questions were asked during dialogue.
+### **Symptoms**
+  - Requirements document written immediately without user feedback on the synthesis summary.
+### **Detection Pattern**
+  Skipping confirmation and writing the document on high-complexity scopes.
+
+
+## Fuzzy Open Probes
+
+### **Id**
+fuzzy-open-probes
+### **Summary**
+  Using overly vague or conversational open-ended questions that fail to elicit concrete product constraints.
+### **Severity**
+  medium
+### **Situation**
+  The agent asks "What's your take on this?" or "What are you thinking?" instead of anchoring the prompt on observable metrics or workarounds.
+### **Why**
+  Vague prompts yield vague answers, wasting the turn and failing to uncover real user pain points.
+### **Solution**
+  - Anchor open-ended questions in concrete scenarios (e.g., "What do they do today when this fails?").
+  - Avoid AI-slop warmth wrappers and framings that imply a short answer.
+### **Symptoms**
+  - User gives a one-liner like "looks good" or "not sure" without adding new requirements.
+### **Detection Pattern**
+  Generics like "how does that sound", "what do you think", "any thoughts".
+
+
+## Temporary File Pollution
+
+### **Id**
+temporary-file-pollution
+### **Summary**
+  Leaving intermediate requirements or design files behind in the workspace, or creating new directories for temporary files.
+### **Severity**
+  medium
+### **Situation**
+  The agent performs a brainstorming session, writes the requirements to a temporary file, compiles the skill, but terminates without deleting the temporary file, or creates a nested subdirectory like `docs/brainstorms` that is left behind.
+### **Why**
+  Pollutes the user's repository with untracked git files and nested directories, violating the constraint that brainstorming should not persist requirements docs.
+### **Solution**
+  - Save the temporary requirements document directly in the workspace root (e.g. `temp-requirements.md`), avoiding directory creation.
+  - Explicitly delete the temporary file immediately after drafting/writing the skill or if the session is cancelled.
+### **Symptoms**
+  - Untracked `temp-requirements.md` or new folders remaining in the workspace git status.
+### **Detection Pattern**
+  Writing temporary files to nested folders or failing to call delete/remove on temporary files before exiting.
