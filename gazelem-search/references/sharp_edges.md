@@ -135,3 +135,26 @@ Confusing semantic vector matching with raw text keyword searching.
 ### **Detection Pattern**
 Regex search queries or `grep_search` invocations targeting `semantic_cache.toon`.
 
+---
+
+## Over-Engineering with Custom Scripts
+
+### **Id**
+over-engineering-scripts
+### **Summary**
+Writing custom Python or shell scripts to perform simple file viewing, substring searching, or line counting instead of leveraging the agent's built-in tools.
+### **Severity**
+medium
+### **Situation**
+The agent writes a Python script to search for a string in a text file and print the matching lines, rather than using `grep_search` or a simple shell `grep` via `run_command`.
+### **Why**
+Failing to recognize and utilize native agent tools (`view_file`, `grep_search`, `run_command` with standard Unix commands).
+### **Solution**
+- Always check if a task can be solved using built-in tools first.
+- Only write custom scripts for complex logic (e.g., computing similarity scores or traversing complex graph structures in data formats that require parsing).
+### **Symptoms**
+- Unnecessary Python files created in the workspace.
+- Slow execution times due to script writing, permission handling, and execution overhead.
+### **Detection Pattern**
+Creating or writing a file ending in `.py` or `.sh` to perform basic tasks like reading files, searching patterns, or simple grep-like matches.
+
