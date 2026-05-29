@@ -149,3 +149,72 @@ This document defines the validations used by skill-creator.
 - **Applies To**:
     - SKILL.md
     - *.md
+
+---
+
+## Skill SKILL.md Template Violation
+
+- **Id**: skill-structure-skill-md
+- **Severity**: error
+- **Type**: regex
+- **Pattern**:
+    - ^(?s)(?!.*---\r?\nname:\s*\S+).*$
+    - ^(?s)(?!.*description:\s*\S+).*$
+    - ^(?s)(?!.*^#\s+[A-Za-z\s\-]+).*$
+    - ^(?s)(?!.*##\s+Identity\b).*$
+    - ^(?s)(?!.*##\s+Principles\b).*$
+    - ^(?s)(?!.*##\s+Reference\s+System\s+Usage\b).*$
+    - ^(?s)(?!.*ground\s+your\s+responses\s+in\s+the\s+provided\s+reference\s+files).*$
+- **Message**: SKILL.md does not adhere to the strict template layout (frontmatter, level-1 title heading, or Level-2 headings: Identity, Principles, Reference System Usage verbatim)
+- **Fix Action**: Reformat SKILL.md to include name and description frontmatter, a Level-1 title in Title Case, and the required Level-2 sections (Identity, Principles, and Reference System Usage verbatim)
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Skill patterns.md Template Violation
+
+- **Id**: skill-structure-patterns
+- **Severity**: error
+- **Type**: regex
+- **Pattern**:
+    - ^(?s)(?!.*#\s+[A-Za-z\s\-]+\s+Patterns\s+&\s+Anti-Patterns).*$
+    - ^(?s)(?!.*This\s+document\s+defines\s+the\s+patterns\s+and\s+anti-patterns\s+used\s+by).*$
+    - ^(?s)(?!.*##\s+Patterns\b).*$
+    - ^(?s)(?!.*##\s+Anti-Patterns\b).*$
+    - (?s)##\s+Patterns\b(?:(?!##\s+Anti-Patterns).)*\bName\b(?!.*\bDescription\b)(?!.*\bWhen\b)(?!.*\bExample\b).*$
+    - (?s)##\s+Anti-Patterns\b.*\bName\b(?!.*\bDescription\b)(?!.*\bWhy\b)(?!.*\bInstead\b).*$
+- **Message**: patterns.md does not adhere to the strict template layout (Level-1 heading, introductory sentence, Level-2 Patterns/Anti-Patterns headings, or the required keys Name/Description/When/Example for Patterns and Name/Description/Why/Instead for Anti-Patterns)
+- **Fix Action**: Restructure patterns.md to have the Level-1 heading, introductory sentence, Level-2 headings, and define all Patterns with Name, Description, When, Example, and Anti-Patterns with Name, Description, Why, Instead
+- **Applies To**:
+    - *patterns.md
+
+---
+
+## Skill sharp_edges.md Template Violation
+
+- **Id**: skill-structure-sharp-edges
+- **Severity**: error
+- **Type**: regex
+- **Pattern**:
+    - ^(?s)(?!.*#\s+Sharp\s+Edges).*$
+    - (?s)##\s+[A-Za-z\s\-]+\b(?:(?!##).)*\bId\b(?!.*\bSummary\b)(?!.*\bSeverity\b)(?!.*\bSituation\b)(?!.*\bWhy\b)(?!.*\bSolution\b)(?!.*\bSymptoms\b)(?!.*\bDetection\s+Pattern\b).*$
+- **Message**: sharp_edges.md does not adhere to the strict template layout or is missing required keys (Id, Summary, Severity, Situation, Why, Solution, Symptoms, Detection Pattern)
+- **Fix Action**: Structure sharp_edges.md with Level-2 headings for each sharp edge, ensuring every edge defines Id, Summary, Severity, Situation, Why, Solution, Symptoms, and Detection Pattern
+- **Applies To**:
+    - *sharp_edges.md
+
+---
+
+## Skill validations.md Template Violation
+
+- **Id**: skill-structure-validations
+- **Severity**: error
+- **Type**: regex
+- **Pattern**:
+    - ^(?s)(?!.*#\s+Validations).*$
+    - (?s)##\s+[A-Za-z\s\-]+\b(?:(?!##).)*\bId\b(?!.*\bSeverity\b)(?!.*\bType\b)(?!.*\bPattern\b)(?!.*\bMessage\b)(?!.*\bFix\s+Action\b)(?!.*\bApplies\s+To\b).*$
+- **Message**: validations.md does not adhere to the strict template layout or is missing required keys (Id, Severity, Type, Pattern, Message, Fix Action, Applies To)
+- **Fix Action**: Structure validations.md with Level-2 headings for each validation, ensuring every validation defines Id, Severity, Type, Pattern, Message, Fix Action, and Applies To
+- **Applies To**:
+    - *validations.md
