@@ -102,6 +102,13 @@ This document defines the patterns and anti-patterns used by skill-creator.
 
 ---
 
+- **Name**: Standardized Skill Structure Pattern
+- **Description**: Output newly created skill files using standardized templates to ensure structured, consistent layout in `SKILL.md`, `references/patterns.md`, `references/sharp_edges.md`, and `references/validations.md`.
+- **When**: Drafting, writing, or editing any agent skill's files.
+- **Example**: Generate `SKILL.md` containing name/description frontmatter, a Level-1 title heading, and Level-2 headings for "Identity", "Principles", and "Reference System Usage" verbatim. Generate reference markdown files (`patterns.md`, `sharp_edges.md`, `validations.md`) with their standard heading layouts and required bullet key attributes.
+
+---
+
 ## Anti-Patterns
 
 - **Name**: Fuzzy Trigger Description
