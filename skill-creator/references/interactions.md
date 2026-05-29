@@ -1,4 +1,8 @@
-# Skill Creator
+# Skill Creator Interactions
+
+This document defines the interaction flow used by skill-creator.
+
+---
 
 ## Interaction Rules
 
