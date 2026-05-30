@@ -49,62 +49,62 @@ The skill's `SKILL.md` file must be structured as follows:
   ```markdown
   You must ground your responses in the provided reference files, treating them as the source of truth for this domain:
 
-  * **For Brainstorming:** Always consult **`references/interactions.md`**. This file dictates how to interact, clarify requirements, and explore approaches with the user when starting a new skill or making significant changes.
-  * **For Creation:** Always consult **`references/patterns.md`**. This file dictates *how* things should be built. Ignore generic approaches if a specific pattern exists here.
-  * **For Diagnosis:** Always consult **`references/sharp_edges.md`**. This file lists the critical failures and “why” they happen. Use it to explain risks to the user.
-  * **For Review:** Always consult **`references/validations.md`**. This contains the strict rules and constraints. Use it to validate user inputs objectively.
+  - **For Creation:** Always consult **`references/patterns.md`**. This file dictates *how* things should be built. Ignore generic approaches if a specific pattern exists here.
+  - **For Diagnosis:** Always consult **`references/sharp_edges.md`**. This file lists the critical failures and “why” they happen. Use it to explain risks to the user.
+  - **For Review:** Always consult **`references/validations.md`**. This contains the strict rules and constraints. Use it to validate user inputs objectively.
 
   **Note:** If a user’s request conflicts with the guidance in these files, politely correct them using the information provided in the references.
   ```
 
 ##### 2. references/patterns.md Template
 
-The skill's `references/patterns.md` file must be structured as follows:
-- **Level-1 Heading**: The name of the skill in Title Case followed by "Patterns & Anti-Patterns" (e.g., `# Git Commit Patterns & Anti-Patterns`).
-- **Introductory Sentence**: A single sentence explaining that the document defines the patterns and anti-patterns used by the skill.
-- **Level-2 Heading: Patterns**: A section titled `## Patterns`, listing each pattern as a bullet in an unordered list. Each pattern bullet MUST contain the following keys in bold, delimited by a colon:
-  - **Name**: The name of the pattern
-  - **Description**: A short description of the pattern
-  - **When**: When to apply the pattern
-  - **Example**: A concrete code or instruction example showing the pattern in action
-  - Use a horizontal rule `---` to separate distinct patterns.
-- **Level-2 Heading: Anti-Patterns**: A section titled `## Anti-Patterns`, listing each anti-pattern as a bullet in an unordered list. Each anti-pattern bullet MUST contain the following keys in bold, delimited by a colon:
-  - **Name**: The name of the anti-pattern
-  - **Description**: A description of the incorrect behavior/structure
-  - **Why**: Why it is a failure mode or anti-pattern
-  - **Instead**: What to do instead to avoid the anti-pattern
-  - Use a horizontal rule `---` to separate distinct anti-patterns.
+Read the baseline template located at `templates/patterns_template.md`. Populate the placeholder fields in that template (e.g., '[FULL_NAME]') using the extracted data.
+
+- `[NAME]`: The name of the skill in Title Case
+- `[SHORT_NAME]`: The name of the skill in kebab-case
+- `[PATTERN_NAME]`: The name of the pattern
+- `[PATTERN_DESCRIPTION]`: A short description of the pattern
+- `[WHEN]`: When to apply the pattern
+- `[EXAMPLE]`: A concrete instruction or code example showing the pattern in action
+- `[ANTI_PATTERN_NAME]`: The name of the anti-pattern
+- `[ANTI_PATTERN_DESCRIPTION]`: A description of the incorrect behavior/structure
+- `[WHY]`: Why it is a failure mode or anti-pattern
+- `[INSTEAD]`: What to do instead to avoid the anti-pattern
+
+Use a horizontal rule `---` in between patterns and anti-patterns.
 
 ##### 3. references/sharp_edges.md Template
 
-The skill's `references/sharp_edges.md` file must be structured as follows:
-- **Level-1 Heading**: A level-1 heading titled `# Sharp Edges`.
-- **Introductory Sentence**: A single sentence stating that the document defines the sharp edges used by the skill.
-- **Level-2 Heading for each Sharp Edge**: Each sharp edge must have its own Level-2 heading indicating its name. The content under the heading must use an unordered list containing the following keys:
-  - **Id**: A kebab-case identifier for the sharp edge
-  - **Summary**: A one-sentence summary of the edge
-  - **Severity**: The severity level (e.g., `critical`, `high`, `medium`)
-  - **Situation**: The scenario where this issue arises
-  - **Why**: The underlying reason for the issue
-  - **Solution**: How to prevent or resolve the issue
-  - **Symptoms**: Indicators or signs that the issue is occurring
-  - **Detection Pattern**: A description or regex of how to detect this issue
-  - Use a horizontal rule `---` to separate distinct sharp edges.
+Read the baseline template located at `templates/sharp_edges_template.md`. Populate the placeholder fields in that template (e.g., '[FIELD]') using the extracted data.
+
+- `[NAME]`: The name of the skill in kebab-case
+- `[EDGE_NAME]`: The name of the sharp edge in Title Case
+- `[ID]`: A kebab-case identifier for the sharp edge
+- `[SUMMARY]`: A one-sentence summary of the edge
+- `[SEVERITY]`: The severity level (e.g., `critical`, `high`, `medium`)
+- `[SITUATION]`: The scenario where this issue arises
+- `[WHY]`: The underlying reason for the issue
+- `[SOLUTION]`: How to prevent or resolve the issue
+- `[SYMPTOMS]`: Indicators or signs that the issue is occurring
+- `[DETECTION]`: A description or regex of how to detect this issue
+
+Use a horizontal rule `---` in between sharp edges.
 
 ##### 4. references/validations.md Template
 
-The skill's `references/validations.md` file must be structured as follows:
-- **Level-1 Heading**: A level-1 heading titled `# Validations`.
-- **Introductory Sentence**: A single sentence stating that the document defines the validations used by the skill.
-- **Level-2 Heading for each Validation Rule**: Each validation rule must have its own Level-2 heading indicating its name. The content under the heading must use an unordered list containing the following keys:
-  - **Id**: A kebab-case identifier for the validation rule
-  - **Severity**: The severity level (`error` or `warning`)
-  - **Type**: The type of validation (usually `regex` or `instruction`)
-  - **Pattern**: The pattern or regex to match (if a list of patterns is used, format them as nested bullets under Pattern)
-  - **Message**: The validation error/warning message
-  - **Fix Action**: The action required to fix the validation failure
-  - **Applies To**: A list of file extension/glob patterns the rule applies to (formatted as nested bullets)
-  - Use a horizontal rule `---` to separate distinct validations.
+Read the baseline template located at `templates/validations_template.md`. Populate the placeholder fields in that template (e.g., '[FIELD]') using the extracted data.
+
+- `[NAME]`: The name of the skill in kebab-case
+- `[VALIDATION_NAME]`: A name for the validation rule in Title Case
+- `[ID]`: A kebab-case identifier for the validation rule
+- `[SEVERITY]`: The severity level (`error` or `warning`)
+- `[TYPE]`: The type of validation (usually `regex` or `instruction`)
+- `[PATTERN]`: The pattern or regex to match (if a list of patterns is used, format them as nested bullets under Pattern)
+- `[MESSAGE]`: The validation error/warning message
+- `[FIX]`: The action required to fix the validation failure
+- `[APPLIES]`: A list of file extension/glob patterns the rule applies to (formatted as nested bullets)
+
+Use a horizontal rule `---` in between validation rules.
 
 **If user selects "More clarifying questions to sharpen the requirements":**
 
