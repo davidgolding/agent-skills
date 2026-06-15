@@ -5,19 +5,19 @@ This document defines the patterns and anti-patterns used by [SHORT_NAME].
 ## Patterns
 
 - **Name**: [PATTERN_NAME]
-- **Description**: [DESCRIPTION]
+- **Description**: [PATTERN_DESCRIPTION]
 - **When**: [WHEN]
 - **Example**:
-  ```
-  [EXAMPLE]
-  ```
+```
+    [EXAMPLE]
+```
 
 ---
 
 ## Anti-Patterns
 
 - **Name**: [ANTI_PATTERN_NAME]
-- **Description**: [DESCRIPTION]
+- **Description**: [ANTI_PATTERN_DESCRIPTION]
 - **Why**: [WHY]
 - **Instead**: [INSTEAD]
 

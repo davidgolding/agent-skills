@@ -1,6 +1,6 @@
-# [NAME] Sharp Edges
+# Sharp Edges
 
-This document defines the sharp edges used by [SHORT_NAME].
+This document defines the sharp edges used by [NAME].
 
 ---
 
