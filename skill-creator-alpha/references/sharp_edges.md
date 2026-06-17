@@ -1,4 +1,4 @@
-# Sharp Edges
+# Skill Creator Sharp Edges
 
 This document defines the sharp edges used by skill-creator.
 
@@ -25,19 +25,19 @@ This document defines the sharp edges used by skill-creator.
 
 ## Trigger Dilution
 
-**Id**: trigger-dilution
-**Summary**: The skill description is too broad, leading to accidental triggering (false positives) or missing trigger prompts (false negatives).
-**Severity**: critical
-**Situation**: A skill for "git commit" has a description like "Use this when you want to write text". It gets triggered when the user wants to write a markdown document.
-**Why**: The routing agent relies on specific keywords, commands, and scenarios in the description to match the user's prompt. Fuzzy descriptions confuse the router.
-**Solution**:
+- **Id**: trigger-dilution
+- **Summary**: The skill description is too broad, leading to accidental triggering (false positives) or missing trigger prompts (false negatives).
+- **Severity**: critical
+- **Situation**: A skill for "git commit" has a description like "Use this when you want to write text". It gets triggered when the user wants to write a markdown document.
+- **Why**: The routing agent relies on specific keywords, commands, and scenarios in the description to match the user's prompt. Fuzzy descriptions confuse the router.
+- **Solution**:
     - Write a highly specific, keyword-dense frontmatter description.
     - Explicitly list commands (e.g., `git commit`) and target tasks (e.g., "create git commit").
     - Test the description against a trigger eval set containing near-miss negative prompts.
-**Symptoms**:
+- **Symptoms**:
     - Skill is activated for unrelated user requests.
     - Skill is not activated when the user specifically requests its function.
-**Detection Pattern**: Description contains overly broad phrases like "helps with coding", "general purpose tool", or "assists the user".
+- **Detection Pattern**: Description contains overly broad phrases like "helps with coding", "general purpose tool", or "assists the user".
 
 ---
 
@@ -203,3 +203,5 @@ This document defines the sharp edges used by skill-creator.
     - Explicitly delete the temporary file immediately after drafting/writing the skill or if the session is cancelled.
 - **Symptoms**: Untracked `temp-requirements.md` or new folders remaining in the workspace git status.
 - **Detection Pattern**: Writing temporary files to nested folders or failing to call delete/remove on temporary files before exiting.
+
+---

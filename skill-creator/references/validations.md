@@ -1,4 +1,4 @@
-# Skill Creator Validations
+# Validations
 
 This document defines the validations used by skill-creator.
 
@@ -44,7 +44,7 @@ This document defines the validations used by skill-creator.
 - **Severity**: error
 - **Type**: regex
 - **Pattern**:
-    - (?ms)\A(?!.*patterns\.md)(?!.*sharp_edges\.md)(?!.*validations\.md)(?!.*interactions\.md)
+    - ^(?!.*patterns\.md)(?!.*sharp_edges\.md)(?!.*validations\.md)(?!.*interactions\.md).*$
 - **Message**: Skill does not define or link to the reference system usage files (patterns.md, sharp_edges.md, validations.md, interactions.md)
 - **Fix Action**: Add a 'Reference System Usage' section to the SKILL.md file pointing to the four reference files as the source of truth for Creation, Diagnosis, Review, and Brainstorming
 - **Applies To**:
@@ -58,7 +58,7 @@ This document defines the validations used by skill-creator.
 - **Severity**: warning
 - **Type**: regex
 - **Pattern**:
-    - \b(TODO|FIXME|XXX)\b
+    - \b(?:TODO|FIXME|XXX)\b
     - <[^>]*insert[^>]*>
     - \b[a-zA-Z0-9_\-]*placeholder[a-zA-Z0-9_\-]*\b
 - **Message**: Unresolved placeholder, TODO, or FIXME comment found in skill documentation
@@ -77,8 +77,8 @@ This document defines the validations used by skill-creator.
 - **Severity**: warning
 - **Type**: regex
 - **Pattern**:
-    - (?i)\b(?:run|execute|apply|modify)\s+(?:without\s+asking|directly|silently|automatically)\b
-    - (?i)\bdo\s+not\s+(?:ask|prompt|confirm)\b
+    - \b(?i)(?:run|execute|apply|modify)\s+(?:without\s+asking|directly|silently|automatically)\b
+    - \b(?i)do\s+not\s+(?:ask|prompt|confirm)\b
 - **Message**: Instructions advocate executing commands or modifications without user confirmation
 - **Fix Action**: Ensure instructions state that the agent must explain actions and obtain user consent before running mutating commands or modifying files
 - **Applies To**:
@@ -158,13 +158,13 @@ This document defines the validations used by skill-creator.
 - **Severity**: error
 - **Type**: regex
 - **Pattern**:
-    - (?ms)\A(?!.*---\r?\nname:\s*\S+)
-    - (?ms)\A(?!.*description:\s*\S+)
-    - (?ms)\A(?!.*^#\s+[A-Za-z\s\-]+)
-    - (?ms)\A(?!.*^##\s+Identity\b)
-    - (?ms)\A(?!.*^##\s+Principles\b)
-    - (?ms)\A(?!.*^##\s+Reference\s+System\s+Usage\b)
-    - (?ms)\A(?!.*ground\s+your\s+response\s+in\s+the\s+provided\s+reference\s+files,\s+treating\s+them\s+as\s+the\s+absolute\s+mathematical\s+source\s+of\s+truth)
+    - ^(?s)(?!.*---\r?\nname:\s*\S+).*$
+    - ^(?s)(?!.*description:\s*\S+).*$
+    - ^(?s)(?!.*^#\s+[A-Za-z\s\-]+).*$
+    - ^(?s)(?!.*##\s+Identity\b).*$
+    - ^(?s)(?!.*##\s+Principles\b).*$
+    - ^(?s)(?!.*##\s+Reference\s+System\s+Usage\b).*$
+    - ^(?s)(?!.*ground\s+your\s+responses\s+in\s+the\s+provided\s+reference\s+files).*$
 - **Message**: SKILL.md does not adhere to the strict template layout (frontmatter, level-1 title heading, or Level-2 headings: Identity, Principles, Reference System Usage verbatim)
 - **Fix Action**: Reformat SKILL.md to include name and description frontmatter, a Level-1 title in Title Case, and the required Level-2 sections (Identity, Principles, and Reference System Usage verbatim)
 - **Applies To**:
@@ -178,15 +178,14 @@ This document defines the validations used by skill-creator.
 - **Severity**: error
 - **Type**: regex
 - **Pattern**:
-    - (?ms)\A(?!.*#\s+[A-Za-z\s\-]+\s+Patterns\s+&\s+Anti-Patterns)
-    - (?ms)\A(?!.*This\s+document\s+defines\s+the\s+patterns\s+and\s+anti-patterns\s+used\s+by)
-    - (?ms)\A(?!.*##\s+Patterns\b)
-    - (?ms)\A(?!.*##\s+Anti-Patterns\b)
-    - (?s)##\s+Patterns\b(?:(?!##\s+Anti-Patterns).)*\bName\b(?!.*\bWhen\b)(?!.*\bExample\b).*$
-    - (?s)##\s+Anti-Patterns\b.*\bName\b(?!.*\bWhy\b)(?!.*\bInstead\b).*$
-    - (?s)##\s+(?:Anti-)?Patterns\b.*-\s+\*\*Description\*\*:\s.*$
-- **Message**: patterns.md does not adhere to the strict template layout (Level-1 heading, introductory sentence, Level-2 Patterns/Anti-Patterns headings, or the required keys Name/When/Example for Patterns and Name/Why/Instead for Anti-Patterns, with no Description field)
-- **Fix Action**: Restructure patterns.md to have the Level-1 heading, introductory sentence, Level-2 headings, and define all Patterns with Name, When, Example, and Anti-Patterns with Name, Why, Instead (removing the Description fields)
+    - ^(?s)(?!.*#\s+[A-Za-z\s\-]+\s+Patterns\s+&\s+Anti-Patterns).*$
+    - ^(?s)(?!.*This\s+document\s+defines\s+the\s+patterns\s+and\s+anti-patterns\s+used\s+by).*$
+    - ^(?s)(?!.*##\s+Patterns\b).*$
+    - ^(?s)(?!.*##\s+Anti-Patterns\b).*$
+    - (?s)##\s+Patterns\b(?:(?!##\s+Anti-Patterns).)*\bName\b(?!.*\bDescription\b)(?!.*\bWhen\b)(?!.*\bExample\b).*$
+    - (?s)##\s+Anti-Patterns\b.*\bName\b(?!.*\bDescription\b)(?!.*\bWhy\b)(?!.*\bInstead\b).*$
+- **Message**: patterns.md does not adhere to the strict template layout (Level-1 heading, introductory sentence, Level-2 Patterns/Anti-Patterns headings, or the required keys Name/Description/When/Example for Patterns and Name/Description/Why/Instead for Anti-Patterns)
+- **Fix Action**: Restructure patterns.md to have the Level-1 heading, introductory sentence, Level-2 headings, and define all Patterns with Name, Description, When, Example, and Anti-Patterns with Name, Description, Why, Instead
 - **Applies To**:
     - *patterns.md
 
@@ -198,7 +197,7 @@ This document defines the validations used by skill-creator.
 - **Severity**: error
 - **Type**: regex
 - **Pattern**:
-    - (?ms)\A(?!.*#\s+[A-Za-z\s\-]+\s+Sharp\s+Edges)
+    - ^(?s)(?!.*#\s+Sharp\s+Edges).*$
     - (?s)##\s+[A-Za-z\s\-]+\b(?:(?!##).)*\bId\b(?!.*\bSummary\b)(?!.*\bSeverity\b)(?!.*\bSituation\b)(?!.*\bWhy\b)(?!.*\bSolution\b)(?!.*\bSymptoms\b)(?!.*\bDetection\s+Pattern\b).*$
 - **Message**: sharp_edges.md does not adhere to the strict template layout or is missing required keys (Id, Summary, Severity, Situation, Why, Solution, Symptoms, Detection Pattern)
 - **Fix Action**: Structure sharp_edges.md with Level-2 headings for each sharp edge, ensuring every edge defines Id, Summary, Severity, Situation, Why, Solution, Symptoms, and Detection Pattern
@@ -207,13 +206,28 @@ This document defines the validations used by skill-creator.
 
 ---
 
+## Sharp Edge Detection Pattern Format
+
+- **Id**: skill-sharp-edge-detection-format
+- **Severity**: error
+- **Type**: regex
+- **Pattern**:
+    - (?i)-\s*\*\*Detection\s+Pattern\*\*:\s*`?[a-zA-Z0-9_\-]+`?\s*$
+- **Message**: Detection Pattern in sharp_edges.md should be a natural language description of what to detect, not a shorthand identifier, function name, or code snippet
+- **Fix Action**: Rewrite the Detection Pattern to be a clear natural language description (e.g., 'Registry entries with page ranges spanning 1 page or less containing incomplete sentences.' instead of 'incomplete_sentences')
+- **Applies To**:
+    - *sharp_edges.md
+
+---
+
+
 ## Skill validations.md Template Violation
 
 - **Id**: skill-structure-validations
 - **Severity**: error
 - **Type**: regex
 - **Pattern**:
-    - (?ms)\A(?!.*#\s+[A-Za-z\s\-]+\s+Validations)
+    - ^(?s)(?!.*#\s+Validations).*$
     - (?s)##\s+[A-Za-z\s\-]+\b(?:(?!##).)*\bId\b(?!.*\bSeverity\b)(?!.*\bType\b)(?!.*\bPattern\b)(?!.*\bMessage\b)(?!.*\bFix\s+Action\b)(?!.*\bApplies\s+To\b).*$
 - **Message**: validations.md does not adhere to the strict template layout or is missing required keys (Id, Severity, Type, Pattern, Message, Fix Action, Applies To)
 - **Fix Action**: Structure validations.md with Level-2 headings for each validation, ensuring every validation defines Id, Severity, Type, Pattern, Message, Fix Action, and Applies To

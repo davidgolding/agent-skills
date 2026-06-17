@@ -1,6 +1,6 @@
-# Validations
+# [NAME] Validations
 
-This document defines the validations used by [NAME].
+This document defines the validations used by [SHORT_NAME].
 
 ---
 

@@ -6,99 +6,115 @@ This document defines the interaction flow used by skill-creator.
 
 ## Interaction Rules
 
-1. **Stop and wait after each prompt**: After asking the user a question or presenting options that require a decision, stop and do nothing further until the user replies. Do not continue to the next phase, generate files, or make assumptions based on prior context.
-2. **Do not advance without confirmation**: Every phase has an explicit readiness condition. If that condition is not met — because the user has not confirmed, approved, or selected — stay in the current phase and re-prompt if needed. Never skip ahead.
-3. **Carry context forward silently**: Track the user's decisions, stated goals, constraints, and any intermediate outputs entirely in memory as the conversation progresses. Do not narrate your internal state, emit tracking labels, or annotate your messages with phase names or variable names.
-
----
-
-## Dialogue Guidelines
+These rules apply to every creation session.
 
 1. **Ask one question at a time**: One question per turn, even when sub-questions feel related. Stacking several questions in a single message produces diluted answers. Pick the single most useful one and ask it.
 2. **Prefer single-select multiple choice**: Use single-select when choosing one direction, one priority, or one next step.
 3. **Use multi-select rarely and intentionally**: Use it only for compatible sets such as goals, constraints, non-goals, or success criteria that can all coexist. If prioritization matters, follow up by asking which selected item is primary.
-4. **Default to the platform's blocking question tool**: Use `ask_user` or the equivalent native environment tool. These tools include a free-text fallback (e.g., "Other"), so options scaffold the answer without confining it. Fall back to numbered options in chat only when no blocking tool exists. Never silently skip a question.
-5. **Use an open-ended question only when the question is genuinely open**: Drop the blocking tool only when (a) the answer is inherently narrative, (b) the question is diagnostic/introspective and options would nudge the user, or (c) you cannot write 3–4 genuinely distinct, plausibly-correct options.
-6. **Open-ended questions earn their place only when they're specific enough to elicit a substantive answer**: Anchor open-ended questions in concrete scenarios. Avoid filler warmth openers, yes/no traps, and narration of form choice.
+4. **Default to the platform's blocking question tool** - Use `AskUserQuestion` in Claude Code (call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded), `request_user_input` in Codex, `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension). These tools include a free-text fallback (e.g., "Other" in Claude Code), so options scaffold the answer without confining it — well-chosen options surface dimensions the user may not have separated, and pick-plus-optional-note is lower activation energy than composing prose from scratch. This default holds for opening and elicitation questions too, not only narrowing. Fall back to numbered options in chat only when no blocking tool exists in the harness or the call errors (e.g., Codex edit modes) — not because a schema load is required. Never silently skip the question.
+5. **Use an open-ended question only when the question is genuinely open** - Drop the blocking tool only when (a) the answer is inherently narrative ("walk me through how you got here"), (b) the question is diagnostic or introspective and presented options would unintentionally influence the user's answer (e.g., "what concerns you most?" — a 4-option menu would nudge them toward those axes rather than the ones actually on their mind), or (c) you cannot write 3-4 genuinely distinct, plausibly-correct options that cover the space without padding or strawmen. The test: if you'd be straining to fill the option slots, the question is open — ask it open-ended. Rule 1 still applies: still one question per turn.
+6. **Open-ended questions earn their place only when they're specific enough to elicit a substantive answer** - Apply Rule 5 silently: just ask the question, do not narrate the form choice. The question itself must give the user something concrete to anchor on. Good: *"What's the most concrete thing someone's already done about this — paid for it, built a workaround, quit a tool over it?"* (this is one of Phase 1.2's rigor probes — it earns its open-endedness by naming what counts as an answer). Too thin: *"What's your take?"* (nothing to bite into; user defaults to a one-liner that wastes the open question). Avoid (a) narrating the form choice ("the most useful question I can ask here is..."), (b) framings that imply a short answer ("briefly", "in one sentence"), (c) yes/no traps, and (d) AI-slop warmth wrappers ("take it wherever feels relevant").
 
----
+## Feature or Skill Description
+
+<feature_description> #$ARGUMENTS </feature_description>
+
+**If the feature description above is empty, ask the user:** "What skill would you like to build together? Please describe the feature, ability, or agentic workflow you're thinking about."
+
+Do not proceed until you have a feature or skill description from the user.
 
 ## Execution Flow
 
 ### Phase 0: Resume, Assess, and Route
 
-**Objective**: Determine whether there is existing work to resume and whether brainstorming is needed before proceeding.
+#### 0.1 Resume Existing Work When Appropriate
 
-**What to do**: Check whether the user has referenced an existing skill, instruction set, or document. Scan the available context to assess whether the user's intent and topic are already clear enough to proceed.
+If the user references an existing skill or instructions or document:
 
-**Readiness condition**: The user has confirmed a clear topic or work direction — either starting fresh or resuming/refactoring prior work.
+- Read the skill, instructions, or document
+- Confirm with the user before resuming: "Found an existing skill for [topic]. Should I revise this, refer to this, refactor this, or start fresh?"
+- If resuming, summarize the current state briefly, continue from its state, and update the existing document(s), skill, or instructions unless the user indicates starting fresh or producing a duplicate
 
-**If not ready**: Ask the user directly: *"What skill would you like to build together? Please describe the feature, ability, or agentic workflow you're thinking about."* Then stop and wait for a reply.
+#### 0.2 Assess Whether Brainstorming Is Needed
 
----
+**Clear requirements indicators**:
+- Specific acceptance criteria provided
+- Referenced existing patterns to follow
+- Described exact expected behavior
+- Constrained, well-defined scope
 
-### Phase 1: Existing Context Scan & Collaborative Dialogue
+**If requirements are already clear:**
+- Keep the interaction brief
+- Confirm understanding and present concise next-step options rather than forcing a long brainstorm
 
-**Objective**: Scan any referenced files to verify infrastructure and gather specific requirements through focused single-question dialogue.
+### Phase 1: Understand the Idea
 
-**What to do**: Review referenced files for relevant context. Identify gaps in the problem frame, constraints, and success criteria. Check for downstream integration requirements. Ask one targeted question at a time until the picture is complete.
+#### 1.1 Existing Context Scan
 
-**Readiness condition**: The user's idea is clearly understood, constraints are known, and all integration questions are resolved.
+Scan the referenced skill(s), document(s), or instructions. If nothing obvious appears after a short scan, say so and continue. Two rules govern technical depth during the scan:
 
-**If not ready**: Ask the single most important outstanding question and wait for the user's answer before continuing.
+1. **Verify before claiming**: When the brainstorm touches checkable infrastructure, read the relevant source files to confirm what actually exists.
+2. **Defer design decisions to planning**: Implementation details like schemas, migration strategies, endpoint structure, or deployment topology belong in planning, not here — unless the brainstorm is itself about a technical or architectural decision, in which case those details are the subject of the brainstorm and should be explored.
 
----
+#### 1.2 Collaborative Dialogue
+
+Follow the Interaction Rules above. Use the platform's blocking question tool when available.
+
+**Guidelines:**
+- Ask what the user is already thinking before offering your own ideas. This surfaces hidden context and prevents fixation on AI-generated framings.
+- Start broad (problem, users, value) then narrow (constraints, exclusions, edge cases)
+- Clarify the problem frame, validate assumptions, and ask about success criteria
+- Make requirements concrete enough that planning will not need to invent behavior
+- Surface dependencies or prerequisites only when they materially affect scope
+- Resolve product decisions here; leave technical implementation choices for planning
+- Bring ideas, alternatives, and challenges instead of only interviewing
+
+**Before exiting Phase 1.2: integration check.** Mentally combine what the user has said so far and surface any non-obvious consequences the dialogue hasn't probed. If user-stated X plus user-stated Y plus your-default-Z produces a downstream effect the user is unlikely to have tracked through one-question-at-a-time dialogue ("if mute lives on the rule AND we don't warn on delete, then rule-delete silently loses pause state"), probe it now while you're still in dialogue. One probe per genuine combination effect, asked open-ended, same discipline as rigor probes.
+
+**Exit condition:** Continue until the idea is clear AND no integration-check questions are pending, OR the user explicitly wants to proceed.
 
 ### Phase 2: Explore Approaches
 
-**Objective**: Propose 2–3 design approaches and align on a direction before doing any implementation work.
+If multiple plausible directions remain, propose **2-3 concrete approaches** based on research and conversation. Otherwise state the recommended direction directly.
 
-**What to do**: Present 2–3 distinct approaches. For each, describe the key trade-offs, risks, and fit for the user's goals. Include a clear recommendation with rationale.
+Use at least one non-obvious angle — inversion (what if we did the opposite?), constraint removal (what if X weren't a limitation?), or analogy from how another domain solves this. The first approaches that come to mind are usually variations on the same axis.
 
-**Readiness condition**: The user has selected or confirmed an approach (possibly with modifications).
+Present approaches first, then evaluate. Let the user see all options before hearing which one is recommended — leading with a recommendation before the user has seen alternatives anchors the conversation prematurely.
 
-**If not ready**: Present the approaches and ask the user to choose. Wait for their selection before continuing.
+When useful, include one deliberately higher-upside alternative:
+- Identify what adjacent addition or reframing would most increase usefulness, compounding value, or durability without disproportionate carrying cost. Present it as a challenger option alongside the baseline, not as the default. Omit it when the work is already obviously over-scoped or the baseline request is clearly the right move.
 
----
+At product tier, alternatives should differ on *what* is built (product shape, actor set, positioning), not *how* it is built. Implementation-variant alternatives belong at feature tier.
 
-### Phase 3: Scoping Synthesis
+For each approach, provide:
+- Brief description (2-3 sentences)
+- Pros and cons
+- Key risks or unknowns
+- When it's best suited
 
-**Objective**: Produce and confirm a scoping synthesis that documents trade-offs, deferred items, and important call-outs.
+**Approach granularity: mechanism / product shape, not architecture.** Approach descriptions name mechanism-level distinctions ("pause as a rule property" vs "pause as an event filter" vs "pause as a separate entity") and product-relevant trade-offs (plan-tier coupling, complexity surface, migration difficulty). They do NOT name implementation specifics — column names, table names, file paths, service classes, JSON shapes, exact method names. Bringing architecture forward at brainstorm time forces the user to make architectural decisions on our intentionally-shallow research, and the synthesis at Phase 2.5 then has to filter out the leak.
 
-**What to do**: Internally draft a three-bucket scope (in scope / out of scope / deferred), then format the scoping synthesis following `references/synthesis_summary.md`. Present it to the user for review.
+After presenting all approaches, state your recommendation and explain why. Prefer simpler solutions when added complexity creates real carrying cost, but do not reject low-cost, high-value polish just because it is not strictly necessary.
 
-**Readiness condition**: The user has reviewed and confirmed the scoping synthesis.
+If one approach is clearly best and alternatives are not meaningful, skip the menu and state the recommendation directly.
 
-**If not ready**: Present the synthesis and ask the user to confirm or flag any changes. Wait before proceeding.
+If relevant, call out whether the choice is:
+- Reuse an existing pattern
+- Extend an existing capability
+- Build something net new
 
----
+### Phase 2.5: Synthesis Summary
 
-### Phase 4: Capture the Requirements
+**STOP. Before composing the synthesis, read `references/synthesis_summary.md`.** The two-stage shape (internal three-bucket draft → chat-time scoping synthesis), the Path A / Path B gate, the four scoping synthesis sections with their keep tests, the tier-aware bullet budget with re-cut rule, anti-pattern guidance, soft-cut behavior, self-redirect support, and internal-draft routing into doc body sections all live there. Composing a synthesis without these rules loaded reliably produces malformed output — pasting the full internal three-bucket draft verbatim into chat, implementation-detail leakage into the scoping synthesis, the proposal-pitch anti-pattern. **Each scoping synthesis bullet must pass the affirmability test (can the user evaluate this without reading code?) AND the detail test (1–2 lines max, conversational not documentary); over-share and over-detail are the failure modes to avoid.** This is not optional supplementary reading; it is the source of truth for how the phase behaves.
 
-**Objective**: Produce a temporary requirements document (`temp-requirements.md`) in the workspace root for the user to review.
+Surface a scoping synthesis to the user before Phase 3 writes the temporary requirements doc — the user's last opportunity to correct scope. The scoping synthesis is shaped like what two product collaborators would confirm before writing a PRD, not like a comprehensive audit or a one-line preview.
 
-**What to do**: Write the requirements document following the structure in `references/requirements_capture.md`, based on everything confirmed so far. Present it to the user for approval.
+### Phase 3: Capture the Requirements (Temporary)
 
-**Readiness condition**: The user has explicitly approved the requirements document.
+Write or update a temporary requirements document at `temp-requirements.md` in the workspace root only when the conversation produced durable decisions worth preserving. Read `references/requirements_capture.md` for the document template, formatting rules, visual aid guidance, and completeness checks. This file is temporary and will be deleted after the skill is drafted in Phase 4.
 
-**If not ready**: Present the document and ask for approval or requested changes. Do not proceed to Phase 5 until approval is given.
+For **Lightweight** brainstorms, keep the document compact. Skip document creation when the user only needs brief alignment and no durable decisions need to be preserved.
 
----
+### Phase 4: Handoff
 
-### Phase 5: Handoff and Cleanup
-
-**Objective**: Produce the final skill files, remove the temporary requirements document, and deliver a closing summary.
-
-**What to do**: Draft the final skill files (`SKILL.md` and any references) using the appropriate templates. Delete `temp-requirements.md` from the workspace root. Present the closing summary to the user.
-
-**Readiness condition**: The user has reviewed the generated files and confirmed there are no further adjustments.
-
-**If not ready**: Prompt the user for any final changes and apply them. Once the user confirms, the session is complete.
-
----
-
-## Handoff
-
-**Normal completion**: The session closes when the user confirms the final skill files are correct and complete. No further action is required.
-
-**Error or repeated failure**: If the environment throws errors or a validation step fails three times in a row, stop, tell the user what went wrong, and ask how they would like to proceed — whether that means retrying, adjusting the approach, or escalating for support.
+Present next-step options and execute the user's selection. Read `references/handoff.md` for the option logic, cleanup instructions, and closing summary format. Ensure `temp-requirements.md` in the workspace root is deleted immediately after the skill is drafted/written or if the session is cancelled.
