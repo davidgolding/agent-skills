@@ -57,11 +57,11 @@ Mode C: Target-Constrained Keyword Excerpt Search
 Execute exact-string or regex searches against raw text files, restricted to a pre-filtered metadata subset.
 1. **Do not run keyword searches across the entire raw corpus blindly.**
 2. Narrow the search files first to a subset of `segment_id`s using Mode A or Mode B (e.g., limit search to files within box 4, reel 2).
-3. Execute exact-string or regex matches against the raw text of that subset.
+3. Execute exact-string or regex matches against the raw text of that subset using native tools (e.g., `grep_search` or running `grep` via `run_command`) directly instead of generating and running custom python scripts.
 ### **When**
 Locating specific names, unique phrases, or numerical values in raw corpus files.
 ### **Example**
-Filtering files to the "Glenwood RS Minutes" for the year "1883", then grepping for the term "welfare" inside only those files.
+Filtering files to the "Glenwood RS Minutes" for the year "1883", then using `grep_search` or a native `grep` command to search for the term "welfare" inside only those files.
 
 ---
 

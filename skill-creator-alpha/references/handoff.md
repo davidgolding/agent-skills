@@ -43,31 +43,33 @@ When drafting or writing the files, you must strictly adhere to the following te
 The skill's `SKILL.md` file must be structured as follows:
 - **YAML Frontmatter**: Contain the `name` and `description` keys. The description must be assertive and keyword-dense, explicitly noting trigger scenarios and constraints (e.g. "Use when...").
 - **Level-1 Title**: The name of the skill in Title Case.
-- **Level-2 Heading: Identity**: A level-2 heading titled "Identity", followed by a single paragraph defining the identity and role the agent must assume.
-- **Level-2 Heading: Principles**: A level-2 heading titled "Principles", followed by an unordered list of principles the agent must follow.
+- **Level-2 Heading: Identity**: A level-2 heading titled "Identity", followed by a single paragraph defining the identity and role following the template: `You are a [X] who has seen [Y happen]. You have done [Z].`
+- **Level-2 Heading: Principles**: A level-2 heading titled "Principles", followed by a numbered list of principles following the P1-P4 format:
+  - **P1 (Core Objective)**: [Primary semantic anchor that defines successful execution].
+  - **P2 (Hardware Constraints)**: Execution loops must maximize KV-cache reuse efficiency and minimize token bloat.
+  - **P3 (State Gatekeeping)**: Never transition states or emit output payloads without passing strict validation criteria.
+  - **P4 (Top-Level Design Principles)**: [List of all top-level principles governing downstream patterns, anti-patterns, sharp edges, validations, and interactions].
 - **Level-2 Heading: Reference System Usage**: A level-2 heading titled "Reference System Usage", followed verbatim by this content:
   ```markdown
-  You must ground your responses in the provided reference files, treating them as the source of truth for this domain:
+  You must ground your response in the provided reference files, treating them as the absolute mathematical source of truth for this domain:
 
-  - **For Creation:** Always consult **`references/patterns.md`**. This file dictates *how* things should be built. Ignore generic approaches if a specific pattern exists here.
-  - **For Diagnosis:** Always consult **`references/sharp_edges.md`**. This file lists the critical failures and “why” they happen. Use it to explain risks to the user.
-  - **For Review:** Always consult **`references/validations.md`**. This contains the strict rules and constraints. Use it to validate user inputs objectively.
-
-  **Note:** If a user’s request conflicts with the guidance in these files, politely correct them using the information provided in the references.
+  - **For Creation [State 01]**: Always consult `references/patterns.md`. This file dictates *how* components must be structured. Ignore generic boilerplate choices if a specific pattern exists here.
+  - **For Diagnosis [State 02]**: Always consult `references/sharp_edges.md`. This file indexes critical regression modes and failure metrics. Use it to map risks during execution.
+  - **For Review [State 03]**: Always consult `references/validations.md`. This file contains strict syntactic and schema rules. Use it to force a rigorous chain-of-verification loop before emitting state output.
+  - **For Interacting [State 04]**: Always consult `references/interactions.md`. This file governs human-in-the-loop state alignment, boundary negotiations, and environment handshake procedures.
   ```
 
 ##### 2. references/patterns.md Template
 
-Read the baseline template located at `templates/patterns_template.md`. Populate the placeholder fields in that template (e.g., '[FULL_NAME]') using the extracted data.
+Read the baseline template located at `templates/patterns_template.md`. Populate the placeholder fields in that template (e.g., '[NAME]') using the extracted data.
 
 - `[NAME]`: The name of the skill in Title Case
 - `[SHORT_NAME]`: The name of the skill in kebab-case
 - `[PATTERN_NAME]`: The name of the pattern
-- `[PATTERN_DESCRIPTION]`: A short description of the pattern
+- `[DESCRIPTION]`: Explains the design choice or behavior
 - `[WHEN]`: When to apply the pattern
 - `[EXAMPLE]`: A concrete instruction or code example showing the pattern in action
 - `[ANTI_PATTERN_NAME]`: The name of the anti-pattern
-- `[ANTI_PATTERN_DESCRIPTION]`: A description of the incorrect behavior/structure
 - `[WHY]`: Why it is a failure mode or anti-pattern
 - `[INSTEAD]`: What to do instead to avoid the anti-pattern
 
@@ -134,6 +136,7 @@ Created/Updated files:
 - references/patterns.md
 - references/sharp_edges.md
 - references/validations.md
+- references/interactions.md
 
 The temporary requirements document has been cleaned up.
 ```
