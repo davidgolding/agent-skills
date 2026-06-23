@@ -22,15 +22,15 @@ This document defines the sharp edges used by reading-interlocutor.
 ## Hallucinated Text Mastery
 
 - **Id**: hallucinated-text-mastery
-- **Summary**: The agent assumes familiarity with a text and asks generic, off-target questions.
+- **Summary**: The agent assumes familiarity with a text, leading to fabricated or off-target Socratic questions.
 - **Severity**: high
 - **Situation**: The user provides a text title/author that is obscure or lacks local text files, and the agent's web research/internal memory fails to retrieve the exact argument structures.
-- **Why**: The agent relies on broad disciplinary keywords rather than the specific claims of the monograph.
+- **Why**: The agent relies on broad disciplinary keywords or hallucinates monograph claims rather than referencing the specific, verified claims of the work.
 - **Solution**:
-    - Before starting, summarize the text's core thesis and key chapters in 1 paragraph and ask the user to verify/edit it before proceeding.
+    - If the work is not locally available to the agent, the agent must ask the user to supply a summation or description from the work, and formulate queries based strictly on the user's provided context.
 - **Symptoms**:
-    - Socratic questions feel generic (e.g. "What is the author's methodology?" instead of referencing their specific case study).
-- **Detection Pattern**: Generating generic, broad Socratic questions that do not reference specific chapters or monograph claims.
+    - Socratic questions reference chapters or specific arguments that do not exist in the work.
+- **Detection Pattern**: Generating questions that make assumptions about specific claims or structures of a text without local source text or user-provided summary verification.
 
 ---
 
@@ -63,3 +63,61 @@ This document defines the sharp edges used by reading-interlocutor.
 - **Detection Pattern**: Terminal executor failing with command not found errors when invoking obsidian-cli.
 
 ---
+
+## Cognitive Metrics Exposure
+
+- **Id**: cognitive-metrics-exposure
+- **Summary**: Internal cognitive scores or layer transition info is exposed to the user.
+- **Severity**: medium
+- **Situation**: The agent prints "Cognitive Load", "Recall Probability", or "Current Layer" statistics in its response.
+- **Why**: The agent incorrectly formats its reply by copying internal tracking variables into the chat-facing text block.
+- **Solution**:
+    - Ensure all cognitive load and recall probability scores are kept strictly within internal thought blocks.
+- **Symptoms**:
+    - The chat output contains sections labeled "Invisible Cognitive Metrics" or similar bullet points.
+- **Detection Pattern**: User-facing responses containing numerical metrics or labels referring to Socratic layer names.
+
+---
+
+## Pedagogical Persona Slip
+
+- **Id**: pedagogical-persona-slip
+- **Summary**: Agent acts as an instructional mentor/guide rather than a challenging academic peer.
+- **Severity**: medium
+- **Situation**: The agent uses transitional phrases indicating Socratic progression.
+- **Why**: The agent defaults to user-friendly instructional chat behavior instead of maintaining a rigorous seminar professor persona.
+- **Solution**:
+    - Remove all meta-commentary about the state of the conversation (e.g., "Let's transition to..."). Pose Socratic questions directly and challenging.
+- **Symptoms**:
+    - Sentences like "Let's transition to Active Recall" or "Now we will test your comprehension of..."
+- **Detection Pattern**: Conversational responses containing meta-comments about the current step, phase, or Socratic layer of the session.
+
+---
+
+## Purple Prose Dilution
+
+- **Id**: purple-prose-dilution
+- **Summary**: The agent uses flattering praise or wordy validation in response to user answers.
+- **Severity**: low
+- **Situation**: The agent praises the user's responses (e.g., "Your distinction is a brilliant synthesis").
+- **Why**: The agent mimics standard helper chatbot politeness instead of professional academic critique.
+- **Solution**:
+    - Eliminate all congratulatory remarks and proceed directly to challenging the user's assertions.
+- **Symptoms**:
+    - Responses beginning with "Excellent point," "Brilliant synthesis," or "That is correct."
+- **Detection Pattern**: The presence of praise or validations in user-facing responses.
+
+---
+
+## Editorial Note Distortion
+
+- **Id**: editorial-note-distortion
+- **Summary**: The agent synthesizes or edits the user's answers when generating the final vault note.
+- **Severity**: high
+- **Situation**: The final Markdown note contains paragraphs of summaries, explanations, or altered phrasing of the user's statements.
+- **Why**: The agent attempts to polish the note by writing its own summaries instead of extracting the user's verbatim text.
+- **Solution**:
+    - Copy the user's responses verbatim and reposition them under clean, structured headings.
+- **Symptoms**:
+    - Note output contains words, definitions, or synthesis sentences not written by the user.
+- **Detection Pattern**: Vault note content that does not match the user's chat input responses verbatim.
