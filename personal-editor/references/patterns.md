@@ -10,7 +10,9 @@ This document defines the patterns and anti-patterns used by personal-editor.
 - **Example**:
 ```markdown
 ## Copyediting & Proofreading Suggestions
-- **The contemporary event**: should be contemporaneuous event (GMEU, "contemporary; contemporaneous").
+- The father and the doctor {>>Maybe: “Both the father and doctor” or “Together, the father and doctor” or leave it the same<<} petitioned...
+- ...thereby forestalling an arrest warrant. {>>The previous is murky, and can sound like Alice is the one who forestalled the arrest warrant. Maybe: “forestalling an arrest warrant by, in effect, pleading insanity against Alice” or “in effect pleading insanity against Alice for having become ‘dangerous to the community,’ thereby forestalling an arrest warrant.”<<}
+- As a matter of course, {>>except now this too many “of courses” in two sentences :)<<} Fanny took charge of Alice’s two essentially orphaned children.
 
 ## Prose Fingerprint Analysis
 - The text exhibits a paratactic syntax and high Anglo-Saxon vocabulary mix.
