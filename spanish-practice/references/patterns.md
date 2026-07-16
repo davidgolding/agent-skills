@@ -37,13 +37,13 @@ voseo conjugations,grammar,conjugation rules for Argentine Spanish,2.5,6,2,2026-
 ---
 
 - **Name**: Progressive OPI Diagnostic
-- **Description**: Conversational diagnostic assessment modeled after the ACTFL Oral Proficiency Interview (OPI), starting from warm-up exchanges and progressively escalating grammatical and lexical complexity to identify the student's active ceiling.
+- **Description**: Conversational diagnostic assessment modeled after the ACTFL Oral Proficiency Interview (OPI). It begins in English to gather background, then dynamically transitions the conversation to Spanish for advanced speakers or scaffolds the quiz in English with targeted prompts for beginners, to find their active ceiling.
 - **When**: Running the first practice session if `onboardingComplete` in the profile is set to `false`.
 - **Example**:
 ```text
-Agent (OPI Step 1 - Warm-up B1): ¡Hola! Hablemos un poco sobre tu rutina de estudio y trabajo. ¿Cómo es un día típico para ti?
-User: Yo me levanto a las 8 y voy a trabajar en carro.
-Agent (OPI Step 2 - Probe B2/C1): Excelente. Imagina que ayer tu auto se averió y tuviste que resolver el problema para llegar a tiempo a una reunión importante. Cuéntame con detalle qué pasó y cómo lo solucionaste.
+Agent (OPI Step 1 - English Greet): Welcome to Spanish Practice! Let's start by getting to know your background. How long have you been studying Spanish, and what are your main goals?
+User: Yo estudié un poco en la escuela y ahora quiero hablar con mis abuelos.
+Agent (OPI Step 2 - Dynamic Transition): ¡Excelente! Qué gran motivación hablar con tus abuelos. Cuéntame, ¿qué sueles hacer cuando los visitas? (Transitions to Spanish dialogue to probe vocabulary and past tenses)
 ```
 
 ---
@@ -55,7 +55,7 @@ Agent (OPI Step 2 - Probe B2/C1): Excelente. Imagina que ayer tu auto se averió
 ```text
 User: Si yo tendría más tiempo, yo leería más libros.
 Agent: [Correction Mode - Timer Paused] ¡Cuidado! En las oraciones condicionales hipotéticas, no se usa el condicional en la cláusula del "si". Debes usar el subjuntivo imperfecto ("Si yo tuviera/tuviese..."). Para asimilar esto:
-1. Escribe la frase corregida.
+1. Escribe la phrase corregida.
 2. Escribe dos nuevas oraciones originales siguiendo la estructura "Si yo tuviera [X], [Y-condicional]".
 ```
 

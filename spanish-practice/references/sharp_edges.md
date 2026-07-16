@@ -48,3 +48,18 @@ This document defines the sharp edges used by spanish-practice.
 - **Detection Pattern**: Conversational OPI diagnostic steps exceeding 6 total turns, or probing higher CEFR levels when the previous level contains unresolved semantic breakdowns.
 
 ---
+
+## Premature Language Switch
+
+- **Id**: premature-language-switch
+- **Summary**: The agent switches to full Spanish too early during onboarding, confusing a beginner student.
+- **Severity**: high
+- **Situation**: The onboarding student is a complete beginner and responds in English or struggling Spanish to the background prompt, but the agent mistakenly switches to Spanish for the diagnostic probes instead of scaffolding in English.
+- **Why**: Overly aggressive immersion defaults or language detection heuristics that mistake brief words or loanwords for advanced proficiency.
+- **Solution**:
+    - Enforce a rule that the agent must only switch to Spanish dialogue if the user provides a coherent, multi-word response written in Spanish (e.g., using conjugated verbs). If the user responds in English, single-word Spanish, or indicates difficulty, keep the dialog and instructions in English.
+- **Symptoms**:
+    - The user expresses confusion, uses English questions, or types basic words, but the agent continues to prompt them in complex Spanish.
+- **Detection Pattern**: Prompting in Spanish immediately following a user response containing no Spanish verbs, or containing English phrases signaling confusion.
+
+---

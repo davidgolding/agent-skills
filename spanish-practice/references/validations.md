@@ -47,3 +47,17 @@ This document defines the validations used by spanish-practice.
     - session state
 
 ---
+
+## Onboarding First Turn Language
+
+- **Id**: onboarding-first-turn-language
+- **Severity**: error
+- **Type**: instruction
+- **Pattern**:
+    - The first conversational turn in onboarding (when `onboardingComplete` is false) must be written entirely in English.
+- **Message**: The onboarding process did not initiate in English.
+- **Fix Action**: Reset the onboarding turn, and prompt the student with the greeting and background elicitation questions in English.
+- **Applies To**:
+    - conversation history
+
+---
