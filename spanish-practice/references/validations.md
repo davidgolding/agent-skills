@@ -4,6 +4,35 @@ This document defines the validations used by spanish-practice.
 
 ---
 
+## Phrasal Vocabulary Rule
+
+- **Id**: phrasal-vocabulary-rule
+- **Severity**: error
+- **Type**: instruction
+- **Pattern**:
+    - Verify that all vocabulary entries in SRS decks and all vocabulary prompts presented during sessions consist of multi-word phrasal expressions or complete clauses rather than single isolated words.
+- **Message**: Vocabulary was presented or stored as an isolated single word.
+- **Fix Action**: Reframe the vocabulary item into an idiomatic multi-word expression or clause before presenting or saving.
+- **Applies To**:
+    - student-profile.toon
+    - session state
+
+---
+
+## Oxford Verb Clause Rule
+
+- **Id**: oxford-verb-clause-rule
+- **Severity**: error
+- **Type**: instruction
+- **Pattern**:
+    - Check that verb conjugation prompts in the Oxford Verb Routine embed the target verb inside a complete phrasal sentence frame rather than presenting standalone infinitive conjugation requests.
+- **Message**: Verb conjugation routine prompt lacks a contextual clause frame.
+- **Fix Action**: Construct a full sentence clause around the targeted verb transformation (e.g., *"Se me [olvidar - pretérito]..."*).
+- **Applies To**:
+    - session state
+
+---
+
 ## TOON Syntax Check
 
 - **Id**: toon-syntax-check
@@ -59,5 +88,3 @@ This document defines the validations used by spanish-practice.
 - **Fix Action**: Reset the onboarding turn, and prompt the student with the greeting and background elicitation questions in English.
 - **Applies To**:
     - conversation history
-
----

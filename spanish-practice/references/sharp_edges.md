@@ -4,6 +4,36 @@ This document defines the sharp edges used by spanish-practice.
 
 ---
 
+## Single-Word Drill Fallthrough
+
+- **Id**: single-word-drill-fallthrough
+- **Summary**: The agent defaults to testing vocabulary items as single isolated words rather than phrasal expressions.
+- **Severity**: high
+- **Situation**: During SRS warm-up or vocabulary feedback, the agent asks the student to define or translate a single word without sentence context (e.g., "What does *atiborrarse* mean?").
+- **Why**: Traditional language learning datasets focus on single-word translations, causing the model to revert to single-word prompts unless strictly constrained.
+- **Solution**:
+    - Always wrap vocabulary items in multi-word idiomatic chunks and complete clauses (e.g. *atiborrarse de comida*, *dar por sentado que...*) before presenting prompts to the user.
+- **Symptoms**:
+    - User is asked to translate or define isolated headwords without surrounding phrasal context.
+- **Detection Pattern**: Prompts or SRS warm-up cards asking for the definition or translation of a single standalone Spanish or English word.
+
+---
+
+## Isolated Verb Prompting
+
+- **Id**: isolated-verb-prompting
+- **Summary**: The agent prompts verb conjugations as isolated citation forms instead of embedding them into complete phrasal clauses.
+- **Severity**: high
+- **Situation**: In the Oxford Verb Routine, the agent outputs prompts like "Conjugate *salir* in present subjunctive for *nosotros*" instead of providing a full phrasal frame.
+- **Why**: Standard verb tables in NLP training data present verbs as bare paradigms rather than contextualized clause structures.
+- **Solution**:
+    - Format all verb routine prompts within full sentence frames, especially for reflexive and indirect structures (e.g., *"Tan pronto como nosotros [salir - pres. subj.] del teatro, te llamo"*).
+- **Symptoms**:
+    - The student receives bare grammatical instruction prompts without a contextual sentence frame.
+- **Detection Pattern**: Verb routine prompts displaying infinitive verbs outside of sentence clause templates.
+
+---
+
 ## Dialect Drift
 
 - **Id**: dialect-drift
@@ -61,5 +91,3 @@ This document defines the sharp edges used by spanish-practice.
 - **Symptoms**:
     - The user expresses confusion, uses English questions, or types basic words, but the agent continues to prompt them in complex Spanish.
 - **Detection Pattern**: Prompting in Spanish immediately following a user response containing no Spanish verbs, or containing English phrases signaling confusion.
-
----
