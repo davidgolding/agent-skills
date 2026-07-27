@@ -79,6 +79,51 @@ This document defines the sharp edges used by spanish-practice.
 
 ---
 
+## Correction Preference Ignored
+
+- **Id**: correction-preference-ignored
+- **Summary**: The agent applies Halting Correction Mode to every error regardless of the profile's `correctionPreference` field.
+- **Severity**: high
+- **Situation**: A learner with `correctionPreference: "recasting"` makes a minor, first-occurrence error, and the agent freezes the timer and forces a full correction drill anyway, instead of recasting inline.
+- **Why**: Training data over-represents maximally explicit tutor-correction dialogue, biasing the model toward the halting path by default even when a stored preference says otherwise.
+- **Solution**:
+    - Before pausing the timer, check `correctionPreference` and whether the error already appears in `persistentErrors`. Only escalate to Halting Correction Mode when the preference is `"explicit"` or the error is a repeat offense.
+- **Symptoms**:
+    - Every single error in a session — regardless of severity or repetition — triggers a full halting drill even though `correctionPreference` is `"recasting"`.
+- **Detection Pattern**: Halting Correction Mode invoked on a first-occurrence error while `correctionPreference` in the active profile is `"recasting"`.
+
+---
+
+## False Pronunciation Verification
+
+- **Id**: false-pronunciation-verification
+- **Summary**: The agent claims to have heard, assessed, or verified the student's spoken pronunciation in a text-only session.
+- **Severity**: high
+- **Situation**: The agent tells the student something like "tu pronunciación fue excelente" or "noté que confundiste la 'b' con la 'v'" when no audio or voice modality is present in the conversation.
+- **Why**: Tutoring dialogue in training data frequently includes pronunciation feedback lines, and the model can generate these reflexively even though it has received no audio signal to evaluate.
+- **Solution**:
+    - Never assert perceived pronunciation quality. When a phrasal item carries known interference risk for the learner's dialect, flag it as a brief "say this aloud" self-practice note rather than a scored or verified judgment.
+- **Symptoms**:
+    - Assistant messages reference how something "sounded" or was "pronounced" when the session has no audio input.
+- **Detection Pattern**: Assistant turn containing a pronunciation-quality claim (e.g., "pronunciaste bien/mal", "tu acento...") in a session with no active voice/audio modality.
+
+---
+
+## Receptive Phase Skipped
+
+- **Id**: receptive-phase-skipped
+- **Summary**: The agent collapses the daily session back into SRS warm-up → core production → correction → sync, omitting the 3-minute Receptive Micro-Input segment.
+- **Severity**: medium
+- **Situation**: A session transcript moves directly from the SRS warm-up into core spontaneous production with no leveled text or comprehension questions in between.
+- **Why**: The original four-part partition is more heavily represented in prior session transcripts and examples, so the model can default back to the older habit unless explicitly checked.
+- **Solution**:
+    - Verify all five partition segments (SRS, Receptive Micro-Input, core production, correction, sync) occur before saving the profile at session end.
+- **Symptoms**:
+    - The student never receives a short reading/listening text with comprehension questions during the session.
+- **Detection Pattern**: No distinct receptive-input turn (leveled text + comprehension question) appears between the SRS warm-up and core-production turns.
+
+---
+
 ## Premature Language Switch
 
 - **Id**: premature-language-switch

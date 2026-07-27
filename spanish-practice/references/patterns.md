@@ -31,7 +31,7 @@ Agent: ¡Excelente! Observa cómo la transformación o > ue del presente no se p
 ---
 
 - **Name**: TOON State Management
-- **Description**: Persistent tracking of user CEFR levels, selected dialect, active/passive vocabulary, verb transformation group progress, and SM-2 parameters in a single compact `student-profile.toon` file.
+- **Description**: Persistent tracking of user quarter-level CEFR proficiency, aggregate mastery, selected dialect, correction preference, interests/goals, recurring errors, active/passive vocabulary (with register and encounter counts), verb transformation group progress, and SM-2 parameters in a single compact `student-profile.toon` file.
 - **When**: Initializing the session and saving the state after each session.
 - **Example**:
 ```text
@@ -39,17 +39,21 @@ onboardingComplete: true
 targetLanguage: "Spanish"
 dialectPreference: "Mexican"
 nativeLanguage: "English"
-cefrLevel: "C1"
+cefrLevel: "C1.25"
+masteryPercent: 62
 correctionPreference: "recasting"
+interests: ["cooking", "history", "soccer"]
+learningGoals: ["speak with in-laws", "watch news without subtitles"]
+persistentErrors: ["si + condicional (should be si + imperfect subjunctive)", "gender agreement with compound nouns"]
 lessonsCompleted: 24
 lastLessonTopic: "Subjuntivo e Impersonales"
 lastLessonDate: "2026-07-26T15:00:00Z"
 verbGroupStage: "AR-4"
 verbTenseStage: "Present Subjunctive"
 
-srsDeck[2]{item,translation,easiness,interval,repetitions,nextReviewDate}:
-dar por sentado,to take for granted,2.5,3,2,2026-07-29
-atiborrarse de,to stuff oneself with,2.6,6,3,2026-08-01
+srsDeck[2]{item,translation,register,easiness,interval,repetitions,encounterCount,nextReviewDate}:
+dar por sentado,to take for granted,neutral,2.5,3,2,4,2026-07-29
+atiborrarse de,to stuff oneself with,informal,2.6,6,3,7,2026-08-01
 
 verbMasteryDeck[2]{group,modelVerb,tense,easiness,interval,repetitions,nextReviewDate}:
 AR-4,avergonzar,Pretérito,2.5,1,1,2026-07-27
@@ -83,6 +87,57 @@ Agent: [Correction Mode - Timer Paused] ¡Cuidado! En las oraciones condicionale
 
 ---
 
+- **Name**: Preference-Branched Recasting
+- **Description**: Correcting minor or first-occurrence errors with an inline implicit recast — restating the sentence correctly in the very next turn — without pausing the timer or conversation, when `correctionPreference` is `"recasting"`. Halting Correction Mode is reserved for errors already logged in `persistentErrors` or for `correctionPreference: "explicit"`.
+- **When**: An error occurs during core production or receptive-input debrief and the profile's `correctionPreference` is `"recasting"` and the error is not yet in `persistentErrors`.
+- **Example**:
+```text
+User: Ayer yo iba al cine con mis amigos.
+Agent: ¡Qué buen plan! Ayer fui al cine con mis amigos también — a mí me tocó ver una película de terror. ¿Qué vieron ustedes?
+(Note: the recast — "fui" instead of "iba" — is modeled inline; the timer keeps running and the conversation is not interrupted.)
+```
+
+---
+
+- **Name**: Receptive Micro-Input Step
+- **Description**: A short leveled text or dialogue (at or one notch above the learner's quarter-level) that naturally recycles the session's target phrasal items, followed by 1–2 comprehension or inference questions, delivered during the 3-minute receptive slot between SRS warm-up and core production.
+- **When**: Every daily session, immediately after SRS warm-up.
+- **Example**:
+```text
+Agent: [Entrada Receptiva] Lee este breve fragmento:
+"Marta siempre da por sentado que su hermano la va a ayudar con la mudanza, pero esta vez él se atiborró de trabajo y no pudo llegar a tiempo..."
+Pregunta 1: ¿Por qué se sintió sorprendida Marta?
+Pregunta 2: ¿Qué habría hecho ella de otra manera?
+```
+
+---
+
+- **Name**: Register-Shifting Drill
+- **Description**: Drilling the same communicative intent across two registers (e.g. formal vs. informal) for a single phrasal item, for learners at B2 and above.
+- **When**: Introducing or reviewing a register-tagged phrasal item for a learner whose `cefrLevel` is B2.00 or higher.
+- **Example**:
+```text
+Agent: [Cambio de Registro - B2] La expresión "tomar cartas en el asunto" es neutral. Practiquemos el mismo mensaje en dos registros:
+1. Formal (a tu jefe): "Entiendo la gravedad de la situación; voy a tomar cartas en el asunto de inmediato."
+2. Informal (a un amigo): "Tranquilo, ya me pongo las pilas y arreglo esto ahora mismo."
+Ahora tú: exprésale a un cliente formalmente que resolverás un problema, y luego exprésaselo informalmente a tu compañero de piso.
+```
+
+---
+
+- **Name**: Functional-Need-Triggered Verb Micro-Drill
+- **Description**: A short (2–3 item) embedded Oxford verb-group drill surfaced immediately when a conversational stumble reveals a gap in that group, rather than requiring the student to separately invoke the full on-demand Oxford Verb Routine.
+- **When**: A core-production or Correction Mode turn reveals an error tied to a specific Oxford transformation group.
+- **Example**:
+```text
+User: Si yo fuera tú, yo *saldría* con ella pero primero le *habla*...
+Agent: [Micro-Drill Funcional - Grupo IR-10] Veo que "hablar" necesita el condicional aquí. Practiquemos rápido:
+"Si yo *fuera* tú, primero le [hablar - condicional] antes de invitarla a salir."
+(Two more quick items, then back to the conversation — no need to run the full on-demand routine.)
+```
+
+---
+
 ## Anti-Patterns
 
 - **Name**: Single-Word Flashcards & Isolated Verb Drills
@@ -103,3 +158,17 @@ Agent: [Correction Mode - Timer Paused] ¡Cuidado! En las oraciones condicionale
 - **Description**: Continuing the main chat conversation and logic flow while merely printing corrections inline as secondary feedback.
 - **Why**: It allows the student to ignore the feedback and continue writing incorrect structures, failing to reinforce correct pathways or break persistent errors.
 - **Instead**: Immediately halt the conversational flow, freeze the session timer, and refuse to proceed until the student actively re-types and constructs sentences demonstrating successful correction.
+
+---
+
+- **Name**: Ignoring Correction Preference
+- **Description**: Applying Halting Correction Mode uniformly to every detected error regardless of the profile's `correctionPreference` field.
+- **Why**: Implicit recasts carry better long-term retention and a lower affective filter for spontaneous oral production than explicit halting corrections, which are better reserved for repeat/persistent errors or written accuracy work. Ignoring the stored preference means the session never actually reflects what the learner has told the system works for them.
+- **Instead**: Check `correctionPreference` and `persistentErrors` before escalating; use an inline recast for minor first-occurrence errors under `"recasting"`, and reserve Halting Correction Mode for repeat offenses or an explicit preference.
+
+---
+
+- **Name**: Production-Only Session Collapse
+- **Description**: Running the daily session as SRS warm-up → core production → correction → sync, silently dropping the Receptive Micro-Input segment.
+- **Why**: Meaning-focused receptive input (reading/listening) is the primary evidence-backed driver of incidental vocabulary growth and the only mechanism that accumulates the contextual encounters needed for durable recall; a production-only session starves that channel entirely.
+- **Instead**: Always include the 3-minute Receptive Micro-Input segment between SRS warm-up and core production, recycling that session's target phrasal items in a short leveled text with comprehension questions.

@@ -37,13 +37,15 @@ This document defines the validations used by spanish-practice.
 
 - **Id**: toon-syntax-check
 - **Severity**: error
-- **Type**: regex
+- **Type**: instruction
 - **Pattern**:
-    - (?!.*interests\b)(?!.*srsDeck\b).*$
+    - Verify the profile declares all required top-level flat keys (`targetLanguage`, `dialectPreference`, `nativeLanguage`, `cefrLevel`, `masteryPercent`, `correctionPreference`, `interests`, `learningGoals`, `persistentErrors`) and both required tabular decks (`srsDeck` with its `item,translation,register,easiness,interval,repetitions,encounterCount,nextReviewDate` columns; `verbMasteryDeck` with its `group,modelVerb,tense,easiness,interval,repetitions,nextReviewDate` columns).
 - **Message**: The student profile file has missing required fields or violates TOON format rules.
-- **Fix Action**: Ensure the file strictly follows the TOON format syntax, declaring flat keys, Interests, learningGoals, persistentErrors arrays, and tabular decks for SRS and Curriculum.
+- **Fix Action**: Ensure the file strictly follows the TOON format syntax, declaring all flat keys above plus the `interests`, `learningGoals`, and `persistentErrors` arrays, and both tabular decks with their full column sets.
 - **Applies To**:
     - student-profile.toon
+
+*(Note: a structured, indentation-sensitive format like TOON is validated more reliably by checking for key presence directly than by a single regex — a prior version of this rule used a double negative-lookahead regex that matched only when the required fields were absent, the inverse of its intent.)*
 
 ---
 
@@ -74,6 +76,63 @@ This document defines the validations used by spanish-practice.
 - **Applies To**:
     - student-profile.toon
     - session state
+
+---
+
+## Correction Preference Branching
+
+- **Id**: correction-preference-branching
+- **Severity**: error
+- **Type**: instruction
+- **Pattern**:
+    - Verify that Halting Correction Mode is only triggered when the error matches an entry in `persistentErrors` or `correctionPreference` is `"explicit"`. Otherwise, minor first-occurrence errors must receive an inline implicit recast without pausing the timer or conversation.
+- **Message**: Halting Correction Mode was triggered without checking `correctionPreference` and `persistentErrors` first.
+- **Fix Action**: Re-evaluate the error against `correctionPreference` and `persistentErrors` before pausing the timer; downgrade to an inline recast if escalation criteria are not met.
+- **Applies To**:
+    - student-profile.toon
+    - session state
+
+---
+
+## Receptive Input Presence
+
+- **Id**: receptive-input-presence
+- **Severity**: warning
+- **Type**: instruction
+- **Pattern**:
+    - Check that each daily session includes a distinct Receptive Micro-Input step (a short leveled text or dialogue plus 1–2 comprehension/inference questions) between the SRS warm-up and core production.
+- **Message**: The session skipped the Receptive Micro-Input phase.
+- **Fix Action**: Insert a short leveled text recycling the session's target phrasal items, with comprehension questions, before continuing to core production.
+- **Applies To**:
+    - session state
+
+---
+
+## Pronunciation Claim Check
+
+- **Id**: pronunciation-claim-check
+- **Severity**: error
+- **Type**: instruction
+- **Pattern**:
+    - Verify the agent never asserts having heard, judged, or verified the learner's spoken pronunciation when no audio/voice modality is active in the session.
+- **Message**: The agent made a pronunciation-assessment claim without an audio modality present.
+- **Fix Action**: Retract the claim and reframe it as a text-based interference-pattern note for the learner's own self-practice.
+- **Applies To**:
+    - session state
+
+---
+
+## Quarter-Level Format Check
+
+- **Id**: quarter-level-format-check
+- **Severity**: warning
+- **Type**: regex
+- **Pattern**:
+    - ^[ABC][12]\.(00|25|50|75)$
+- **Message**: `cefrLevel` is not expressed in quarter-level granularity.
+- **Fix Action**: Convert the blunt CEFR band to the nearest quarter-level increment (e.g. `B1.50`) using `masteryPercent` progress within the current band.
+- **Applies To**:
+    - student-profile.toon
 
 ---
 
