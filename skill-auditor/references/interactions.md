@@ -4,46 +4,37 @@ This document defines the interaction flow used by skill-auditor.
 
 ## Interaction Rules
 
-1. **The Turn-Taking Paradigm**: Append the `[AWAIT_HUMAN]` token immediately whenever skill-auditor yields the execution loop to wait for the user's response to a presented refactor plan.
-2. **Validation Gatekeeping**: Block the transition from the Plan state to the Migrate state ($S_{plan} \not\rightarrow S_{migrate}$) unless the user's response is an explicit approval.
-3. **State Retention**: Track the audit findings, scorecard, and change script within state keys encapsulated inside `<state_context>` tags across the Audit, Plan, and Migrate phases.
+1. **The Turn-Taking Paradigm**: End the turn whenever the user's response is needed, and let the conversation's natural back-and-forth carry the wait. Route through the platform's blocking question tool (e.g. `AskUserQuestion`) whenever presenting the refactor plan or a scope question, so the request surfaces as a first-class prompt instead of plain text.
+2. **Validation Gatekeeping**: Advance from the Plan phase to the Migrate phase only once the user's next message is an explicit approval; a revision request or a cancellation keeps the audited skill's files untouched.
+3. **State Retention**: Carry the audit findings, scorecard, and change script forward in the conversation and in the audit report file written to the audited skill's folder — not in an internal registry the runtime tracks on its own.
 
 ## Execution Flow
 
 ### Phase 01: Audit
 
 - **Objective**: Read the audited skill's full file set and score it against PEV-M structural compliance, language quality, and token efficiency.
-- **State Input Key**: `skill-auditor#$[TARGET_SKILL_PATH]`
-- **Agent Action**: Read `SKILL.md` and every file under `references/`, `scripts/`, `templates/`, and any other subfolder; compare structure against `pev-m.md`; detect negative-polarity instructions and heuristic token-efficiency signals; detect human-in-the-loop behavior to determine whether `interactions.md` is required.
+- **Agent Action**: Read `SKILL.md` and every file under `references/`, `scripts/`, `templates/`, and any other subfolder; compare structure against the required shapes in `patterns.md`, `sharp_edges.md`, and `validations.md`; detect negative-polarity instructions, fictional runtime machinery, and heuristic token-efficiency signals; detect human-in-the-loop behavior to determine whether `interactions.md` is required.
 - **Human Gate/Intervention**: None; this phase runs autonomously.
-- **Execution Commands**:
-	- `STOP_AND_PROMPT`: Triggered when `[TARGET_SKILL_PATH]` is missing or does not resolve to a readable skill folder; append a prompt asking the user for a valid skill path.
-	- `GO_PROCEED`: Triggered when a valid, readable skill folder is supplied.
-- **Success Criteria/Output Key**: `skill-auditor#$[AUDIT_FINDINGS]`
+- **Proceed When**: A valid, readable skill folder was supplied.
+- **Pause When**: The supplied path is missing or does not resolve to a readable skill folder — ask the user for a valid skill path.
 
 ### Phase 02: Plan
 
 - **Objective**: Turn the audit findings into a refactor plan the user can approve, revise, or reject without reading code.
-- **State Input Key**: `skill-auditor#$[AUDIT_FINDINGS]`
-- **Agent Action**: Compose the executive summary, scorecard, and sequenced change script; write the plan to a file inside the audited skill's folder; present the plan in chat.
+- **Agent Action**: Compose the executive summary, scorecard, and sequenced change script; write the plan to a new report file inside the audited skill's folder (e.g. `<skill-name>-audit-report.md`); present the plan in chat. Leave every other file in the audited skill's folder untouched during this phase.
 - **Human Gate/Intervention**: The user approves, requests changes to, or cancels the presented refactor plan.
-- **Execution Commands**:
-	- `STOP_AND_PROMPT`: Triggered immediately after presenting the plan; append `[AWAIT_HUMAN]` and wait for the user's response.
-	- `GO_PROCEED`: Triggered only when the user's response is an explicit approval.
-- **Success Criteria/Output Key**: `skill-auditor#$[APPROVED_PLAN]`
+- **Proceed When**: The user's response is an explicit approval.
+- **Pause When**: The plan has just been presented — end the turn and wait for the user's response before touching any file other than the report.
 
 ### Phase 03: Migrate
 
 - **Objective**: Execute the approved change script, migrating the skill's files in place while preserving every original behavior.
-- **State Input Key**: `skill-auditor#$[APPROVED_PLAN]`
 - **Agent Action**: Apply each change in the script in sequence; map every original instruction to its PEV-M destination file; check behavior parity against the pre-migration file set.
 - **Human Gate/Intervention**: None once approval is granted; a revision request routes back to Phase 02 instead of proceeding.
-- **Execution Commands**:
-	- `STOP_AND_PROMPT`: Triggered when the user's Phase 02 response requests changes instead of approving; return to Phase 02 with the requested revisions.
-	- `GO_PROCEED`: Triggered once every change in the script has been applied and behavior parity holds.
-- **Success Criteria/Output Key**: `skill-auditor#$[MIGRATION_COMPLETE]`
+- **Proceed When**: Every change in the script has been applied and behavior parity holds.
+- **Pause When**: The user's Phase 02 response requested changes instead of approving — return to Phase 02 with the requested revisions.
 
 ## Handoff
 
-- **The Completion Safe-State**: `skill-auditor#$COMPLETE`, emitted once the migrated skill passes its own PEV-M structural requirements and behavior parity is confirmed.
-- **Exception/Fallback Handoff**: If behavior parity fails after three consecutive migration attempts, route to `ESCALATE_TO_SUPERVISOR` — stop autonomous migration and present the unresolved parity gap to the user directly for manual resolution.
+- **The Completion State**: The migrated skill's files pass its own PEV-M structural requirements, behavior parity against the original is confirmed, and the audit report file records the completed migration.
+- **Exception/Fallback Handoff**: If behavior parity fails after three consecutive migration attempts, stop autonomous migration and present the unresolved parity gap to the user directly for manual resolution.
