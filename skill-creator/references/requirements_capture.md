@@ -223,7 +223,7 @@ If a document contains outstanding questions:
 - Use `Resolve Before Planning` only for questions that truly block planning.
 - If `Resolve Before Planning` is non-empty, keep working those questions during the brainstorm by default.
 - If the user explicitly wants to proceed anyway, convert each remaining item into an explicit decision, assumption, or `Deferred to Planning` question before proceeding.
-- Do not force resolution of technical questions during brainstorming just to remove uncertainty.
+- Resolve technical questions during brainstorming only when they block planning; otherwise defer them rather than forcing resolution just to remove uncertainty.
 - Put technical questions, or questions that require validation or research, under `Deferred to Planning` when they are better answered there.
 - Use tags like `[Needs research]` when the planner should likely investigate the question rather than answer it from repo context alone.
 - Carry deferred questions forward explicitly rather than treating them as a failure to finish the requirements doc.

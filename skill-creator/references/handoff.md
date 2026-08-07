@@ -6,9 +6,9 @@ This content is loaded when Phase 4 begins — after the temporary requirements 
 
 #### 4.1 Present Next-Step Options
 
-Present the Phase 4 options to the user using the platform's blocking question tool (`AskUserQuestion` in Claude Code — call `ToolSearch` with `select:AskUserQuestion` first if its schema isn't loaded; `request_user_input` in Codex; `ask_user` in Gemini, `ask_user` in Pi (requires the `pi-ask-user` extension)). This is the default.
+Present the Phase 4 options to the user using the platform's blocking question tool, per Interaction Rules #4 in `SKILL.md` (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini/Pi). This is the default.
 
-Never silently skip the question.
+Always ask the question through the blocking tool before moving on.
 
 **Path format:** Use absolute paths for chat-output file references — relative paths are not auto-linked as clickable in most terminals.
 
