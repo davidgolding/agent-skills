@@ -68,6 +68,45 @@ This document defines the sharp edges used by lit-review-compiler.
 
 ---
 
+## Verification Tier Read As Quality Endorsement
+
+- **Id**: verification-tier-read-as-quality
+- **Summary**: A reader treats a Tier 1 or Tier 2 verification result as an endorsement of a source's scholarly significance or methodological soundness, when the tier only confirms the source mechanically exists.
+- **Severity**: high
+- **Situation**: Arises whenever the report reaches a reader who was not part of the compilation process — an advisor, exam committee, or downstream researcher who sees the tier label on the citation line and nothing more.
+- **Why**: Existence-confirmation and significance are orthogonal, but presenting both on the same citation line with no distinguishing signal invites the reader to conflate them — a mechanically confirmed source reads as a vetted, important one, which is a subtler recurrence of the same fluency-as-competence problem the verification script exists to prevent.
+- **Solution**: Apply Verification-Significance Separation on every entry — state consensus, centrality, or contested status in the cluster's framing paragraph or the entry's annotation, kept visibly distinct from the tier caveat; close the report with a Coverage & Confidence section stating the tier distribution across all cited sources.
+- **Symptoms**: A cluster's framing paragraph or an entry's annotation states no consensus/significance context at all; the report has no closing section naming the tier distribution.
+- **Detection Pattern**: An entry or report section stating a citation's verification tier with no adjacent, separate note on the source's centrality or consensus status.
+
+---
+
+## Domain Map Built Entirely From Self-Generated Chaining
+
+- **Id**: domain-map-self-referential
+- **Summary**: The compiled thematic clusters and their foundational/turning-point/consolidator/frontier sources are chained entirely from the model's own seed searches, with no check against a structure the model did not itself generate.
+- **Severity**: high
+- **Situation**: Occurs on unfamiliar or interdisciplinary domains, where the model's initial keyword and seed choices already reflect a partial view of the field before chaining even begins.
+- **Why**: Citation chaining only ever deepens the map it starts from; it cannot surface an entire lineage, school, or language tradition that the seed sources never touched, and nothing in the chaining process itself signals that this happened — the model's domain map can be confidently wrong in a way the process has no way to detect from the inside.
+- **Solution**: Apply External Benchmark Cross-Check at the end of Discovery & Verification — check the compiled clusters against a handbook table of contents, encyclopedia entry, or flagship review journal's recent contents, and carry any named gap into the report's Coverage & Confidence section.
+- **Symptoms**: A single disciplinary lineage, methodology, or language tradition dominates the compiled clusters with no acknowledgment that others exist.
+- **Detection Pattern**: Report assembly begins with no record, in the working matrix or conversation, of a cross-check against an externally authored domain structure.
+
+---
+
+## Scoping Round Presumes User's Domain Knowledge
+
+- **Id**: broad-topic-user-cant-specify
+- **Summary**: The scoping round asks the user to name sub-fields, lenses, and exclusions for a topic broad enough that the user may not yet know what those boundaries are.
+- **Severity**: medium
+- **Situation**: Arises specifically for the users most likely to need this skill on a genuinely broad topic — a student or newcomer surveying a field before they know its internal map.
+- **Why**: An open-ended scoping question presumes the user already has the domain knowledge the compilation exists to supply; asking them to self-report boundaries reproduces the same self-assessment gap the skill is meant to correct for, on the human side instead of the model's.
+- **Solution**: Apply Model-Proposed Scoping Options — run a quick preliminary scan and offer a short candidate list of sub-fields/lenses/schools for the user to confirm or edit, rather than a blank ask.
+- **Symptoms**: The user's scoping answers are vague, single-word, or defer entirely back to the model ("whatever's standard").
+- **Detection Pattern**: A scoping round issued as an open free-text question with no candidate options attached.
+
+---
+
 ## Report Tone Outpacing Evidence
 
 - **Id**: report-tone-outpacing-evidence
