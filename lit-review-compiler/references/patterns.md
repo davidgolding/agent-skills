@@ -23,7 +23,7 @@ This document defines the patterns and anti-patterns used by lit-review-compiler
 ---
 
 - **Name**: Four-Part Citation Chaining
-- **Description**: Never rely on keyword search alone — keywords miss historical terminology shifts and recent unindexed work. For every thematic cluster, deliberately populate all four source types: Foundational (the work that introduced the field's core framework), Turning Point (interventions that reframed the debate or exposed a fatal limitation), Consolidator (systematic reviews, meta-analyses, handbooks that stabilize consensus), and Current Frontier (work from roughly the last 24-36 months). Use backward chaining (reference lists of consolidator/seminal texts) to find Foundational and Turning Point sources, and forward chaining (citation indexes) to find who has responded to them since.
+- **Description**: Supplement keyword search with citation chaining rather than relying on keywords alone — keywords miss historical terminology shifts and recent unindexed work. For every thematic cluster, deliberately populate all four source types: Foundational (the work that introduced the field's core framework), Turning Point (interventions that reframed the debate or exposed a fatal limitation), Consolidator (systematic reviews, meta-analyses, handbooks that stabilize consensus), and Current Frontier (work from roughly the last 24-36 months). Use backward chaining (reference lists of consolidator/seminal texts) to find Foundational and Turning Point sources, and forward chaining (citation indexes) to find who has responded to them since.
 - **When**: During the discovery phase, for every thematic cluster identified in the domain.
 - **Example**:
 ```
@@ -38,7 +38,7 @@ This document defines the patterns and anti-patterns used by lit-review-compiler
 ---
 
 - **Name**: Tiered Citation Verification
-- **Description**: No citation is written into the report until it has cleared `scripts/verify_citation.py`. Run the script with the candidate's title, author, and year. Tier 1 (`api_confirmed`): a scholarly API (Crossref, OpenAlex, or Semantic Scholar) returns a matching record — cite normally. Tier 2 (`secondary_confirmed`): none of the tier-1 APIs match, but Open Library or Google Books confirms it (common for books) — cite normally. Tier 3 (`unverified`): nothing confirms it — still include it, but visibly mark the entry, e.g. "(verified by search evidence only; not independently confirmed)". Never drop a real-seeming source silently, and never skip the script because a source "obviously" exists.
+- **Description**: No citation is written into the report until it has cleared `scripts/verify_citation.py`. Run the script with the candidate's title, author, and year. Tier 1 (`api_confirmed`): a scholarly API (Crossref, OpenAlex, or Semantic Scholar) returns a matching record — cite normally. Tier 2 (`secondary_confirmed`): none of the tier-1 APIs match, but Open Library or Google Books confirms it (common for books) — cite normally. Tier 3 (`unverified`): nothing confirms it — still include it, but visibly mark the entry, e.g. "(verified by search evidence only; not independently confirmed)". Run the script against every candidate, including sources that seem "obviously" real, and carry every real-seeming source through to at least its Tier 3 caveated inclusion rather than a silent drop.
 - **When**: Immediately before any citation is added to the draft report — treat it as a gate, not a final cleanup pass.
 - **Example**:
 ```
@@ -53,14 +53,14 @@ This document defines the patterns and anti-patterns used by lit-review-compiler
 ---
 
 - **Name**: Retrieval-Grounded Annotation
-- **Description**: Write each entry's annotation only from what was actually retrieved — the abstract, the metadata, snippet text from search results, or full text if it was actually fetched and read. Do not fill gaps with plausible-sounding paraphrase drawn from training knowledge of "what a paper like this probably argues." If all that was retrieved is a title and a one-line abstract, the annotation is necessarily shorter — that is correct behavior, not a defect to compensate for.
+- **Description**: Write each entry's annotation only from what was actually retrieved — the abstract, the metadata, snippet text from search results, or full text if it was actually fetched and read. Fill any gap in the retrieved material by shortening the annotation, not by paraphrasing from training knowledge of "what a paper like this probably argues." If all that was retrieved is a title and a one-line abstract, the annotation is necessarily shorter — that is correct behavior, not a defect to compensate for.
 - **When**: While drafting every annotated entry, especially for sources where full text was not accessible (common with paywalled journal articles).
 - **Example**:
 ```
     Retrieved: title + abstract only.
     Write: "Argues, based on [the abstract's stated claim], that X; the abstract
     does not specify [whatever it leaves out]."
-    Do not write: invented detail about the paper's methodology, sample size, or
+    Leave out: invented detail about the paper's methodology, sample size, or
     specific findings the abstract never mentioned.
 ```
 

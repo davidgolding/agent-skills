@@ -76,7 +76,7 @@ This document defines the sharp edges used by lit-review-compiler.
 - **Situation**: Arises when the report's framing language ("the definitive account," "settles the debate," "the complete literature on X") is drawn from stylistic convention rather than an actual claim backed by what was retrieved.
 - **Why**: The instruction to sound like a confident, professional bibliography is about register, not about license to assert completeness or certainty beyond the compilation's actual scope and verification tier mix.
 - **Solution**:
-    - Keep the confident tone in sentence-level prose and word choice, but keep completeness claims scoped to the stated boundaries (from the Specificity-Calibrated Scoping pattern) — never claim to be exhaustive beyond that stated scope.
+    - Keep the confident tone in sentence-level prose and word choice, but keep completeness claims scoped to the stated boundaries (from the Specificity-Calibrated Scoping pattern), qualifying any claim of exhaustiveness with that stated scope.
 - **Symptoms**:
     - The report's introduction or framing language asserts totality ("the complete," "exhaustive," "settles") without a corresponding scope statement to bound the claim.
 - **Detection Pattern**: Superlative or totalizing language in the report's framing prose (e.g., "the definitive," "the complete literature," "settles the debate") that is not immediately qualified by the report's own stated scope boundaries.

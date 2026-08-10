@@ -8,7 +8,7 @@ This document defines the validations used by lit-review-compiler.
 
 - **Id**: citation-has-verification-record
 - **Severity**: error
-- **Type**: instruction
+- **Type**: semantic
 - **Pattern**: Every bibliographic entry in the report must correspond to a `scripts/verify_citation.py` run whose result tier (`api_confirmed`, `secondary_confirmed`, or `unverified` with caveat) is known before the entry is written.
 - **Message**: A citation appears in the report with no corresponding verification run.
 - **Fix Action**: Run `scripts/verify_citation.py` against the citation's title/author/year before including it, or remove it from the report if it cannot be verified through any tier.
@@ -35,7 +35,7 @@ This document defines the validations used by lit-review-compiler.
 
 - **Id**: scope-statement-present
 - **Severity**: error
-- **Type**: instruction
+- **Type**: semantic
 - **Pattern**: The report's opening section (introduction or a clearly labeled "Scope" section) must state the time range, sub-field/lens boundaries, language restrictions, and exclusions that were elicited or inferred for this run.
 - **Message**: The report does not state its scope boundaries near the opening.
 - **Fix Action**: Add a scope statement summarizing the elicited or inferred boundaries before the thematic subsections begin.
@@ -48,8 +48,8 @@ This document defines the validations used by lit-review-compiler.
 
 - **Id**: no-conflated-entry-flags
 - **Severity**: warning
-- **Type**: instruction
-- **Pattern**: An entry must not carry an explicit annotation-depth label (e.g., "per abstract," "full text reviewed") — only the Tier-3 verification caveat is a permitted per-entry flag.
+- **Type**: semantic
+- **Pattern**: An entry carries an explicit annotation-depth label (e.g., "per abstract," "full text reviewed") alongside or instead of the Tier-3 verification caveat.
 - **Message**: An entry labels its annotation depth explicitly, which conflates two distinct signals (annotation depth vs. verification confidence) that must stay separate.
 - **Fix Action**: Remove the annotation-depth label; let annotation length and specificity vary naturally with what was retrieved instead of announcing it.
 - **Applies To**:
@@ -61,8 +61,8 @@ This document defines the validations used by lit-review-compiler.
 
 - **Id**: no-internal-matrices-in-output
 - **Severity**: error
-- **Type**: instruction
-- **Pattern**: The delivered report must not include a Literature Matrix, Synthesis Matrix, or any raw source-by-source extraction table as a standalone section.
+- **Type**: semantic
+- **Pattern**: The delivered report includes a Literature Matrix, Synthesis Matrix, or any raw source-by-source extraction table as a standalone section.
 - **Message**: The report includes an internal working matrix as a deliverable section.
 - **Fix Action**: Remove the matrix section; fold any content worth keeping into the narrative annotated-entry prose instead.
 - **Applies To**:
