@@ -10,6 +10,14 @@ This document defines the interaction flow used by lit-review-compiler.
 
 ## Execution Flow
 
+### Phase 00: Check Google Scholar Availability
+
+- **Objective**: Determine once, silently, whether this run has Google Scholar (via SerpApi) available for discovery and verification.
+- **Agent Action**: Run `python3 scripts/search_scholar.py --query ""` or check `serpapi_config.get_serpapi_key()` directly; record the resulting availability (true/false) for the rest of the run per State Retention. Say nothing to the user about the result either way — this is an internal, mechanical branch, not a scoping question.
+- **Human Gate/Intervention**: None.
+- **Proceed When**: Availability is known (immediately — this is a single local/API check, not a wait).
+- **Pause When**: Never; this phase never blocks on the user.
+
 ### Phase 01: Classify & Scope
 
 - **Objective**: Classify the input's specificity and establish the scope boundaries the rest of the run depends on.
@@ -21,7 +29,7 @@ This document defines the interaction flow used by lit-review-compiler.
 ### Phase 02: Discovery & Verification
 
 - **Objective**: Populate the domain's foundational-through-frontier literature and mechanically confirm every candidate before it can be cited.
-- **Agent Action**: Run Four-Part Citation Chaining (backward and forward) for every thematic cluster; run `scripts/verify_citation.py` against each candidate's title/author/year and record its tier; draft each entry's annotation from what was actually retrieved, per Retrieval-Grounded Annotation; note each cluster's consensus/contested/superseded status per Verification-Significance Separation, kept distinct from any tier caveat. Before this phase closes, apply External Benchmark Cross-Check — check the compiled clusters against a handbook table of contents, encyclopedia entry, or flagship review journal's recent contents, and record any named gap for the Coverage & Confidence note.
+- **Agent Action**: Run Four-Part Citation Chaining (backward and forward) for every thematic cluster — when Phase 00 found Google Scholar available, use `scripts/search_scholar.py` as the preferred discovery/chaining tool per Optional Google Scholar Enhancement, following "cited by" links for forward chaining, alongside (not instead of) the model's own web search; run `scripts/verify_citation.py` against each candidate's title/author/year and record its tier (Tier 0 is only attempted when Scholar is available, and confirming there skips the remaining tiers for that candidate); draft each entry's annotation from what was actually retrieved, per Retrieval-Grounded Annotation; note each cluster's consensus/contested/superseded status per Verification-Significance Separation, kept distinct from any tier caveat. Before this phase closes, apply External Benchmark Cross-Check — check the compiled clusters against a handbook table of contents, encyclopedia entry, or flagship review journal's recent contents, and record any named gap for the Coverage & Confidence note.
 - **Human Gate/Intervention**: None; this phase runs autonomously once scope is established.
 - **Proceed When**: Phase 01's scope boundaries are set.
 - **Pause When**: A tier-1/tier-2 verification call reports a transient error rather than a clean no-match (per the `api-unavailable-mid-run` sharp edge) — retry that source once before finalizing its tier; this is an internal retry, not a user-facing pause.
@@ -29,7 +37,7 @@ This document defines the interaction flow used by lit-review-compiler.
 ### Phase 03: Report Assembly
 
 - **Objective**: Assemble the single narrative deliverable per the Oxford-Bibliographies Report Shape.
-- **Agent Action**: Write the scope statement near the opening; organize thematically with framing paragraphs stating each cluster's consensus/contested/superseded status; order entries foundational-to-frontier within each subsection; attach a visible caveat to every Tier-3 entry, kept separate from any significance note; keep any internal matrix out of the delivered report; close the report with a Coverage & Confidence section stating the verification-tier distribution across all cited sources and any gap surfaced by the benchmark cross-check.
+- **Agent Action**: Write the scope statement near the opening; organize thematically with framing paragraphs stating each cluster's consensus/contested/superseded status; order entries foundational-to-frontier within each subsection; attach a visible caveat to every Tier-3 entry, kept separate from any significance note; keep any internal matrix out of the delivered report; close the report with a Coverage & Confidence section stating the verification-tier distribution across all cited sources, any gap surfaced by the benchmark cross-check, and — per Optional Google Scholar Enhancement — a one-line note on whether Google Scholar-assisted search/verification was available for this run.
 - **Human Gate/Intervention**: None.
 - **Proceed When**: Every candidate citation in the draft has a recorded verification tier and the benchmark cross-check from Phase 02 has been recorded.
 - **Pause When**: N/A — this phase completes once Phase 02's verification records and benchmark cross-check are complete.

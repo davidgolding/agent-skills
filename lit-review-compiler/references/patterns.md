@@ -38,7 +38,7 @@ This document defines the patterns and anti-patterns used by lit-review-compiler
 ---
 
 - **Name**: Tiered Citation Verification
-- **Description**: No citation is written into the report until it has cleared `scripts/verify_citation.py`. Run the script with the candidate's title, author, and year. Tier 1 (`api_confirmed`): a scholarly API (Crossref, OpenAlex, or Semantic Scholar) returns a matching record — cite normally. Tier 2 (`secondary_confirmed`): none of the tier-1 APIs match, but Open Library or Google Books confirms it (common for books) — cite normally. Tier 3 (`unverified`): nothing confirms it — still include it, but visibly mark the entry, e.g. "(verified by search evidence only; not independently confirmed)". Run the script against every candidate, including sources that seem "obviously" real, and carry every real-seeming source through to at least its Tier 3 caveated inclusion rather than a silent drop.
+- **Description**: No citation is written into the report until it has cleared `scripts/verify_citation.py`. Run the script with the candidate's title, author, and year. Tier 0 (`scholar_confirmed`, only attempted when a SerpApi key is configured — see Optional Google Scholar Enhancement below): Google Scholar returns a matching record — cite normally, and skip the remaining tiers for this candidate. Tier 1 (`api_confirmed`): a scholarly API (Crossref, OpenAlex, or Semantic Scholar) returns a matching record — cite normally. Tier 2 (`secondary_confirmed`): none of the tier-1 APIs match, but Open Library or Google Books confirms it (common for books) — cite normally. Tier 3 (`unverified`): nothing confirms it — still include it, but visibly mark the entry, e.g. "(verified by search evidence only; not independently confirmed)". Run the script against every candidate, including sources that seem "obviously" real, and carry every real-seeming source through to at least its Tier 3 caveated inclusion rather than a silent drop.
 - **When**: Immediately before any citation is added to the draft report — treat it as a gate, not a final cleanup pass.
 - **Example**:
 ```
@@ -48,6 +48,25 @@ This document defines the patterns and anti-patterns used by lit-review-compiler
     $ python3 scripts/verify_citation.py --title "An obscure 1971 conference proceeding" --author "Doe"
     {"tier": "unverified", "matched": null, "checked": [...], "errors": []}
     -> Include with a visible caveat, per Tier 3.
+```
+
+---
+
+- **Name**: Optional Google Scholar Enhancement
+- **Description**: At the start of a run, `scripts/serpapi_config.py` checks whether `settings.json` (in the skill's root directory) defines a non-empty `serpapi_key`. If it does not — the file is absent, malformed, or the key is empty — proceed exactly as documented elsewhere in this skill, with no message to the user about it either way. If a key is configured, Google Scholar (via SerpApi's `engine=google_scholar`) becomes the preferred tool for discovery search, citation chaining, and verification for the rest of the run: use `scripts/search_scholar.py` for discovery queries and to follow "cited by" links for forward chaining, and rely on `scripts/verify_citation.py`'s Tier 0 (`scholar_confirmed`) as the first verification check per Tiered Citation Verification. Google Scholar availability does not replace the model's own web-search-based discovery or the existing verification tiers — it supplements and, on a per-candidate basis, can short-circuit them.
+- **When**: Once, at the very start of Phase 01, before any scoping or search begins; the result (available or not) holds for the rest of the run.
+- **Example**:
+```
+    $ python3 scripts/search_scholar.py --query "domain analysis information science"
+    {"available": false}
+    -> No settings.json / no key. Continue with existing web-search discovery
+       and the existing Tier 1/2/3 verification flow — no different from a
+       run where this pattern didn't exist.
+
+    $ python3 scripts/search_scholar.py --query "domain analysis information science"
+    {"available": true, "results": [{"title": "...", "cited_by_count": 412, ...}]}
+    -> Key configured. Use Scholar results for discovery/chaining this run,
+       and verify candidates against Tier 0 first.
 ```
 
 ---
@@ -199,6 +218,13 @@ This document defines the patterns and anti-patterns used by lit-review-compiler
 - **Description**: Opening the scoping round with an open free-text question ("What sub-fields or lenses should this cover?") and treating whatever the user answers as the full boundary set.
 - **Why**: The users most likely to need a scoping round for a genuinely broad topic are also the ones least likely to already know its sub-fields and lenses by name — an open ask presumes the exact domain knowledge the compilation exists to supply.
 - **Instead**: Apply Model-Proposed Scoping Options — scan first, then offer a candidate list for the user to confirm or edit.
+
+---
+
+- **Name**: Scholar Availability Announced Mid-Run
+- **Description**: Telling the user, during scoping or discovery, whether a SerpApi key was found — either apologizing for its absence or announcing that Google Scholar is now in use.
+- **Why**: The Optional Google Scholar Enhancement pattern is designed to be a silent, mechanical branch: present or absent, the run proceeds without asking the user to care. Surfacing it mid-run adds noise about an implementation detail the user didn't ask about.
+- **Instead**: Say nothing about key availability during the run itself; only the closing Coverage & Confidence section notes, in passing, whether Scholar-assisted verification was available.
 
 ---
 

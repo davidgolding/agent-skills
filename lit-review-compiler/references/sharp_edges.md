@@ -21,6 +21,22 @@ This document defines the sharp edges used by lit-review-compiler.
 
 ---
 
+## SerpApi Quota, Auth, or Rate-Limit Failure
+
+- **Id**: serpapi-failure-mid-run
+- **Summary**: A configured `serpapi_key` can still fail at request time — expired key, exhausted monthly quota, or rate-limited — independent of whether Google Scholar actually has a matching record.
+- **Severity**: high
+- **Situation**: Occurs mid-run on a key that was valid at the start of the session (quota exhausted partway through a long compilation) or on a key that was never valid (typo, revoked, expired trial).
+- **Why**: Both `search_scholar.py` and `verify_citation.py`'s Tier 0 check treat a SerpApi failure the same way they'd treat "no key configured" from the caller's perspective — no results, not an exception — which is correct for silent fallback, but if the run never notices the pattern (every Tier 0 check erroring out the same way in a row), it will burn a request per candidate for no benefit.
+- **Solution**:
+    - Treat a run of identical SerpApi errors across several consecutive Tier 0 checks as a signal to stop attempting Tier 0 for the rest of the run and fall through directly to Tier 1 — don't keep retrying a dead key candidate by candidate.
+    - Never surface the raw SerpApi error (which may echo back the key) to the user or into the report; log it only in the verification record's `errors` field.
+- **Symptoms**:
+    - Every Tier 0 (`googlescholar`) check in a run returns an error rather than a clean no-match, and no candidate ever lands at `scholar_confirmed`.
+- **Detection Pattern**: `scripts/verify_citation.py`'s `errors` field contains a `googlescholar` entry with an HTTP 401/403/429 or quota-related message on more than one consecutive candidate.
+
+---
+
 ## Fuzzy-Match False Positive
 
 - **Id**: fuzzy-match-false-positive

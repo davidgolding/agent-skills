@@ -1,29 +1,33 @@
 #!/usr/bin/env python3
 """Tiered existence verification for a candidate bibliographic citation.
 
-Checks a candidate source's title/author/year against free scholarly APIs
-(Crossref, OpenAlex, Semantic Scholar) and, if none confirm it, against free
-catalog APIs (Open Library, Google Books) as a secondary tier. This is the
-mechanical guardrail lit-review-compiler uses to make sure no citation is
-included on the model's recollection or inference alone.
+If lit-review-compiler/settings.json defines a serpapi_key (see
+serpapi_config.py), checks Google Scholar first as Tier 0. Otherwise, or if
+Tier 0 doesn't confirm, checks free scholarly APIs (Crossref, OpenAlex,
+Semantic Scholar) and, if none confirm it, against free catalog APIs (Open
+Library, Google Books) as a secondary tier. This is the mechanical guardrail
+lit-review-compiler uses to make sure no citation is included on the model's
+recollection or inference alone.
 
 Usage:
     python3 verify_citation.py --title "..." [--author "..."] [--year YYYY]
 
 Prints a JSON object to stdout:
     {
-        "tier": "api_confirmed" | "secondary_confirmed" | "unverified",
+        "tier": "scholar_confirmed" | "api_confirmed" | "secondary_confirmed" | "unverified",
         "query": {"title": ..., "author": ..., "year": ...},
         "matched": {...} | null,
-        "checked": ["crossref", "openalex", ...],
-        "errors": [{"source": "...", "error": "..."}]
+        "checked": ["googlescholar", "crossref", "openalex", ...],
+        "errors": [{"source": "...", "error": "..."}],
+        "scholar_available": true | false
     }
 
 Exit code is always 0 on a completed run; the "tier" field communicates the
 result. A non-empty "errors" list for a source that never matched means that
 source's check was inconclusive (network/rate-limit failure), not a
 confirmed absence -- see references/sharp_edges.md, "Verification API
-Unavailable Mid-Run".
+Unavailable Mid-Run". "scholar_available" reflects whether a serpapi_key was
+configured for this run at all, independent of whether Tier 0 matched.
 """
 
 import argparse
@@ -36,12 +40,16 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from serpapi_config import get_serpapi_key
+
 USER_AGENT = "lit-review-compiler-verify-citation/1.0 (mailto:research@example.invalid)"
 TIMEOUT_SECONDS = 12
 TITLE_SIMILARITY_THRESHOLD = 0.78
+YEAR_TOLERANCE_TIER0 = 1
 YEAR_TOLERANCE_TIER1 = 1
 YEAR_TOLERANCE_TIER2 = 15
 
+TIER0_SOURCES = ("googlescholar",)
 TIER1_SOURCES = ("crossref", "openalex", "semanticscholar")
 TIER2_SOURCES = ("openlibrary", "googlebooks")
 
@@ -237,7 +245,35 @@ def query_googlebooks(title, author, year):
     return candidates
 
 
+def query_googlescholar(title, author, year):
+    api_key = get_serpapi_key()
+    if not api_key:
+        return []
+    query = title
+    if author:
+        query += f" {author}"
+    params = {"engine": "google_scholar", "q": query, "api_key": api_key}
+    url = "https://serpapi.com/search.json?" + urllib.parse.urlencode(params)
+    data = fetch_json(url)
+    candidates = []
+    for item in data.get("organic_results", []) or []:
+        summary = (item.get("publication_info") or {}).get("summary", "")
+        year_match = re.search(r"\b(19|20)\d{2}\b", summary)
+        authors_head = summary.split(" - ")[0] if summary else ""
+        candidates.append(
+            {
+                "title": item.get("title") or "",
+                "authors": [name.strip() for name in authors_head.split(",") if name.strip()],
+                "year": int(year_match.group(0)) if year_match else None,
+                "id": item.get("result_id"),
+                "source": "googlescholar",
+            }
+        )
+    return candidates
+
+
 QUERY_FUNCTIONS = {
+    "googlescholar": query_googlescholar,
     "crossref": query_crossref,
     "openalex": query_openalex,
     "semanticscholar": query_semanticscholar,
@@ -269,11 +305,18 @@ def best_match(candidates, title, author, year, tolerance):
 def verify(title, author, year):
     checked = []
     errors = []
+    scholar_available = get_serpapi_key() is not None
 
-    tiers = (
+    tiers = [
         ("api_confirmed", TIER1_SOURCES, YEAR_TOLERANCE_TIER1),
         ("secondary_confirmed", TIER2_SOURCES, YEAR_TOLERANCE_TIER2),
-    )
+    ]
+    # Only attempt Google Scholar when a serpapi_key is configured -- with no
+    # key, skip it entirely (not even listed in "checked") so behavior is an
+    # exact no-op match for a run with no settings.json at all.
+    if scholar_available:
+        tiers.insert(0, ("scholar_confirmed", TIER0_SOURCES, YEAR_TOLERANCE_TIER0))
+
     for tier_name, sources, tolerance in tiers:
         for source in sources:
             checked.append(source)
@@ -290,6 +333,7 @@ def verify(title, author, year):
                     "matched": match,
                     "checked": checked,
                     "errors": errors,
+                    "scholar_available": scholar_available,
                 }
 
     return {
@@ -298,6 +342,7 @@ def verify(title, author, year):
         "matched": None,
         "checked": checked,
         "errors": errors,
+        "scholar_available": scholar_available,
     }
 
 
