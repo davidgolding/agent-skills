@@ -1,34 +1,34 @@
 # Progression, Autoregulation, and Deload Rules
 
-These are the codified rules session autoregulation applies immediately when a workout is reported (Session Autoregulation on Report pattern) — they exist so that any load change is explainable by name, not improvised fresh each time.
+These rules govern immediate session autoregulation upon receipt of a workout report (Session Autoregulation on Report pattern), ensuring every load, rep, or volume adjustment remains transparent and grounded in established exercise science.
 
 ## Strength
 
-- **Double progression within a rep range.** Hold load constant while reps climb through the prescribed range (e.g., 3x8-10); once the top of the range is hit for all sets, increase load by the smallest sensible increment (typically 2.5-5% or the smallest available plate jump) and drop back to the bottom of the rep range.
-- **RIR/RPE-based load adjustment.** Prescriptions carry a target reps-in-reserve (RIR) or RPE. Reported RIR meaningfully above target (e.g., target RIR 2, reported RIR 4+) increases next session's load or reps; reported RIR at or below target holds or reduces load.
-- **Deload triggers.** Any of: reported RIR below target for two consecutive sessions on the same lift, a missed rep target twice in a row, or the user reporting accumulating joint or connective-tissue discomfort (short of a red flag) — reduce volume or load 40-50% for one session or a full week depending on severity, then resume progression.
+- **Double progression within a rep range**: Maintain load constant while repetitions advance toward the upper boundary of the prescribed rep bracket (e.g., 3x8-10); once the ceiling repetitions are achieved across all working sets, increase the resistance by the smallest practical increment (typically 2.5–5% or minimal plate jump) and reset repetitions to the bracket floor.
+- **RIR/RPE-based load adjustment**: Working sets carry target Reps-In-Reserve (RIR) or RPE boundaries. When reported RIR exceeds target (e.g., target RIR 2, reported RIR 4+), advance next session's load or volume; when reported RIR meets or falls below target, maintain or reduce prescribed load.
+- **Deload triggers**: When reported RIR falls below target for two consecutive sessions on the same lift, target repetitions are missed across two consecutive exposures, or accumulating joint discomfort is reported, reduce working volume or load by 40–50% for one session or one full week, then resume standard double progression.
 
 ## Endurance / Zone 2
 
-- **Duration before intensity.** Increase session duration in small increments (5-10%) before increasing pace or intensity, once the current duration is completed comfortably (conversational effort, or the prescribed heart-rate zone held without drift).
-- **Heart-rate drift as the signal.** If heart rate climbs noticeably at constant pace within a session (cardiac drift), that session's target was too ambitious for current recovery — hold or reduce next session's target rather than progressing.
-- **Deload triggers.** A missed session due to fatigue, illness, or reported unusual heaviness in easy efforts — reduce volume 20-30% for a week before resuming the progression.
+- **Duration before intensity**: Expand session duration in modest increments (5–10%) prior to advancing pace or heart-rate targets, once the baseline duration is comfortably sustained with conversational breathing.
+- **Heart-rate drift as the signal**: When heart rate elevates steadily at a fixed pace (cardiac drift), treat the elevation as an indicator that the workload exceeded current recovery capacity; hold or decrease the next session's target duration or pace to re-establish aerobic equilibrium.
+- **Deload triggers**: Upon a missed session resulting from systemic fatigue, illness, or persistent heaviness during easy aerobic bouts, decrease weekly aerobic volume by 20–30% for seven days prior to resuming progressive volume.
 
 ## HIIT
 
-- **Interval count or work:rest ratio, not both at once.** Progress by adding one more work interval, or by shortening rest relative to work, in a given session — never increase intensity and volume in the same step.
-- **Completion quality as the gate.** Only progress if the prescribed intervals were completed at the prescribed intensity; if intervals degraded noticeably by the final set, hold the current prescription next session rather than advancing.
-- **Frequency ceiling.** HIIT sessions are capped by what the integrated weekly plan can absorb given concurrent strength volume (see `references/evidence/hiit.md` on interference) — autoregulation adjusts within a session, not the weekly count; weekly count changes only at block review.
-- **Deload triggers.** Two consecutive sessions with degraded completion quality, or any reported joint pain during high-impact intervals — drop to a lower-impact variant or reduce volume for the next session.
+- **Isolated variable progression**: Increase either interval volume (adding a repetition) or density (shortening recovery intervals) exclusively within any single progression step, keeping the alternate variable steady.
+- **Completion quality as the gate**: Advance interval workload only when all prescribed work intervals are executed with target power output and clean mechanical form; when output degrades markedly during final intervals, maintain the existing prescription for the subsequent exposure.
+- **Frequency ceiling**: Cap weekly HIIT frequency against concurrent strength demands (consult `references/evidence/hiit.md`), adjusting intra-session work during weekly training while reserving macrocycle frequency adjustments for block review.
+- **Deload triggers**: Following two consecutive sessions characterized by degrading interval completion, or when acute joint soreness emerges during explosive movements, substitute low-impact modalities or reduce working intervals by 50% for the subsequent workout.
 
 ## Mobility / Yoga
 
-- **Progress range and hold time, not load.** Progression here is deeper range of motion, longer static holds, or more complex flows/sequences — not weight.
-- **Comfort as the signal, not effort.** Progress only when the current range or hold is achieved without compensation or strain; regress immediately if the user reports sharpness or pinching (distinct from the normal stretch sensation) rather than pushing through.
-- **No deload concept in the strength/endurance sense** — mobility work absorbs fatigue rather than creating it, so it's adjusted for placement (not stacked immediately after a max-effort strength session) rather than deloaded on its own cycle.
+- **Progress range and hold time**: Advance flexibility and mobility via increased active joint range of motion, extended isometric hold durations, and heightened flow complexity while maintaining external load at zero.
+- **Comfort and alignment as progression signals**: Advance movement depth only when positions are held with full postural control and steady breathing; regress immediately if acute pinching or sharpness arises, returning to a comfortable stretch boundary.
+- **Continuous practice management**: Mobility work aids systemic recovery rather than inducing fatigue; structure mobility through optimal placement (spacing deep mobility sessions away from heavy strength workouts) while sustaining consistent practice across the macrocycle.
 
-## General rules across modalities
+## General Autoregulation Rules
 
-- Autoregulation acts on the *next session*, never retroactively on the one just reported.
-- When a report doesn't clearly indicate which rule applies (ambiguous RIR, no completion-quality signal given), ask rather than guess — a wrong autoregulation call compounds across a block.
-- Any deload trigger, from any modality, is a candidate to also check against the red-flag list in `references/safety.md` — persistent discomfort short of a red flag still deserves a direct question about whether it's worsening.
+- Apply autoregulation adjustments forward to subsequent sessions, maintaining the historical integrity of completed logs.
+- Request explicit clarification from the athlete whenever reported metrics are ambiguous (such as unstated RIR or unclear completion quality), ensuring load adjustments remain grounded.
+- Cross-reference persistent joint discomfort or localized pain against the red-flag symptom criteria in `references/safety.md`, prompting the user directly to verify symptom trajectory.
