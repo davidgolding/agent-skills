@@ -4,7 +4,7 @@ The figure catalog `rhetorician` grounds its identifications in. Each entry carr
 
 Cross-references are double-bracketed anchor links pointing to other entries in this file, matching each entry's **Name**. Terms belonging to rhetorical theory rather than to the figure catalog — the canons, the parts of an oration, the *progymnasmata* — appear in italics without a link.
 
-**Source**: adapted from Silva Rhetoricae (rhetoric.byu.edu), compiled by Gideon O. Burton, Brigham Young University. Confirm the applicable license terms before redistributing this file.
+**Source**: adapted from Silva Rhetoricae (rhetoric.byu.edu), compiled by Gideon O. Burton, Brigham Young University.
 
 ## Figures
 
