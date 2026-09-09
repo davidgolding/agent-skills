@@ -46,7 +46,7 @@ Then the confirmation: *"Confirm and I'll write the requirements doc next, drawi
 
 ### Path A vs Path B: the gate that fires the confirmation question
 
-Phase 2.5 has two presentation modes, gated by **two signals**: (1) did any blocking question fire before Phase 2.5? AND (2) what tier did Phase 0.3 classify the scope as? Blocking questions include Phase 0.3 scope disambiguation, Phase 1.3 collaborative dialogue probes, and Phase 2 approach selection (when a menu fires). Internal classification, Phase 1.1 scan, and Phase 1.2 pressure test are not blocking questions — they don't count.
+Phase 2.5 has two presentation modes, gated by **two signals**: (1) did any blocking question fire before Phase 2.5? AND (2) what tier did Phase 0.3 classify the scope as? Blocking questions include Phase 0.3 scope disambiguation, Phase 1.3 collaborative dialogue probes, and Phase 2 approach selection (when a menu fires). Count only those three as blocking questions; treat internal classification, the Phase 1.1 scan, and the Phase 1.2 pressure test as non-blocking.
 
 - **Path A — no blocking questions fired AND tier is Lightweight**: announce-mode. Emit "What we're building" prose only (no other sections, no confirmation question), then proceed to Phase 3 doc-write within the same turn (see the Path A template below for the exact phrasing and turn-handling). The user can revise after the doc lands if the shape is wrong — Lightweight Path A docs are short, post-hoc revision is cheap.
 - **Path B — at least one blocking question fired, OR tier is Standard / Deep-feature / Deep-product**: full tier-aware scoping synthesis with confirmation gate. Two scenarios fire Path B: (a) the user invested answer-time during dialogue, or (b) the user pre-loaded substantive scope content (Phase 0.2 fast-path with a richly-specified opening prompt). Either way, the substance earns a real checkpoint. The confirmation question is unconditional even when zero call-outs survive the keep test.
@@ -69,7 +69,7 @@ Each conditional section has its own keep test. Sections are render-conditional 
 - **Non-obvious scope inclusion** — a behavior the agent assumed is in scope that the user might want excluded
 - **Non-obvious scope exclusion** — an item the agent moved to deferred that the user might want in scope
 - **Cheap-now-expensive-later correction** — a scope bet that's cheap to fix now but expensive after the requirements doc lands and implementation consumes it
-- **Non-obvious consequence of multi-turn answers** — a downstream effect of combining user-stated answers that the user is unlikely to have tracked through dialogue. Surfaced forward-looking ("X means Y for the doc"), not retrospectively ("you said X"). This category is the multi-turn-dialogue reason call-outs exist at all in the brainstorming workflow; do not filter these as "already implied by Stated"
+- **Non-obvious consequence of multi-turn answers** — a downstream effect of combining user-stated answers that the user is unlikely to have tracked through dialogue. Surfaced forward-looking ("X means Y for the doc"), not retrospectively ("you said X"). This category is the multi-turn-dialogue reason call-outs exist at all in the brainstorming workflow; keep these even when they read as already implied by Stated
 
 Cut anything that doesn't match a keep-test category, including:
 
@@ -90,7 +90,7 @@ The cap is heuristic, not law. The real discipline is each section's keep test o
 | Deep — feature | 3–5 | 7 |
 | Deep — product | 4–7 | 9 |
 
-**Above the hard ceiling, the synthesis is misshapen — do not raise the cap, re-cut at a higher level of abstraction.** Almost always, multiple bullets within a section are sub-decisions of one larger named decision. Collapse related bullets into a single one named at the level the user actually weighs in on.
+**Above the hard ceiling, the synthesis is misshapen — hold the cap and re-cut at a higher level of abstraction.** Almost always, multiple bullets within a section are sub-decisions of one larger named decision. Collapse related bullets into a single one named at the level the user actually weighs in on.
 
 A useful test: read the bullets aloud. If two or more sound like "and also" extensions of the same idea, they belong as one.
 
@@ -123,13 +123,13 @@ Each anti-pattern below produces a bullet that fails its section's keep test, or
 - **Re-stating the Phase 2 approach the user already picked**: the approach was chosen before Phase 2.5 — its mention belongs in one sentence of "What we're building," not as a call-out.
 - **Padding a section to meet a bullet count**: render-conditional means empty is allowed. Omit the section entirely rather than fill it with weak items.
 - **Pasting the three-bucket internal draft verbatim into chat**: that was the old shape and the volume problem it produced is why stage 2 exists. Compose internally, derive scoping synthesis sections, present compressed.
-- **Floating questions adjacent to stage 2**: if a question genuinely cannot be defaulted, pause synthesis and resolve it before presenting. Pick the question shape that matches: a blocking multiple-choice tool when options are bounded and meaningfully distinct, open-ended when option sets would unintentionally influence the user's answer per Interaction Rule 5(a). Integrate the answer, then present the scoping synthesis on its own, with no adjacent floating question — that gives the user one clear resolution path.
+- **Floating questions adjacent to stage 2**: if a question genuinely cannot be defaulted, pause synthesis and resolve it before presenting. Pick the question shape that matches: a blocking multiple-choice tool when options are bounded and meaningfully distinct, open-ended when option sets would unintentionally influence the user's answer per Interaction Rule 5(b) in `references/interactions.md`. Integrate the answer, then present the scoping synthesis on its own, with no adjacent floating question — that gives the user one clear resolution path.
 
 ---
 
 ## Prompt templates
 
-This is directional guidance — adjust phrasing to fit dialogue context. Open-ended feedback per Interaction Rule 5(a) (an option menu would unintentionally influence the user toward the parts the menu lists, away from anything else they might want to change).
+This is directional guidance — adjust phrasing to fit dialogue context. Open-ended feedback per Interaction Rule 5(b) in `references/interactions.md` (an option menu would unintentionally influence the user toward the parts the menu lists, away from anything else they might want to change).
 
 **Prose discipline for "What we're building" (required):** forward-looking (what *will* be in the doc), not retrospective (what's been discussed). Lead with the actual thing being built in plain words. No qualifiers ("comprehensive," "thoughtful," "substantive"). No re-stating dialogue context the user just lived through. If the work can't be said in 1–3 sentences without filler, the synthesis isn't ready yet.
 
@@ -165,7 +165,7 @@ No open decisions — writing the requirements doc now. Interrupt if the shape i
 
 Proceed to Phase 3 doc-write within the same turn, without waiting for acknowledgment. The "interrupt if wrong" affordance means the user can revise after the doc lands, not before. Lightweight Path A docs are short, so post-hoc revision is cheap.
 
-Ask the user open-ended on Path B (no `AskUserQuestion` menu). The justification is Interaction Rule 5(a) in SKILL.md — an option menu would unintentionally influence the user's feedback toward the parts the menu lists.
+Ask the user open-ended on Path B (no `AskUserQuestion` menu). The justification is Interaction Rule 5(b) in `references/interactions.md` — an option menu would unintentionally influence the user's feedback toward the parts the menu lists.
 
 ### Worked example: compression from internal draft to scoping synthesis (Standard tier)
 
@@ -231,7 +231,7 @@ Track which scoping synthesis items the user touched per round. The soft-cut blo
 
 **Identity across rounds is by decision dimension, not surface wording or section.** A revision may cause stage 2 to re-derive — the same underlying decision can come back rephrased, merged with another bullet, or moved to a different section (e.g., what was a Trade-off in round one becomes a Call-out in round two after the user pushed back). "Same item" means the same underlying decision regardless of which section currently holds it. When a re-cut collapses multiple prior bullets into one, the new combined bullet inherits the "touched" status of any of its constituents — soft-cut fires if any underlying decision was already revised once before.
 
-When the soft-cut fires, use the platform's blocking question tool (per Interaction Rules #4 in `SKILL.md`) with two options:
+When the soft-cut fires, use the platform's blocking question tool (per Interaction Rules #4 in `references/interactions.md`) with two options:
 
 - `Proceed and write the requirements doc`
 - `Hold off — keep discussing before the doc`
@@ -247,7 +247,7 @@ If the user response indicates they want a different workflow:
 - Stop this brainstorming session
 - Suggest the alternative workflow or skill the user appears to want
 - Offer to load it in-session
-- Do not push back or argue — the user's redirect signal is the deliberate choice
+- Accept the redirect as the user's deliberate choice and integrate it as given
 
 This support exists because the scoping synthesis is an honest checkpoint. If the user discovers the skill choice was wrong by reading the scoping synthesis, redirecting is the right move.
 

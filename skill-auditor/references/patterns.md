@@ -90,7 +90,7 @@ This document defines the patterns and anti-patterns used by skill-auditor.
 - **Name**: Progressive, Lazy-Loaded Structure
 - **When**: While assessing or migrating a skill's overall file layout.
 - **Example**: ```
-  Keep SKILL.md limited to frontmatter, Identity, Principles, and Reference
+  Keep SKILL.md limited to frontmatter, Mandate, Principles, and Reference
   System Usage. Route every pattern, failure mode, validation rule, and
   interaction phase into its own dedicated reference file instead of
   inlining it, so it loads only when the agent reaches that state.
@@ -105,6 +105,30 @@ This document defines the patterns and anti-patterns used by skill-auditor.
   <skill-name>-audit-report.md inside the audited skill's folder. Leave
   the audited skill's own SKILL.md and references/*.md untouched until
   the user approves and Phase 03 (Migrate) begins.
+  ```
+
+---
+
+- **Name**: Task-Criteria Framing
+- **When**: While drafting or auditing a Mandate section, or rewriting any passage flagged as identity language.
+- **Example**: ```
+  Before: "You are a rigorous skill architect who has seen skills drift
+  out of compliance through well-intentioned edits."
+  After:  "Audit one skill folder against PEV-M. Judge five axes:
+  structural compliance, instruction polarity, identity language,
+  description discoverability, token efficiency. A correct audit names
+  each failing rule by Id, cites file and line, proposes a rewrite."
+  ```
+
+---
+
+- **Name**: Discovery-Sized Description
+- **When**: While checking the audited skill's frontmatter.
+- **Example**: ```
+  Count the characters in the description value. Hold it between 200
+  and 500 — one clause naming what the skill does, one naming when to
+  use it. Treat anything past the 1024-character specification cap as
+  an error, since the skill stops registering there.
   ```
 
 ---
@@ -162,5 +186,17 @@ This document defines the patterns and anti-patterns used by skill-auditor.
 - **Name**: In-Place Report Writing
 - **Why**: Writing audit findings directly into the audited skill's own files mutates it before approval and destroys the original content the user needs to review against.
 - **Instead**: Dedicated Audit Report File
+
+---
+
+- **Name**: Persona Framing
+- **Why**: Assigning an identity substitutes implied competence for stated criteria, leaving the model nothing checkable to reason against. Hu, Rostami & Thomason (arXiv 2603.18507) found expert personas damage accuracy on discriminative tasks, and Wharton's "Playing Pretend" found no reliable accuracy gain across six models — with low-knowledge personas degrading results and out-of-domain ones triggering refusals. Auditing, reviewing, and validating are discriminative work, so the cost lands on exactly the skills most likely to carry a persona.
+- **Instead**: Task-Criteria Framing
+
+---
+
+- **Name**: Overstuffed Description
+- **Why**: A description carrying the skill's whole procedure pays index cost in every session while adding nothing to the trigger decision the description exists to make, and past 1024 characters it stops the skill from registering at all.
+- **Instead**: Discovery-Sized Description
 
 ---

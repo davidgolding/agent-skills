@@ -100,9 +100,9 @@ This document defines the sharp edges used by skill-auditor.
 - **Severity**: medium
 - **Situation**: During the PEV-M structural compliance check of SKILL.md.
 - **Why**: Loading all detail at the SKILL.md level defeats progressive disclosure — deep reference content should load lazily only when the agent reaches that execution state, keeping every invocation's base context small.
-- **Solution**: Move the inlined content to its correct reference file (patterns.md, sharp_edges.md, validations.md, or interactions.md) and leave SKILL.md to frontmatter, Identity, Principles, and Reference System Usage only.
+- **Solution**: Move the inlined content to its correct reference file (patterns.md, sharp_edges.md, validations.md, or interactions.md) and leave SKILL.md to frontmatter, Mandate, Principles, and Reference System Usage only.
 - **Symptoms**: SKILL.md contains pattern examples, failure-mode write-ups, validation rules, or phase-by-phase interaction blocks instead of a pointer to them.
-- **Detection Pattern**: SKILL.md body content, outside Identity, Principles, and Reference System Usage, matching the patterns.md/sharp_edges.md/validations.md/interactions.md element-blueprint shapes.
+- **Detection Pattern**: SKILL.md body content, outside Mandate, Principles, and Reference System Usage, matching the patterns.md/sharp_edges.md/validations.md/interactions.md element-blueprint shapes.
 
 ---
 
@@ -116,5 +116,44 @@ This document defines the sharp edges used by skill-auditor.
 - **Solution**: Build an explicit before/after map from every original instruction to its new PEV-M destination as part of the refactor script, and check the migrated skill's full behavior set against the original before presenting the migration as complete.
 - **Symptoms**: A behavior, trigger condition, or edge case present in the pre-migration skill has no corresponding instruction anywhere in the post-migration file set.
 - **Detection Pattern**: An instruction or conditional clause present in the original skill's files with no matching phrase or paraphrase anywhere in the migrated files.
+
+---
+
+## Persona Degrades Discriminative Accuracy
+
+- **Id**: persona-degrades-discriminative-accuracy
+- **Summary**: A skill opens by assigning the agent an expert identity, and the audit accepts it as a required section rather than flagging it as an accuracy cost.
+- **Severity**: high
+- **Situation**: During the language review of any audited skill whose work is judging, classifying, reviewing, validating, or verifying.
+- **Why**: Hu, Rostami & Thomason (arXiv 2603.18507) found expert personas aid alignment on generative tasks while damaging accuracy on discriminative ones; Wharton's "Playing Pretend" measured six models across GPQA Diamond and MMLU-Pro and found no reliable accuracy gain from expert personas, with low-knowledge personas degrading results in proportion to the ignorance they imply. Auditing, reviewing, and validating sit squarely in the discriminative class, so a persona there substitutes implied competence for the checkable criteria the model would otherwise reason against.
+- **Solution**: Convert the persona into the criteria it stood in for, per the Task-Criteria Framing pattern — the unit of work, the axes judged, the reference files grounding each judgment, and the condition that makes an output correct.
+- **Symptoms**: SKILL.md opens with a sentence assigning the agent a role, a career history, or a skill level, and no section names the criteria the skill's judgments are measured against.
+- **Detection Pattern**: Text matching `^You are an?\b`, `\bAct as an?\b`, `\bworld-class\b`, `\byears of experience\b`, or `\bwho has (seen|spent|worked)\b` in SKILL.md or references/*.md.
+
+---
+
+## Out-of-Domain Persona Refusal
+
+- **Id**: out-of-domain-persona-refusal
+- **Summary**: A skill's assigned persona covers a narrower domain than the skill's own trigger conditions, and the agent declines work that falls inside the skill's scope but outside the persona's.
+- **Severity**: medium
+- **Situation**: During the language review, whenever an audited skill pairs an expert persona with trigger conditions spanning more than that expert's field.
+- **Why**: Wharton's "Playing Pretend" recorded out-of-domain expert personas driving Gemini 2.5 Flash past ten refusals per question set — the persona reads as a scope boundary, so the model treats in-scope requests as outside its remit. The failure surfaces as refusal rather than as a wrong answer, which makes it easy to misread as correct caution.
+- **Solution**: Replace the persona with the Task-Criteria Framing pattern, letting the description's trigger conditions define scope so the stated scope and the honored scope are the same text.
+- **Symptoms**: The skill declines or hedges on requests its own `description` names as trigger conditions.
+- **Detection Pattern**: A persona sentence naming a single occupation or field while the frontmatter `description` lists trigger conditions reaching beyond it.
+
+---
+
+## Oversized Description Load Failure
+
+- **Id**: oversized-description-load-failure
+- **Summary**: A skill's frontmatter `description` runs past the 1024-character specification cap, so the skill never surfaces for auto-discovery.
+- **Severity**: high
+- **Situation**: During the frontmatter check of the audited skill's SKILL.md.
+- **Why**: The Agent Skills specification caps `description` at 1024 characters. Past the cap the skill fails to register cleanly while still appearing installed on disk, so the failure is silent — the folder looks correct, the skill simply never fires, and the cause reads as a triggering problem rather than a length problem.
+- **Solution**: Measure the `description` value's character count during the frontmatter check, record it in the scorecard, and cut anything past the cap down to one what-it-does clause plus one when-to-use clause, relocating the absorbed procedural detail into SKILL.md or the matching reference file.
+- **Symptoms**: The skill never triggers on requests matching its stated trigger conditions, and its `description` value measures over 1024 characters.
+- **Detection Pattern**: The frontmatter `description` value measuring more than 1024 characters, or more than 500 for the warning band.
 
 ---

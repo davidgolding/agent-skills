@@ -125,9 +125,9 @@ This document defines the validations used by skill-auditor.
 - **Id**: skill-md-required-shape
 - **Severity**: error
 - **Type**: schema
-- **Pattern**: YAML frontmatter missing `name` or `description`; missing H1 matching `name` in Title Case; missing `## Identity`, `## Principles`, or `## Reference System Usage` headings, or out of that order; Identity section not a single persona-defining paragraph; Reference System Usage missing the grounding directive or a bullet for any reference file the skill actually has.
-- **Message**: SKILL.md must contain frontmatter (name, description), an H1 matching the skill name, and Identity, Principles, and Reference System Usage sections in that order.
-- **Fix Action**: Add or reorder the missing piece, following the SKILL.md template: frontmatter, then H1, then Identity (single paragraph — "You are a [X] who has seen [Y happen]. You have done [Z]."), then Principles (category-ordered, label-free), then Reference System Usage (grounding directive plus one bullet per reference file).
+- **Pattern**: YAML frontmatter missing `name` or `description`; missing H1 matching `name` in Title Case; missing `## Mandate`, `## Principles`, or `## Reference System Usage` headings, or out of that order; Mandate section omitting the decision scope, the criteria source, or the success condition; Reference System Usage missing the grounding directive or a bullet for any reference file the skill actually has.
+- **Message**: SKILL.md must contain frontmatter (name, description), an H1 matching the skill name, and Mandate, Principles, and Reference System Usage sections in that order.
+- **Fix Action**: Add or reorder the missing piece, following the SKILL.md template: frontmatter, then H1, then Mandate (the unit of work, the axes judged, the reference files those judgments ground in, and what a correct output contains), then Principles (category-ordered, label-free), then Reference System Usage (grounding directive plus one bullet per reference file).
 - **Applies To**:
     - SKILL.md
 
@@ -190,8 +190,8 @@ This document defines the validations used by skill-auditor.
 - **Id**: skill-md-progressive-disclosure
 - **Severity**: warning
 - **Type**: semantic
-- **Pattern**: SKILL.md body sections beyond frontmatter, Identity, Principles, and Reference System Usage, or reference-file-shaped content (pattern, sharp-edge, validation, or interaction element blueprints) appearing inline in SKILL.md.
-- **Message**: SKILL.md should contain only frontmatter, Identity, Principles, and Reference System Usage — deeper content belongs in its dedicated reference file.
+- **Pattern**: SKILL.md body sections beyond frontmatter, Mandate, Principles, and Reference System Usage, or reference-file-shaped content (pattern, sharp-edge, validation, or interaction element blueprints) appearing inline in SKILL.md.
+- **Message**: SKILL.md should contain only frontmatter, Mandate, Principles, and Reference System Usage — deeper content belongs in its dedicated reference file.
 - **Fix Action**: Move the inlined content into the matching reference file and replace it in SKILL.md with the standard Reference System Usage pointer.
 - **Applies To**:
     - SKILL.md
@@ -208,5 +208,66 @@ This document defines the validations used by skill-auditor.
 - **Fix Action**: Locate the correct PEV-M destination file for the missing behavior and add it back before presenting the migration as complete.
 - **Applies To**:
     - migrated skill folder (all files)
+
+---
+
+## Persona or Identity Language Detected
+
+- **Id**: persona-identity-language
+- **Severity**: warning
+- **Type**: regex
+- **Pattern**:
+    - `^You are an?\b`
+    - `\bAct as an?\b`
+    - `\bAs an? (expert|experienced|seasoned|veteran)\b`
+    - `\bworld-class\b`
+    - `\byears of experience\b`
+    - `\bwho has (seen|spent|worked)\b`
+    - `\bYou have (done|built|shipped|audited)\b`
+    - `\b(Imagine|Pretend) (you|that you)\b`
+- **Message**: This text assigns an identity instead of stating criteria; personas cost accuracy on the discriminative work — judging, classifying, verifying — that most skills perform.
+- **Fix Action**: Rewrite the passage per the Task-Criteria Framing pattern, converting the implied competence into the explicit decision scope, criteria source, and success condition it was standing in for.
+- **Applies To**:
+    - SKILL.md
+    - references/*.md
+
+---
+
+## Mandate Section Is Task-Framed
+
+- **Id**: mandate-section-task-framed
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A `## Mandate` section describing who the agent is, what it has experienced, or how skilled it is, rather than naming the decision scope, the criteria source, and the condition that makes an output correct.
+- **Message**: The Mandate section states the task the skill performs and the criteria it performs it against, not an identity the agent adopts.
+- **Fix Action**: Rewrite the section per the Task-Criteria Framing pattern: name the unit of work, the axes judged, the reference files the judgments ground in, and what a correct output contains.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Description Within Specification Cap
+
+- **Id**: description-length-over-cap
+- **Severity**: error
+- **Type**: schema
+- **Pattern**: Frontmatter `description` value exceeding 1024 characters.
+- **Message**: The Agent Skills specification caps `description` at 1024 characters; past the cap the skill fails to register and never triggers, while still appearing installed.
+- **Fix Action**: Cut the description to the two clauses auto-discovery uses — what the skill does and when to use it — and move the procedural detail it absorbed into SKILL.md or the matching reference file.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Description Within Discovery Band
+
+- **Id**: description-length-out-of-band
+- **Severity**: warning
+- **Type**: schema
+- **Pattern**: Frontmatter `description` value shorter than 200 characters or longer than 500 characters.
+- **Message**: Under 200 characters a description carries too few trigger cues for reliable auto-discovery; over 500 it pays index cost in every session without improving the trigger decision.
+- **Fix Action**: Restate the description as one clause naming what the skill does and one clause naming when to use it, landing the total between 200 and 500 characters.
+- **Applies To**:
+    - SKILL.md
 
 ---

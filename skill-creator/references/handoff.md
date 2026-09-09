@@ -6,7 +6,7 @@ This content is loaded when Phase 4 begins — after the temporary requirements 
 
 #### 4.1 Present Next-Step Options
 
-Present the Phase 4 options to the user using the platform's blocking question tool, per Interaction Rules #4 in `SKILL.md` (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini/Pi). This is the default.
+Present the Phase 4 options to the user using the platform's blocking question tool, per Interaction Rules #4 in `references/interactions.md` (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini/Pi). This is the default.
 
 Always ask the question through the blocking tool before moving on.
 
@@ -50,10 +50,10 @@ The skill's `SKILL.md` file must be structured as follows:
   You must ground your responses in the provided reference files, treating them as the source of truth for this domain:
 
   - **For Creation:** Always consult **`references/patterns.md`**. This file dictates *how* things should be built. Ignore generic approaches if a specific pattern exists here.
-  - **For Diagnosis:** Always consult **`references/sharp_edges.md`**. This file lists the critical failures and “why” they happen. Use it to explain risks to the user.
+  - **For Diagnosis:** Always consult **`references/sharp_edges.md`**. This file lists the critical failures and "why" they happen. Use it to explain risks to the user.
   - **For Review:** Always consult **`references/validations.md`**. This contains the strict rules and constraints. Use it to validate user inputs objectively.
 
-  **Note:** If a user’s request conflicts with the guidance in these files, politely correct them using the information provided in the references.
+  **Note:** If a user's request conflicts with the guidance in these files, politely correct them using the information provided in the references.
   ```
 
 ##### 2. references/patterns.md Template

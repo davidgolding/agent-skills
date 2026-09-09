@@ -10,7 +10,7 @@ This document defines the patterns and anti-patterns used by skill-creator.
 - **Example**:
 ```
     - Metadata Layer: Trigger description in frontmatter
-    - Core Instruction Layer: `SKILL.md` containing Identity, Princoples, and Reference Usage
+    - Core Instruction Layer: `SKILL.md` containing Identity, Principles, and Reference Usage
     - Resource Layer: `references/patterns.md`, `references/sharp_edges.md`, `scripts/run_eval.py`
 ```
 

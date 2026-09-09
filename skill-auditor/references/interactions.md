@@ -12,8 +12,8 @@ This document defines the interaction flow used by skill-auditor.
 
 ### Phase 01: Audit
 
-- **Objective**: Read the audited skill's full file set and score it against PEV-M structural compliance, language quality, and token efficiency.
-- **Agent Action**: Read `SKILL.md` and every file under `references/`, `scripts/`, `templates/`, and any other subfolder; compare structure against the required shapes in `patterns.md`, `sharp_edges.md`, and `validations.md`; detect negative-polarity instructions, fictional runtime machinery, and heuristic token-efficiency signals; detect human-in-the-loop behavior to determine whether `interactions.md` is required.
+- **Objective**: Read the audited skill's full file set and score it against PEV-M structural compliance, affirmative-language quality, identity-language freedom, description discoverability, and token efficiency.
+- **Agent Action**: Read `SKILL.md` and every file under `references/`, `scripts/`, `templates/`, and any other subfolder; compare structure against the required shapes in `patterns.md`, `sharp_edges.md`, and `validations.md`; detect negative-polarity instructions, fictional runtime machinery, and heuristic token-efficiency signals; sweep SKILL.md and every `references/*.md` for identity and persona language per the persona-identity-language rule, and confirm the Mandate section states its decision scope, criteria source, and success condition; measure the frontmatter `description` value's character count against the 1024 cap and the 200–500 discovery band; detect human-in-the-loop behavior to determine whether `interactions.md` is required.
 - **Human Gate/Intervention**: None; this phase runs autonomously.
 - **Proceed When**: A valid, readable skill folder was supplied.
 - **Pause When**: The supplied path is missing or does not resolve to a readable skill folder — ask the user for a valid skill path.
@@ -21,7 +21,7 @@ This document defines the interaction flow used by skill-auditor.
 ### Phase 02: Plan
 
 - **Objective**: Turn the audit findings into a refactor plan the user can approve, revise, or reject without reading code.
-- **Agent Action**: Compose the executive summary, scorecard, and sequenced change script; write the plan to a new report file inside the audited skill's folder (e.g. `<skill-name>-audit-report.md`); present the plan in chat. Leave every other file in the audited skill's folder untouched during this phase.
+- **Agent Action**: Compose the executive summary, the five-axis scorecard, and a sequenced change script; write the plan to a new report file inside the audited skill's folder (e.g. `<skill-name>-audit-report.md`); present the plan in chat. Leave every other file in the audited skill's folder untouched during this phase.
 - **Human Gate/Intervention**: The user approves, requests changes to, or cancels the presented refactor plan.
 - **Proceed When**: The user's response is an explicit approval.
 - **Pause When**: The plan has just been presented — end the turn and wait for the user's response before touching any file other than the report.
