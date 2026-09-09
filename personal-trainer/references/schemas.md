@@ -1,19 +1,8 @@
 # Data Schemas
 
-This document defines the TOON shape of the four persistent documents and the pointer file. TOON is indentation-based key:value notation; arrays of uniform objects use the compact tabular form `name[N]{col1,col2,...}:` followed by one comma-separated row per item.
+This document defines the TOON shape of the four persistent documents. TOON is indentation-based key:value notation; arrays of uniform objects use the compact tabular form `name[N]{col1,col2,...}:` followed by one comma-separated row per item.
 
-All four documents live together in one user-chosen directory. Only the pointer file below has a fixed location.
-
----
-
-## Pointer file: `~/.personal-trainer/location.toon`
-
-```
-data_dir: /absolute/path/the/user/chose
-created: 2026-01-15
-```
-
-Written once, at the end of onboarding. If this file is missing, or `data_dir` doesn't contain `profile.toon`, run onboarding.
+All four documents live together in the agent's configured or default training data directory. The skill instructions remain file-path agnostic, allowing the agent environment to manage the storage path through its own settings.
 
 ---
 

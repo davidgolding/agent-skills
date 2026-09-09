@@ -1,39 +1,41 @@
 # Safety Protocol
 
-## Medical screen fields (captured at onboarding)
+This document defines the clinical intake fields, contraindication translation guidelines, and immediate red-flag response protocols for personal-trainer.
 
-- Current diagnosed conditions (cardiovascular, metabolic, musculoskeletal, respiratory)
-- Current medications (note any with exertion-relevant effects: beta-blockers blunt heart-rate response, some blood pressure medications affect orthostatic tolerance, some affect thermoregulation)
-- Past injuries and surgeries, with rough dates and current status (resolved / ongoing / flares occasionally)
-- Pregnancy status, where relevant
-- Cardiac and blood-pressure flags: chest pain or pressure with exertion, unexplained syncope or near-syncope, diagnosed arrhythmia or structural heart condition, uncontrolled hypertension
+## Medical Screen Fields (Captured at Onboarding)
 
-## Deriving contraindications from the screen
+- Current diagnosed conditions (cardiovascular, metabolic, musculoskeletal, respiratory).
+- Current medications, noting agents that influence exercise tolerance (e.g., beta-blockers blunting heart-rate response, antihypertensives affecting orthostatic regulation, medications altering thermoregulation).
+- Past injuries and surgeries, noting dates, rehabilitation history, and ongoing functional impact (fully resolved / intermittent flare / chronic).
+- Pregnancy status and gestational stage where applicable.
+- Cardiovascular and hemodynamic flags: exertional chest discomfort or tightness, unexplained syncope or near-syncope, diagnosed arrhythmias, structural heart disease, or uncontrolled hypertension.
 
-Translate each answer into a `contraindications` row (`references/schemas.md`) — a movement pattern, a reason, and a severity. Typical mappings to reason from, not a lookup table to apply blindly:
+## Deriving Contraindications from the Screen
 
-| Screen finding | Likely contraindicated pattern | Typical severity |
+Translate each clinical finding into an explicit `contraindications` row (`references/schemas.md`) specifying the affected movement pattern, clinical rationale, and severity level (`caution` vs `hard` exclusion). Apply clinical rationale to determine movement boundaries:
+
+| Screen Finding | Derived Contraindicated Pattern | Typical Severity |
 |---|---|---|
-| Shoulder impingement / rotator cuff history | Heavy overhead pressing, behind-the-neck work | caution (modify range, monitor) to hard (recent surgery) |
-| Lumbar disc history | Loaded spinal flexion under fatigue, max-effort axial loading | caution |
-| Knee ligament reconstruction (recent) | Deep unilateral loading, plyometrics | hard until cleared, then caution |
-| Uncontrolled hypertension or cardiac flag | High-intensity interval work, max-effort strength testing | hard until cleared by a physician |
-| Pregnancy (varies by trimester) | Supine positions late-term, high-fall-risk movements, Valsalva-heavy maxing | caution, trimester-dependent |
+| Shoulder impingement / rotator cuff repair | Heavy overhead pressing, behind-the-neck movements | caution (modify active range) to hard (post-surgical) |
+| Lumbar disc pathology / radiculopathy | Loaded spinal flexion under fatigue, max axial loading | caution |
+| Recent knee ligament reconstruction | Deep unilateral deceleration, plyometrics | hard until cleared, then caution |
+| Uncontrolled hypertension / cardiac flags | Maximal isometric straining (heavy Valsalva), supramaximal HIIT | hard until cleared by a physician |
+| Late-term pregnancy | Prolonged supine loading, high-fall-risk balance movements | caution, trimester-adapted |
 
-Use clinical judgment for anything not listed rather than treating this table as exhaustive — the point is the translation habit, not the specific rows.
+Apply sound exercise mechanics to conditions beyond this table, maintaining the mandatory translation from clinical history to explicit movement pattern constraints.
 
-## Red-flag protocol
+## Red-Flag Protocol
 
-These halt programming immediately, in any workout report or ongoing conversation, regardless of what else is being discussed:
+The following symptoms mandate an immediate halt to all training programming across workout reports, session planning, and general dialogue:
 
-- Chest pain or pressure, with or without exertion
-- Fainting, near-fainting, or unexplained dizziness
-- New numbness, tingling, or weakness, especially one-sided
-- Shortness of breath disproportionate to effort
-- Sharp or searing joint pain (distinct from normal training discomfort or fatigue)
+- Chest pain, pressure, or tightness, with or without exertion.
+- Syncope, near-syncope, or unexplained dizziness during or after exertion.
+- Acute numbness, tingling, or sudden unilateral motor weakness.
+- Dyspnea or shortness of breath disproportionate to the workload.
+- Sharp, searing, or radiating joint/connective-tissue pain distinct from muscular fatigue.
 
-On a match: stop, name what was said and why it's a stop, and ask about the symptom directly (still present? resolved? has it happened before?) rather than continuing to program. Do not resume programming in that modality until the user indicates it has resolved or been cleared; a recurring pattern warrants recommending they see a physician before continuing, stated plainly and once — not as a repeated disclaimer.
+Upon detection of any red flag: halt programming immediately, state the identified symptom and its clinical risk, and evaluate the symptom directly (active status, duration, prior history). Resume programming in the affected modality only after the athlete confirms the symptom has fully subsided or has received formal medical clearance. When symptoms persist or recur, recommend evaluation by a qualified medical provider plainly and decisively, upholding expert vigilance without repetitive disclaimer hedging.
 
-## Re-screening at block review
+## Re-Screening at Block Review
 
-Every block review re-opens the medical screen briefly: any new conditions, medications, injuries, or life changes (illness, travel, sleep disruption, pregnancy) since the last screen. Update `profile.toon`'s `medical_screen` and `contraindications` fields whenever the answer changes anything, and update `last_screened` regardless. This is what prevents Stale Profile Drift — it happens every block review, not only when something seems obviously wrong.
+Every block review re-opens the medical screen: inquire about newly diagnosed conditions, medication changes, acute injuries, or significant lifestyle stressors (systemic illness, travel fatigue, altered sleep patterns, pregnancy) since the prior review. Update `profile.toon`'s `medical_screen` and `contraindications` fields with new findings, and refresh `last_screened` upon every block review to prevent Stale Profile Drift.
