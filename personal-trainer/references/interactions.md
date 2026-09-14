@@ -6,7 +6,7 @@ This document defines the human-in-the-loop interaction flow and protocols for p
 
 1. **The Turn-Taking Paradigm**: End the turn whenever input or confirmation from the user is required, allowing the natural conversational exchange to drive state progression. Use the platform's blocking question tool when presenting constrained multiple-choice options (such as training frequency, session duration, or primary goal selection), and reserve open dialogue for narrative history.
 2. **Validation Gatekeeping**: Gate profile persistence, program generation, and load progression behind explicit validation checks. Present captured intake data to the user for explicit confirmation before writing `profile.toon`.
-3. **State Retention**: Maintain complete conversational and domain state inside persistent TOON files (`profile.toon`, `program.toon`, `log.toon`, `measurements.toon`) within the agent's configured training directory, ensuring all recommendations remain grounded across sessions.
+3. **State Retention**: Maintain complete conversational and domain state inside persistent TOON files (`profile.toon`, `program.toon`, `log.toon`, `measurements.toon`) within the training directory resolved per `references/schemas.md`, ensuring all recommendations remain grounded across sessions.
 4. **Immediate Red-Flag Interruption**: Halt training prescription immediately whenever a red-flag symptom appears in a workout report or conversation, prioritizing user health assessment above any scheduled programming.
 
 ## Execution Flow
@@ -14,18 +14,19 @@ This document defines the human-in-the-loop interaction flow and protocols for p
 ### Phase 01: Onboarding Intake & Profile Initialization
 
 - **Objective**: Establish the athlete's training background, goals, schedule, equipment, and medical screening before generating any training content.
-- **Agent Action**: Verify the presence of `profile.toon` in the agent's configured training directory. If missing, execute the 6-step onboarding sequence from `references/onboarding.md` one topic at a time. Translate medical findings into explicit movement contraindications per `references/safety.md`. Summarize the captured profile to the user in clear language. Upon confirmation, write `profile.toon`, `measurements.toon`, and `program.toon`, and initialize `log.toon` in the configured directory.
+- **Agent Action**: Resolve the training data directory per the resolution order in `references/schemas.md`, then verify the presence of `profile.toon` there. If missing, execute the 6-step onboarding sequence from `references/onboarding.md` one topic at a time. Translate medical findings into explicit movement contraindications per `references/safety.md`. Summarize the captured profile to the user in clear language. Upon confirmation, write `profile.toon`, `measurements.toon`, and `program.toon`, and initialize `log.toon` in the resolved directory.
 - **Human Gate/Intervention**: The user provides intake responses and explicitly approves the profile summary before any program file is written.
 - **Proceed When**: The user confirms the intake summary and all required profile fields are populated.
-- **Pause When**: Awaiting an intake response or explicit approval of the captured profile summary.
+- **Pause When**: Awaiting an intake response or explicit approval of the captured profile summary; or directory resolution found no path from the environment and none from the user — ask where the training data lives before reading or writing anything, since existing data may sit on a path this session has not been told about.
 
 ### Phase 02: Routine Session Programming & Autoregulation
 
-- **Objective**: Address daily training requests, autoregulate upcoming sessions based on completed workout reports, and answer exercise-science queries.
-- **Agent Action**: Read `profile.toon`, `program.toon`, and the current block's window from `log.toon` in the configured training directory. Route requests across three pathways:
+- **Objective**: Address daily training requests, autoregulate upcoming sessions based on completed workout reports, answer exercise-science queries, and refer out-of-scope questions to the right specialist.
+- **Agent Action**: Read `profile.toon`, `program.toon`, and the current block's window from `log.toon` in the resolved training directory (`references/schemas.md`). Route requests across four pathways:
   - *Workout Report*: Screen report against red-flag symptoms. If clear, record entry in `log.toon`, apply modality-specific progression rules from `references/progression.md`, and state the next session's adjusted load and rationale.
   - *Session Request*: Verify prescribed movements against `profile.toon` contraindications and place within the standing weekly program load.
   - *Domain Query*: Consult the matching evidence file under `references/evidence/`. If the inquiry outruns the cached evidence, conduct a targeted search and report findings with explicit source citation.
+  - *Out-of-Scope Query*: A question about nutrition, food logging, macro targets, supplements, or biomarker interpretation routes to a qualified specialist — a registered dietitian for nutrition and supplementation, the athlete's physician for biomarker interpretation. State the referral plainly and once, and continue delivering the training guidance that accompanies it without hedging.
 - **Human Gate/Intervention**: The user submits workout metrics, raises training inquiries, or answers clarifying questions regarding ambiguous RIR/RPE values.
 - **Proceed When**: Workout data is successfully logged, autoregulation adjustments are calculated, or training sessions are verified and delivered.
 - **Pause When**: Clarification is needed on ambiguous workout metrics (e.g., unspecified RIR or incomplete set details), or a red-flag symptom requires immediate user assessment.

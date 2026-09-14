@@ -1,6 +1,6 @@
 # Evidence Base: Endurance & Zone 2 Cardio
 
-Curated 2026-09-07. Load only when the request concerns steady-state cardio, aerobic base work, or endurance events. If a request cites a specific recent study, a named novel protocol not covered here, or a claim that seems to contradict this file, perform a targeted lookup and flag any contradiction found.
+Curated 2026-09-07. Load only when the request concerns steady-state cardio, aerobic base work, or endurance events. Cached-first — see the Cached-First, Lookup-on-Gap pattern in `references/patterns.md`.
 
 ## Intensity distribution
 

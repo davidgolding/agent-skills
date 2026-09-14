@@ -1,6 +1,6 @@
 # Evidence Base: Strength & Resistance Training
 
-Curated 2026-09-07. Load only when the request concerns resistance/strength training. If a request cites a specific recent study, a named novel method not covered here, or a claim that seems to contradict this file, perform a targeted lookup (Cached-First, Lookup-on-Gap pattern) and flag any contradiction found.
+Curated 2026-09-07. Load only when the request concerns resistance/strength training. Cached-first — see the Cached-First, Lookup-on-Gap pattern in `references/patterns.md`.
 
 ## Volume and frequency
 

@@ -2,7 +2,19 @@
 
 This document defines the TOON shape of the four persistent documents. TOON is indentation-based key:value notation; arrays of uniform objects use the compact tabular form `name[N]{col1,col2,...}:` followed by one comma-separated row per item.
 
-All four documents live together in the agent's configured or default training data directory. The skill instructions remain file-path agnostic, allowing the agent environment to manage the storage path through its own settings.
+All four documents live together in the resolved training data directory, per the resolution order below.
+
+---
+
+## Storage Resolution
+
+These instructions name no path. The storage location comes from the environment or from the user, and the skill resolves it once at session start, using the result for every read and write of the four documents:
+
+1. **A path supplied by the agent environment** — a directory recorded in the environment's own settings or project instructions. This wins whenever it exists.
+2. **A path the user named** — in this conversation, or in a prior session this conversation can still see.
+3. **Ask** — when neither is available, ask the user where the training data lives, or where it should live, before reading or writing anything.
+
+Resolution ending in a question is the normal case on first contact, not a failure. Asking costs one turn; guessing a path risks reading an empty directory, reporting no profile, and re-onboarding an athlete whose data sits somewhere this session was never told about. Once the directory is resolved, state it plainly the first time a file is written, per the Transparent Data Ownership principle.
 
 ---
 

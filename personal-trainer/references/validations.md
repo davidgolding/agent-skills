@@ -7,11 +7,11 @@ This document defines the validations used by personal-trainer.
 - **Id**: pt-profile-resolution-required
 - **Severity**: error
 - **Type**: semantic
-- **Pattern**: A session proceeds to prescribe or manipulate training data without first verifying and reading `profile.toon` from the configured training directory.
+- **Pattern**: A session proceeds to prescribe or manipulate training data without first resolving the training directory per `references/schemas.md` and verifying and reading `profile.toon` from it.
 - **Message**: A valid user profile must be resolved prior to processing training requests.
-- **Fix Action**: Verify the presence of `profile.toon` in the configured training directory; when absent, initiate the onboarding workflow before generating training content.
+- **Fix Action**: Resolve the training directory per `references/schemas.md`, then verify the presence of `profile.toon` there; when absent, initiate the onboarding workflow before generating training content.
 - **Applies To**:
-    - SKILL.md session start
+    - references/patterns.md
     - references/interactions.md
 
 ---
@@ -42,22 +42,36 @@ This document defines the validations used by personal-trainer.
 
 ---
 
+## Red Flag Symptom Vocabulary
+
+- **Id**: pt-red-flag-vocabulary
+- **Severity**: warning
+- **Type**: regex
+- **Pattern**:
+    - `(?i)\bchest (pain|pressure|tightness)\b`
+    - `(?i)\b(can'?t breathe|shortness of breath|dyspnea)\b`
+    - `(?i)\b(fainted|fainting|blacked out|passed out|syncope|near-syncope)\b`
+    - `(?i)\b(numbness|tingling)\b`
+    - `(?i)\b(sharp|searing|radiating) pain\b`
+- **Message**: This turn contains red-flag symptom vocabulary and requires the `pt-red-flag-halt` semantic assessment before any progression rule is applied.
+- **Fix Action**: Assess the match against `pt-red-flag-halt` — establish whether the symptom is actively reported by the athlete, then either halt per that rule or proceed once it resolves to a negated answer, a resolved history, or the skill's own screening text.
+- **Applies To**:
+    - workout report responses
+    - live conversation turns
+
+---
+
 ## Red Flag Halt
 
 - **Id**: pt-red-flag-halt
 - **Severity**: error
-- **Type**: regex
-- **Pattern**:
-    - (?i)\bchest pain\b
-    - (?i)\b(can'?t breathe|shortness of breath)\b
-    - (?i)\b(fainted|fainting|blacked out|passed out)\b
-    - (?i)\bnumbness|tingling\b
-    - (?i)\b(sharp|searing) pain\b
-- **Message**: Immediate cessation of programming is required upon detection of red-flag symptoms.
-- **Fix Action**: Halt training progression immediately, address the symptom directly per `references/safety.md`, and resume programming only when the issue is resolved or medically cleared.
+- **Type**: semantic
+- **Pattern**: An athlete actively reports a current symptom from the red-flag list in `references/safety.md` — chest pain/pressure/tightness, syncope or near-syncope, acute numbness/tingling or unilateral weakness, disproportionate dyspnea, or sharp/searing/radiating joint pain — and a progression rule or session prescription is applied in the same turn. A negated answer ("no chest pain"), a resolved historical finding ("numbness cleared up in 2023"), a screening question the skill itself asks, and the symptom vocabulary as it appears in this skill's own reference text all fall outside this pattern.
+- **Message**: Immediate cessation of programming is required upon an actively reported red-flag symptom.
+- **Fix Action**: Halt training progression immediately, evaluate the symptom directly per `references/safety.md` (active status, duration, prior history), and resume programming only when the athlete confirms the symptom has fully subsided or has received formal medical clearance.
 - **Applies To**:
     - workout report responses
-    - references/interactions.md
+    - live conversation turns
 
 ---
 
@@ -113,3 +127,17 @@ This document defines the validations used by personal-trainer.
 - **Applies To**:
     - references/interactions.md
     - references/onboarding.md
+
+---
+
+## Scope Referral for Out-of-Domain Queries
+
+- **Id**: pt-scope-referral
+- **Severity**: warning
+- **Type**: semantic
+- **Pattern**: A question about nutrition, food logging, macro or calorie targets, supplements, or biomarker interpretation is answered with a prescription of the agent's own rather than routed to a qualified specialist.
+- **Message**: Nutrition, food logging, supplement, and biomarker questions route to a qualified specialist, as the skill's description states.
+- **Fix Action**: Name the right specialist once — a registered dietitian for nutrition and supplementation, the athlete's physician for biomarker interpretation — per the Out-of-Scope Query pathway in `references/interactions.md`, and continue the accompanying training guidance without hedging it.
+- **Applies To**:
+    - domain query responses
+    - references/interactions.md

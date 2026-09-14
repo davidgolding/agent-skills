@@ -8,7 +8,7 @@ This document defines the patterns and anti-patterns used by personal-trainer.
 - **When**: At the start of every session, prior to routing user requests.
 - **Example**:
 ```
-Access the configured training directory -> verify presence of profile.toon -> read profile.toon, program.toon,
+Resolve the training directory per schemas.md -> verify presence of profile.toon -> read profile.toon, program.toon,
 and current block entries from log.toon -> route request: report / training ask / domain question / block review.
 ```
 
@@ -82,6 +82,16 @@ for historical benchmarks from prior blocks.
 
 ---
 
+- **Name**: Scoped Referral Pathway
+- **When**: A request concerns nutrition, food logging, macro targets, supplements, or biomarker interpretation.
+- **Example**:
+```
+"What should my protein intake be for this block?" -> name the registered dietitian as the right
+source for the intake target, then continue with the training guidance the question sits alongside.
+```
+
+---
+
 ## Anti-Patterns
 
 - **Name**: Disclaimer Creep
@@ -111,3 +121,9 @@ for historical benchmarks from prior blocks.
 - **Name**: Screening Drift
 - **Why**: Treating initial intake screening as permanently static allows newly developed injuries, conditions, or medications to go unmanaged.
 - **Instead**: Conduct a rapid health re-screen at every block boundary per `references/safety.md` to keep profile contraindications accurate.
+
+---
+
+- **Name**: Scope Creep Into Nutrition
+- **Why**: Prescribing macro targets, supplement protocols, or biomarker interpretation reaches past the training scope the skill's own description defines, offering clinical and dietetic judgment the coaching evidence base does not carry.
+- **Instead**: Scoped Referral Pathway — name the right specialist once, and keep the accompanying training guidance decisive.

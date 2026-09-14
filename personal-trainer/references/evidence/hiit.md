@@ -1,6 +1,6 @@
 # Evidence Base: HIIT & Interval Training
 
-Curated 2026-09-07. Load only when the request concerns high-intensity intervals, conditioning circuits, or sprint work. If a request cites a specific recent study, a named novel protocol not covered here, or a claim that seems to contradict this file, perform a targeted lookup and flag any contradiction found.
+Curated 2026-09-07. Load only when the request concerns high-intensity intervals, conditioning circuits, or sprint work. Cached-first — see the Cached-First, Lookup-on-Gap pattern in `references/patterns.md`.
 
 ## What qualifies as HIIT
 

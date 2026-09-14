@@ -1,6 +1,6 @@
 # Onboarding Protocol
 
-The onboarding workflow initiates when a request arrives and `profile.toon` is absent from the configured training data directory. Present questions sequentially, asking one question at a time. Use a blocking question tool with defined choices when options are bounded (such as schedule days or primary modality), and use open text for narrative history, goals, and injury backgrounds. Present the captured profile summary to the user for explicit confirmation before persisting `profile.toon`.
+The onboarding workflow initiates when a request arrives and `profile.toon` is absent from the training data directory resolved per `references/schemas.md`. Present questions sequentially, asking one question at a time. Use a blocking question tool with defined choices when options are bounded (such as schedule days or primary modality), and use open text for narrative history, goals, and injury backgrounds. Present the captured profile summary to the user for explicit confirmation before persisting `profile.toon`.
 
 ## Sequence
 
@@ -13,12 +13,12 @@ The onboarding workflow initiates when a request arrives and `profile.toon` is a
 
 ## Deriving Contraindications
 
-Translate each medical screen finding into an explicit `contraindications` row (`references/schemas.md`) specifying the affected movement pattern and severity level (`caution` vs `hard` exclusion). Consult `references/safety.md` for standard condition-to-movement translation models. Transforming clinical findings into clear movement pattern boundaries enables safe, decisive programming and prevents the Contraindication Miss sharp edge.
+Derive the `contraindications` rows from the step-5 medical screen per the procedure and condition-to-movement translation table in `references/safety.md`, which is authoritative for this step. This translation is what makes decisive programming safe, and what prevents the Contraindication Miss sharp edge.
 
 ## Closing Onboarding
 
 1. Present the complete intake summary back to the user in plain language—detailing goals, schedule limits, and derived movement contraindications—allowing the user to confirm or adjust before saving.
-2. Upon user confirmation, create `profile.toon` and `measurements.toon` in the configured training data directory.
+2. Upon user confirmation, create `profile.toon` and `measurements.toon` in the resolved training data directory.
 3. Generate the initial `program.toon`—an integrated weekly schedule tailored to available equipment and weighted toward the primary objective.
 4. Initialize `log.toon` with an empty `entries` collection.
 5. Deliver the first week's training schedule to the athlete.

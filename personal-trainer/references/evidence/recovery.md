@@ -1,6 +1,6 @@
 # Evidence Base: Recovery & Fatigue Management
 
-Curated 2026-09-07. Load alongside another modality file when a request concerns fatigue, deloads, sleep's effect on training, or how hard a week has been — this file covers the cross-cutting recovery principles that inform programming rather than a modality of its own. If a request cites a specific recent study or claim that seems to contradict this file, perform a targeted lookup and flag any contradiction found.
+Curated 2026-09-07. Load alongside another modality file when a request concerns fatigue, deloads, sleep's effect on training, or how hard a week has been — this file covers the cross-cutting recovery principles that inform programming rather than a modality of its own. Cached-first — see the Cached-First, Lookup-on-Gap pattern in `references/patterns.md`.
 
 ## Sleep
 
