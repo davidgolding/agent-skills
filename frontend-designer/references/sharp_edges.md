@@ -14,7 +14,7 @@ This document defines the sharp edges used by frontend-designer.
 - **Solution**:
     - Run the named-tell check below before serving anything, and fix what it catches rather than rationalizing it.
     - Named tells: a centered hero with a large gradient headline; a three-column grid of equal rounded cards with soft shadows; one geometric sans (Inter, Geist, or the current equivalent) carrying every level of the hierarchy; purple-to-blue or indigo-to-violet gradients used decoratively; emoji standing in for icons; a shadow on every raised surface; uniform padding at every scale; a single centered fixed-width column as the only spatial idea; badge pills above every heading; a feature list of three items with an icon, a bold phrase, and two lines of copy.
-    - When a tell is present and genuinely correct for this project, say so explicitly and record the justification in the direction brief so later sessions do not relitigate it.
+    - When a tell is present and genuinely correct for this project, say so explicitly and record the justification in the direction brief so later sessions read it and build on it.
     - Prevent rather than correct: commit the Forced Commitment Set upstream so the token layer itself is not generic.
 - **Symptoms**:
     - The result would look at home in any product in any industry.
@@ -27,12 +27,12 @@ This document defines the sharp edges used by frontend-designer.
 ## Direction Drift Across Invocations
 
 - **Id**: direction-drift-across-invocations
-- **Summary**: A later session builds against defaults instead of the project's established system because it never read the direction brief or tokens.
+- **Summary**: A later session builds against defaults instead of the project's established system because the session began before reading the direction brief or tokens.
 - **Severity**: high
 - **Situation**: The fourth or fifth invocation in a project, adding a new component with fresh context, months after the direction was chosen.
-- **Why**: Context does not persist between sessions and the agent never sees its own rendered output, so nothing corrects a drifted choice from inside the session. One inconsistent component establishes a precedent that the next session then matches, and drift compounds silently.
+- **Why**: Context lapses between sessions and the agent works without sight of its own rendered output, so correction has to come from the brief and tokens rather than from within the session. One inconsistent component establishes a precedent that the next session then matches, and drift compounds silently.
 - **Solution**:
-    - Walk the Phase 0 resolution order before writing anything: direction brief, then tokens, then existing code, then from scratch.
+    - Walk the Phase 0 resolution order in `interactions.md` before writing anything.
     - State which rung was hit so the user can catch a missed brief immediately.
     - Extend the existing brief and tokens rather than authoring parallel ones, and say what was added.
     - When the brief and the built components disagree, surface the conflict and ask which governs instead of silently picking one.
@@ -54,7 +54,7 @@ This document defines the sharp edges used by frontend-designer.
 - **Solution**:
     - Prefer the native element that already has the behavior over a generic element plus a role.
     - When a custom component is unavoidable, implement the full keyboard interaction contract for its role, not only the attributes.
-    - Verify focus is visible, reachable, ordered sensibly, restored on close, and never trapped except deliberately in a modal.
+    - Verify focus is visible, reachable, ordered sensibly, restored on close, and released on exit except where a modal traps it deliberately.
     - Treat this as part of the Component Completeness Bar, not as a follow-up pass.
 - **Symptoms**:
     - A generic element carries a role attribute but no key handler.
@@ -74,7 +74,7 @@ This document defines the sharp edges used by frontend-designer.
 - **Solution**:
     - Look up the current state of anything datable at the moment you need it, before it reaches the user or the code.
     - Report what you found and when you checked it, so the user can judge the freshness themselves.
-    - Never write version-specific claims into this skill's reference files, where they would age invisibly.
+    - Keep version-specific claims in the session, where a lookup dates them, and keep this skill's reference files to the durable rule, which stays current as tooling moves.
     - When a lookup is unavailable, say the claim is from memory and unverified rather than stating it flatly.
 - **Symptoms**:
     - A setup command errors on an unrecognized flag or a renamed configuration key.
@@ -94,12 +94,12 @@ This document defines the sharp edges used by frontend-designer.
 - **Solution**:
     - Map the project's token layer onto the framework's theme configuration before building the first component, so the defaults are replaced rather than competing.
     - Remove or override the default scales the direction does not use, so reaching for them is not possible by accident.
-    - Treat an unmapped default utility class in a component the same as a raw value: flag and justify, do not ship quietly.
+    - Treat an unmapped default utility class in a component the same as a raw value: flag it and justify it before it ships.
 - **Symptoms**:
     - Components use the framework's stock radius, shadow, and spacing names rather than project token names.
     - The rendered result resembles the framework's own documentation site.
     - The theme configuration is unmodified from its generated state.
-- **Detection Pattern**: Components consuming a utility framework's default scale, radius, shadow, or color class names in a project whose theme configuration was never extended with the direction's token values.
+- **Detection Pattern**: Components consuming a utility framework's default scale, radius, shadow, or color class names in a project whose theme configuration still holds its generated defaults rather than the direction's token values.
 
 ---
 
@@ -117,7 +117,7 @@ This document defines the sharp edges used by frontend-designer.
 - **Symptoms**:
     - A lockfile or dependency manifest changed without a preceding statement of intent.
     - New configuration files appeared that the user was not told about.
-    - A library was introduced mid-build to solve a problem that was never discussed.
+    - A library was introduced mid-build to solve a problem that reached code before it reached the conversation.
 - **Detection Pattern**: Package installation or project scaffolding commands executed in a session where no statement of the intended commands and affected files preceded them.
 
 ---
@@ -157,4 +157,4 @@ This document defines the sharp edges used by frontend-designer.
     - The reported port matches the framework default while another process already held it.
     - A closing summary claims the project is running with no output from the server quoted or observed.
     - The server process exited immediately after start and the exit was not noticed.
-- **Detection Pattern**: A handoff message stating a running development address in a session where the server process output was never read back or the process status was never confirmed.
+- **Detection Pattern**: A handoff message stating a running development address in a session where the address was assumed rather than read back from the process output and confirmed against its running status.

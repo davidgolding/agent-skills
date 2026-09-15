@@ -15,7 +15,7 @@ This document defines the patterns and anti-patterns used by frontend-designer.
     Palette: sampled from the archive photography — warm neutrals, single ink accent
     Motion: restrained, 120ms, ease-out only, no entrance animation
     Density: deliberately tight leading in captions against open body copy
-    This project must never look like: centered SaaS hero, gradient headline,
+    This project rules out: centered SaaS hero, gradient headline,
     uniform card grid, glassmorphism, emoji iconography
 ```
 
@@ -101,7 +101,7 @@ This document defines the patterns and anti-patterns used by frontend-designer.
 ---
 
 - **Name**: Live Currency Check
-- **Description**: Look up the present state of any framework version, API, tooling default, or design trend at the moment you need it, and report what you found. Nothing datable is asserted from memory or written into this skill's reference files.
+- **Description**: Look up the present state of any framework version, API, tooling default, or design trend at the moment you need it, and report what you found. Assert anything datable only from a lookup made at the moment of use, and keep this skill's reference files to durable rules.
 - **When**: Phase 3 before proposing stacks, and any time a specific version, API surface, configuration default, or trend claim is about to be stated to the user or written into code.
 - **Example**:
 ```
@@ -119,7 +119,8 @@ This document defines the patterns and anti-patterns used by frontend-designer.
 - **Example**:
 ```
     States: rest, hover, active, focus-visible, disabled, loading, error
-    Keyboard: reachable, operable, escapable; focus visible and never trapped
+    Keyboard: reachable, operable, escapable; focus visible throughout, and
+      released on exit except where a modal traps it deliberately
     Semantics: a real button element or a correct role with matching behavior
     Responsive: verified against the stated breakpoints, including worst-case
       content length
@@ -130,7 +131,7 @@ This document defines the patterns and anti-patterns used by frontend-designer.
 ---
 
 - **Name**: Iteration Depth Discipline
-- **Description**: Perfect the unit of work currently in front of you rather than multiplying features sideways. Adjacent functionality you notice while building is named and offered as the next unit, never quietly added to this one.
+- **Description**: Perfect the unit of work currently in front of you rather than multiplying features sideways. Adjacent functionality you notice while building is held out of the current unit, named, and offered as the next one.
 - **When**: Throughout Phase 5, and whenever a mid-build request arrives for something adjacent to the current unit.
 - **Example**:
 ```
@@ -157,7 +158,7 @@ This document defines the patterns and anti-patterns used by frontend-designer.
 ## Anti-Patterns
 
 - **Name**: AI House Style
-- **Description**: Producing the recognizable visual signature of machine-generated frontends — a centered hero with a gradient headline, a three-column grid of uniform rounded cards, one geometric sans at every weight, purple-to-blue gradients, emoji standing in for icons, a soft shadow on every surface, and uniform padding everywhere.
+- **Description**: Producing the recognizable visual signature of machine-generated frontends — the named tells enumerated under the `ai-house-style` edge in `sharp_edges.md`.
 - **Why**: It is the statistical center of the training distribution, so it is where output lands by default. It reads instantly as machine-made to anyone who looks at interfaces professionally, and it makes the product indistinguishable from every other product built the same way.
 - **Instead**: Commit upstream through the Forced Commitment Set so the tokens themselves are not generic, record the project-specific anti-patterns in the direction brief, and run the named-tell check in `sharp_edges.md` before serving.
 
@@ -165,7 +166,7 @@ This document defines the patterns and anti-patterns used by frontend-designer.
 
 - **Name**: Framework Reflex
 - **Description**: Reaching for React or a comparable framework on a project whose requirements a static page would satisfy, because a framework is the habitual answer rather than the argued one.
-- **Why**: It imposes a build step, a dependency tree, and a maintenance burden on a project that gained nothing for them, and it hands the user an inheritance cost they never agreed to.
+- **Why**: It imposes a build step, a dependency tree, and a maintenance burden on a project that gained nothing for them, and it hands the user an inheritance cost that reached them without their consent.
 - **Instead**: Name the specific requirement the framework is solving. If no such requirement can be named, propose vanilla and say why it wins here.
 
 ---

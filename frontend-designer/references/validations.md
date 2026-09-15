@@ -29,7 +29,7 @@ This document defines the validations used by frontend-designer.
 
 - **Id**: fd-missing-focus-style
 - **Severity**: error
-- **Type**: instruction
+- **Type**: semantic
 - **Pattern**:
     - Any interactive element — link, button, form control, custom control, or element carrying an interactive role — that has no visible focus style, or whose default focus indicator was removed without a replacement.
     - Any rule that clears the browser's default focus indicator with no accompanying focus-visible style defined for the same element.
@@ -70,9 +70,9 @@ This document defines the validations used by frontend-designer.
 
 - **Id**: fd-missing-direction-brief
 - **Severity**: error
-- **Type**: instruction
+- **Type**: semantic
 - **Pattern**:
-    - Component or page code written into a project that contains no direction brief and no design tokens file, where the agent never authored one during the session.
+    - Component or page code written into a project that lacks both a direction brief and a design tokens file, in a session that authored neither.
     - A session that produced visual output without any statement of which context rung the Phase 0 resolution order landed on.
 - **Message**: Design work was produced without a committed direction brief governing it
 - **Fix Action**: Author a direction brief in the project recording the chosen direction, its reasoning, the Forced Commitment Set, and the project-specific anti-patterns, then confirm the built components conform to it. When an existing brief or token file was already present, state that it was read and is governing this work.
@@ -95,7 +95,7 @@ This document defines the validations used by frontend-designer.
     - font-family\s*:\s*(?:["']?(?:Inter|Geist|Roboto|Open Sans|Montserrat|Poppins)["']?|system-ui|-apple-system|ui-sans-serif)\b
     - \bfont-(?:sans|serif|mono)\b(?!.*var\()
 - **Message**: Typography relies on a default or ubiquitous font stack with no stated reason, a primary marker of undifferentiated design
-- **Fix Action**: Commit to a type pairing chosen for this project with the reason recorded in the direction brief, and expose it through token values. When a system or ubiquitous stack is genuinely the right answer — a performance floor, an offline requirement, a brand mandate — state that reason in the brief so later sessions do not relitigate it.
+- **Fix Action**: Commit to a type pairing chosen for this project with the reason recorded in the direction brief, and expose it through token values. When a system or ubiquitous stack is genuinely the right answer — a performance floor, an offline requirement, a brand mandate — state that reason in the brief so later sessions read it and honor it.
 - **Applies To**:
     - *.css
     - *.scss
@@ -107,7 +107,7 @@ This document defines the validations used by frontend-designer.
 
 - **Id**: fd-emoji-as-icon
 - **Severity**: warning
-- **Type**: instruction
+- **Type**: semantic
 - **Pattern**:
     - An emoji character used as an interface element — a button affordance, a list bullet, a status marker, a feature icon, or a navigation glyph — rather than appearing inside user-authored content.
     - A pictographic character standing in a position where the direction's icon set would otherwise supply a mark.
@@ -165,7 +165,7 @@ This document defines the validations used by frontend-designer.
 
 - **Id**: fd-uniform-surface-treatment
 - **Severity**: warning
-- **Type**: instruction
+- **Type**: semantic
 - **Pattern**:
     - Every raised surface in the project carrying the same corner radius and the same shadow value, with no distinction between elevation levels or surface roles.
     - A primary content region composed of equally sized cards in an evenly divided grid, where the content itself has no equal weighting.
