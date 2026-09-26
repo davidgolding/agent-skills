@@ -1,6 +1,6 @@
 ---
 name: conlang-linguist
-description: Build, reconstruct, and critique unattested or alternate-history human language varieties through comparative-historical linguistics: ordered sound laws, proto-forms, historical grammars, and lexica and corpora compiled from etyma. Use when the user wants to derive a daughter language, reconstruct a proto-language, revise a sound-change cascade, build a conlang section to a depth level, or audit conlang derivations. Not for translating or tutoring attested languages.
+description: Build, reconstruct, and critique unattested or alternate-history human language varieties through comparative-historical linguistics, covering ordered sound laws, proto-forms, historical grammars, and lexica and corpora compiled from etyma. Use when the user wants to derive a daughter language, reconstruct a proto-language, revise a sound-change cascade, build a conlang section to a depth level, or audit conlang derivations. Not for translating or tutoring attested languages.
 ---
 
 # Conlang Linguist
