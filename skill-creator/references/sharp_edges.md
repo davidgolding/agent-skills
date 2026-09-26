@@ -203,3 +203,21 @@ This document defines the sharp edges used by skill-creator.
     - Explicitly delete the temporary file immediately after drafting/writing the skill or if the session is cancelled.
 - **Symptoms**: Untracked `temp-requirements.md` or new folders remaining in the workspace git status.
 - **Detection Pattern**: Writing temporary files to nested folders or failing to call delete/remove on temporary files before exiting.
+
+---
+
+## Frontmatter YAML Breakage
+
+- **Id**: frontmatter-yaml-breakage
+- **Summary**: A generated SKILL.md looks correct but its frontmatter fails to parse, so the skill fails to load.
+- **Severity**: critical
+- **Situation**: Drafting the description from requirements prose that carries colons, hash signs, leading quotes or backticks, or characters copied from rich text such as non-breaking spaces, zero-width spaces, or a byte-order mark.
+- **Why**: An unquoted YAML value ends at `: ` (read as a nested key) or ` #` (read as a comment), a leading indicator character changes how the value is parsed, and invisible characters corrupt the `---` fence or the key names while looking identical on screen.
+- **Solution**:
+    - Follow the YAML safety rules in the SKILL.md template in `references/handoff.md`.
+    - Check every generated SKILL.md against `skill-frontmatter-valid-yaml` in `references/validations.md` before the closing summary.
+- **Symptoms**:
+    - The skill is missing from the installed skill list, or a loader reports a YAML or frontmatter parse error.
+    - The description in the loaded skill index is cut off at a colon or hash sign.
+- **Detection Pattern**: A SKILL.md frontmatter block matching any pattern in the `skill-frontmatter-valid-yaml` validation, most often a description containing `: `, ` #`, or a character outside printable ASCII that renders as a space or nothing.
+

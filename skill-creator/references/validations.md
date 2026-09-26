@@ -387,3 +387,25 @@ This document defines the validations used by skill-creator.
 - **Applies To**:
     - SKILL.md
     - references/*.md
+
+---
+
+## Frontmatter Is Valid YAML
+
+- **Id**: skill-frontmatter-valid-yaml
+- **Severity**: error
+- **Type**: syntax
+- **Pattern**:
+    - First line of the file is anything other than exactly `---`, including a leading byte-order mark or whitespace
+    - No closing `---` line after the frontmatter keys
+    - A frontmatter line that is not a single `key: value` pair, such as a value continued onto a second line
+    - A duplicate key
+    - A tab anywhere in the frontmatter
+    - An invisible character in the frontmatter: non-breaking space (U+00A0), zero-width space or joiner (U+200B–U+200D), word joiner (U+2060), or any other control or format character
+    - An unquoted value containing `: ` or ` #`, or ending in `:`
+    - An unquoted value starting with any of `` ` `` `"` `'` `[` `{` `>` `|` `*` `&` `!` `%` `@` `-` `?` `,` `#`
+    - A double-quoted value with an unescaped inner `"`, or a single-quoted value with an undoubled inner `'`
+- **Message**: The frontmatter is not valid YAML, so the skill fails to load or loses its name and description.
+- **Fix Action**: Strip the invisible character or tab; rejoin the value onto one line; reword the value to remove the `: ` or ` #` or the leading indicator character — or, when the wording needs it, wrap the whole value in double quotes and escape inner `"` as `\"`.
+- **Applies To**:
+    - SKILL.md
