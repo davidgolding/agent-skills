@@ -24,7 +24,7 @@ What would you like to do next?
 
 Present the following options:
 
-1. **Draft/Write the skill files (Recommended)** - Draft/write the `SKILL.md` and reference files (under `references/`) based on the brainstormed requirements, then delete the temporary requirements document.
+1. **Draft/Write the skill files (Recommended)** - Draft/write the `SKILL.md` and reference files (under `references/`, including `interactions.md` when the skill has human-in-the-loop behavior) based on the brainstormed requirements, then delete the temporary requirements document.
 2. **More clarifying questions to sharpen the requirements** - Keep refining scope, constraints, and behaviors through further dialogue. Always shown.
 3. **Cancel and clean up** - Abort the session and delete the temporary requirements document. Always shown.
 
@@ -40,11 +40,11 @@ When drafting or writing the files, you must strictly adhere to the following te
 
 ##### 1. SKILL.md Template
 
-The skill's `SKILL.md` file must be structured as follows:
-- **YAML Frontmatter**: Contain the `name` and `description` keys. The description must be assertive and keyword-dense, explicitly noting trigger scenarios and constraints (e.g. "Use when...").
+The skill's `SKILL.md` file must be structured as follows, and must pass the `skill-structure-skill-md` and `skill-mandate-task-framed` rules in `references/validations.md`:
+- **YAML Frontmatter**: Contain the `name` and `description` keys. Write the description as one clause naming what the skill does and one clause naming when to use it (e.g. "Use when..."), landing the total between 200 and 500 characters. Treat 1024 characters as a hard cap — past it the skill fails to register. Move procedural detail into the body or a reference file.
 - **Level-1 Title**: The name of the skill in Title Case.
-- **Level-2 Heading: Identity**: A level-2 heading titled "Identity", followed by a single paragraph defining the identity and role the agent must assume.
-- **Level-2 Heading: Principles**: A level-2 heading titled "Principles", followed by an unordered list of principles the agent must follow.
+- **Level-2 Heading: Mandate**: A level-2 heading titled "Mandate", followed by a single task-framed paragraph that names (1) the unit of work the skill performs per invocation, (2) the decisions or axes it judges, (3) the reference files those judgments ground in, and (4) what a correct output contains. State the task and its criteria rather than a role for the agent to adopt; when the requirements imply expertise, convert it into the explicit criteria it stands for.
+- **Level-2 Heading: Principles**: A level-2 heading titled "Principles", followed by an unordered list of principles the agent must follow. Render each as a bold descriptive name, a colon, and the principle (e.g. `- **Behavior Preservation**: ...`). Order them core objective → efficiency → gatekeeping → downstream-governing, using those categories to choose order only, with no `P1`-style labels in the output.
 - **Level-2 Heading: Reference System Usage**: A level-2 heading titled "Reference System Usage", followed verbatim by this content:
   ```markdown
   You must ground your responses in the provided reference files, treating them as the source of truth for this domain:
@@ -55,6 +55,19 @@ The skill's `SKILL.md` file must be structured as follows:
 
   **Note:** If a user's request conflicts with the guidance in these files, politely correct them using the information provided in the references.
   ```
+  When the skill gets a `references/interactions.md` (see template 5), add this bullet after the Review bullet:
+  ```markdown
+  - **For Interacting:** Always consult **`references/interactions.md`**. This file governs human-in-the-loop checkpoints, approval gates, and handoffs.
+  ```
+
+Keep `SKILL.md` to exactly these parts. Route every pattern, failure mode, validation rule, and interaction phase into its dedicated reference file so it loads only when the agent reaches that state.
+
+##### Language Rules for Every Generated File
+
+Apply these to `SKILL.md` and every reference file, since `references/validations.md` checks them across the whole skill (`skill-persona-identity-language`, `skill-negative-polarity-instruction`, `skill-fictional-runtime-tokens`):
+- **Task-criteria framing**: Describe what the agent decides and the criteria it decides against. Replace assigned roles, career histories, and claimed expertise levels with the explicit criteria they imply.
+- **Affirmative phrasing**: Phrase each instruction as the action to take and its trigger condition. When the requirements state a prohibition, restate it as the correct action while keeping the constraint's scope (e.g. "Whenever emitting output, pass validation first").
+- **Grounded interaction mechanics**: Express waits as ending the turn, choices as the platform's blocking question tool, and gates as plain Proceed-When / Pause-When conditions, using runtime mechanics the platform actually performs in place of invented tokens or tags.
 
 ##### 2. references/patterns.md Template
 
@@ -81,7 +94,7 @@ Read the baseline template located at `templates/sharp_edges_template.md`. Popul
 - `[EDGE_NAME]`: The name of the sharp edge in Title Case
 - `[ID]`: A kebab-case identifier for the sharp edge
 - `[SUMMARY]`: A one-sentence summary of the edge
-- `[SEVERITY]`: The severity level (e.g., `critical`, `high`, `medium`)
+- `[SEVERITY]`: The severity level — exactly one of `critical`, `high`, `medium`, or `low`
 - `[SITUATION]`: The scenario where this issue arises
 - `[WHY]`: The underlying reason for the issue
 - `[SOLUTION]`: How to prevent or resolve the issue
@@ -97,14 +110,34 @@ Read the baseline template located at `templates/validations_template.md`. Popul
 - `[NAME]`: The name of the skill in kebab-case
 - `[VALIDATION_NAME]`: A name for the validation rule in Title Case
 - `[ID]`: A kebab-case identifier for the validation rule
-- `[SEVERITY]`: The severity level (`error` or `warning`)
-- `[TYPE]`: The type of validation (usually `regex` or `instruction`)
+- `[SEVERITY]`: The severity level — exactly one of `error` or `warning`
+- `[TYPE]`: The type of validation — exactly one of `regex` (a pattern matched against file text), `schema` (required structure, fields, enumerated values, or lengths), `semantic` (a judgment about meaning or behavior), or `syntax` (well-formedness, such as valid YAML or JSON)
 - `[PATTERN]`: The pattern or regex to match (if a list of patterns is used, format them as nested bullets under Pattern)
 - `[MESSAGE]`: The validation error/warning message
 - `[FIX]`: The action required to fix the validation failure
 - `[APPLIES]`: A list of file extension/glob patterns the rule applies to (formatted as nested bullets)
 
 Use a horizontal rule `---` in between validation rules.
+
+##### 5. references/interactions.md Template (Conditional)
+
+Generate this file only when the requirements show human-in-the-loop behavior: mid-task prompts, multi-turn confirmation, approval gates, or gated state transitions. For a skill with none of these, leave the file out — an empty or fabricated interactions.md is scaffolding filler (see `skill-interactions-conditional` in `references/validations.md`).
+
+Read the baseline template located at `templates/interactions_template.md`. Populate the placeholder fields in that template using the extracted data.
+
+- `[NAME]`: The name of the skill in Title Case
+- `[SHORT_NAME]`: The name of the skill in kebab-case
+- `[RULE_NAME]` / `[RULE]`: A named interaction rule and its mechanics (turn-ending waits, the blocking question tool, what counts as approval)
+- `[PHASE_NUMBER]` / `[PHASE_NAME]`: The phase's two-digit number and name
+- `[OBJECTIVE]`: What the phase accomplishes
+- `[AGENT_ACTION]`: What the agent does during the phase
+- `[HUMAN_GATE]`: What the user decides at this phase, or "None; this phase runs autonomously."
+- `[PROCEED_WHEN]`: The plain condition that advances to the next phase
+- `[PAUSE_WHEN]`: The plain condition that ends the turn to wait for the user
+- `[COMPLETION_STATE]`: What is true when the skill's run is complete
+- `[FALLBACK]`: What the agent does when it cannot reach the completion state
+
+Repeat the phase block once per phase.
 
 **If user selects "More clarifying questions to sharpen the requirements":**
 
@@ -134,6 +167,7 @@ Created/Updated files:
 - references/patterns.md
 - references/sharp_edges.md
 - references/validations.md
+- references/interactions.md (only when generated)
 
 The temporary requirements document has been cleaned up.
 ```

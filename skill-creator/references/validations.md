@@ -46,7 +46,7 @@ This document defines the validations used by skill-creator.
 - **Pattern**:
     - ^(?!.*patterns\.md)(?!.*sharp_edges\.md)(?!.*validations\.md)(?!.*interactions\.md).*$
 - **Message**: Skill does not define or link to the reference system usage files (patterns.md, sharp_edges.md, validations.md, interactions.md)
-- **Fix Action**: Add a 'Reference System Usage' section to the SKILL.md file pointing to the four reference files as the source of truth for Creation, Diagnosis, Review, and Brainstorming
+- **Fix Action**: Add a 'Reference System Usage' section to the SKILL.md file pointing to patterns.md, sharp_edges.md, and validations.md as the source of truth for Creation, Diagnosis, and Review, plus interactions.md for Interacting when the skill has one
 - **Applies To**:
     - SKILL.md
 
@@ -161,12 +161,13 @@ This document defines the validations used by skill-creator.
     - ^(?s)(?!.*---\r?\nname:\s*\S+).*$
     - ^(?s)(?!.*description:\s*\S+).*$
     - ^(?s)(?!.*^#\s+[A-Za-z\s\-]+).*$
-    - ^(?s)(?!.*##\s+Identity\b).*$
+    - ^(?s)(?!.*##\s+Mandate\b).*$
     - ^(?s)(?!.*##\s+Principles\b).*$
     - ^(?s)(?!.*##\s+Reference\s+System\s+Usage\b).*$
-    - ^(?s)(?!.*ground\s+your\s+responses\s+in\s+the\s+provided\s+reference\s+files).*$
-- **Message**: SKILL.md does not adhere to the strict template layout (frontmatter, level-1 title heading, or Level-2 headings: Identity, Principles, Reference System Usage verbatim)
-- **Fix Action**: Reformat SKILL.md to include name and description frontmatter, a Level-1 title in Title Case, and the required Level-2 sections (Identity, Principles, and Reference System Usage verbatim)
+    - ^(?s)(?!.*##\s+Mandate\b.*##\s+Principles\b.*##\s+Reference\s+System\s+Usage\b).*$
+    - ^(?s)(?!.*ground\s+your\s+responses?\s+in\s+the\s+provided\s+reference\s+files).*$
+- **Message**: SKILL.md does not adhere to the strict template layout (frontmatter, level-1 title heading, or Level-2 headings Mandate, Principles, and Reference System Usage, in that order)
+- **Fix Action**: Reformat SKILL.md to include name and description frontmatter, a Level-1 title in Title Case, and the required Level-2 sections in order — Mandate, Principles, and Reference System Usage (verbatim grounding directive plus one bullet per reference file the skill has)
 - **Applies To**:
     - SKILL.md
 
@@ -233,3 +234,156 @@ This document defines the validations used by skill-creator.
 - **Fix Action**: Structure validations.md with Level-2 headings for each validation, ensuring every validation defines Id, Severity, Type, Pattern, Message, Fix Action, and Applies To
 - **Applies To**:
     - *validations.md
+
+---
+
+## Mandate Section Not Task-Framed
+
+- **Id**: skill-mandate-task-framed
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A `## Mandate` section describing who the agent is, what it has experienced, or how skilled it is, or omitting the unit of work, the decisions or axes judged, the reference files those judgments ground in, or what a correct output contains.
+- **Message**: The Mandate section states the task the skill performs and the criteria it performs it against, not an identity the agent adopts.
+- **Fix Action**: Rewrite the section per the Task-Criteria Mandate pattern: name the unit of work, the axes judged, the reference files the judgments ground in, and what a correct output contains.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Persona or Identity Language
+
+- **Id**: skill-persona-identity-language
+- **Severity**: warning
+- **Type**: semantic
+- **Pattern**: Generated text that assigns the agent a role, occupation, career history, length of tenure, or claimed expertise level, or asks it to imagine or pretend to be someone, in place of stating criteria.
+- **Message**: This text assigns an identity instead of stating criteria; personas cost accuracy on the discriminative work — judging, classifying, verifying — that most skills perform.
+- **Fix Action**: Convert the implied competence into the explicit decision scope, criteria source, and success condition it stands for, per the Task-Criteria Mandate pattern.
+- **Applies To**:
+    - SKILL.md
+    - references/*.md
+
+---
+
+## Numbered Principle Labels
+
+- **Id**: skill-numbered-principle-labels
+- **Severity**: warning
+- **Type**: regex
+- **Pattern**: `^-\s+\*\*P[1-4]`
+- **Message**: This principle is rendered with a literal P-number label instead of a plain descriptive name.
+- **Fix Action**: Replace the P-number prefix with a short bold descriptive name; use the principle categories only to choose order.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## SKILL.md Progressive Disclosure
+
+- **Id**: skill-md-progressive-disclosure
+- **Severity**: warning
+- **Type**: semantic
+- **Pattern**: Generated SKILL.md body sections beyond Mandate, Principles, and Reference System Usage, or pattern, sharp-edge, validation, or interaction entries inlined into SKILL.md.
+- **Message**: SKILL.md should contain only frontmatter, Mandate, Principles, and Reference System Usage — deeper content belongs in its dedicated reference file.
+- **Fix Action**: Move the inlined content into the matching reference file and leave the standard Reference System Usage pointer in SKILL.md.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Description Over Specification Cap
+
+- **Id**: skill-description-over-cap
+- **Severity**: error
+- **Type**: schema
+- **Pattern**: Frontmatter `description` value exceeding 1024 characters.
+- **Message**: The Agent Skills specification caps `description` at 1024 characters; past the cap the skill fails to register and stops triggering.
+- **Fix Action**: Cut the description to one clause naming what the skill does and one naming when to use it, moving procedural detail into SKILL.md or a reference file.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Description Outside Discovery Band
+
+- **Id**: skill-description-out-of-band
+- **Severity**: warning
+- **Type**: schema
+- **Pattern**: Frontmatter `description` value shorter than 200 characters or longer than 500 characters.
+- **Message**: Under 200 characters a description carries too few trigger cues; over 500 it pays index cost in every session without improving the trigger decision.
+- **Fix Action**: Restate the description as one clause naming what the skill does and one naming when to use it, landing between 200 and 500 characters.
+- **Applies To**:
+    - SKILL.md
+
+---
+
+## Reference Field Values Out of Range
+
+- **Id**: skill-reference-field-enums
+- **Severity**: error
+- **Type**: schema
+- **Pattern**: A validations.md entry whose Severity is outside {error, warning} or whose Type is outside {regex, schema, semantic, syntax}; a sharp_edges.md entry whose Severity is outside {critical, high, medium, low}.
+- **Message**: Validation Severity must be error or warning and Type one of regex/schema/semantic/syntax; sharp-edge Severity must be critical, high, medium, or low.
+- **Fix Action**: Replace the value with the closest allowed one (e.g. a judgment-based `instruction` rule becomes `semantic`; a structural check becomes `schema`).
+- **Applies To**:
+    - *validations.md
+    - *sharp_edges.md
+
+---
+
+## Interactions File Missing for Interactive Skill
+
+- **Id**: skill-interactions-conditional
+- **Severity**: warning
+- **Type**: semantic
+- **Pattern**: Generated SKILL.md or references contain mid-task prompts, multi-turn confirmation, approval gates, or gated state transitions, but `references/interactions.md` is absent; or interactions.md is present for a skill with none of these.
+- **Message**: interactions.md is required exactly when the skill shows human-in-the-loop behavior; an empty or fabricated one is scaffolding filler.
+- **Fix Action**: Add `references/interactions.md` from `templates/interactions_template.md`, move embedded interaction logic into it, and add the "For Interacting" bullet to Reference System Usage — or remove the file when the skill has no interaction loop.
+- **Applies To**:
+    - SKILL.md
+    - references/*.md
+
+---
+
+## Skill interactions.md Template Violation
+
+- **Id**: skill-structure-interactions
+- **Severity**: error
+- **Type**: schema
+- **Pattern**: interactions.md missing `## Interaction Rules`, `## Execution Flow`, or `## Handoff`; a phase block missing Objective, Agent Action, Human Gate/Intervention, Proceed When, or Pause When; Handoff missing The Completion State or Exception/Fallback Handoff.
+- **Message**: interactions.md does not adhere to the template layout in `templates/interactions_template.md`.
+- **Fix Action**: Add the missing section or field following `templates/interactions_template.md`.
+- **Applies To**:
+    - *interactions.md
+
+---
+
+## Fictional Runtime Tokens
+
+- **Id**: skill-fictional-runtime-tokens
+- **Severity**: error
+- **Type**: regex
+- **Pattern**:
+    - `\[AWAIT_HUMAN\]`
+    - `<state_context>`
+    - `STOP_AND_PROMPT`
+    - `GO_PROCEED`
+    - `#\$\[`
+- **Message**: This text uses runtime-machinery notation the agent runtime does not interpret.
+- **Fix Action**: Rewrite with turn-ending waits, the platform's blocking question tool, and plain Proceed-When / Pause-When conditions.
+- **Applies To**:
+    - SKILL.md
+    - references/interactions.md
+
+---
+
+## Negative-Polarity Instructions
+
+- **Id**: skill-negative-polarity-instruction
+- **Severity**: warning
+- **Type**: semantic
+- **Pattern**: A generated instruction phrased as a prohibition rather than as the action to take and its trigger condition.
+- **Message**: This instruction names what to skip rather than what to do; affirmative instructions route the agent toward the correct action.
+- **Fix Action**: Rewrite the instruction to name the required action and its trigger condition, keeping the original constraint's scope.
+- **Applies To**:
+    - SKILL.md
+    - references/*.md

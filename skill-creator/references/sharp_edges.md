@@ -31,7 +31,7 @@ This document defines the sharp edges used by skill-creator.
 - **Situation**: A skill for "git commit" has a description like "Use this when you want to write text". It gets triggered when the user wants to write a markdown document.
 - **Why**: The routing agent relies on specific keywords, commands, and scenarios in the description to match the user's prompt. Fuzzy descriptions confuse the router.
 - **Solution**:
-    - Write a highly specific, keyword-dense frontmatter description.
+    - Write a highly specific frontmatter description: one clause naming what the skill does, one naming when to use it, 200–500 characters total.
     - Explicitly list commands (e.g., `git commit`) and target tasks (e.g., "create git commit").
     - Test the description against a trigger eval set containing near-miss negative prompts.
 - **Symptoms**:

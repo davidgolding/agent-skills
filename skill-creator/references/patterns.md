@@ -5,19 +5,19 @@ This document defines the patterns and anti-patterns used by skill-creator.
 ## Patterns
 
 - **Name**: Three-Layer Loading Pattern
-- **Description**: Organize the skill's file layout into three distinct layers: triggering metadata (frontmatter in `SKILL.md`), core instructions and identity (body of `SKILL.md`), and detailed references/scripts/examples in subdirectories.
+- **Description**: Organize the skill's file layout into three distinct layers: triggering metadata (frontmatter in `SKILL.md`), core instructions and mandate (body of `SKILL.md`), and detailed references/scripts/examples in subdirectories.
 - **When**: Designing any new skill to keep the initial agent context lightweight and avoid overloading the context window during triggers.
 - **Example**:
 ```
     - Metadata Layer: Trigger description in frontmatter
-    - Core Instruction Layer: `SKILL.md` containing Identity, Principles, and Reference Usage
+    - Core Instruction Layer: `SKILL.md` containing Mandate, Principles, and Reference System Usage
     - Resource Layer: `references/patterns.md`, `references/sharp_edges.md`, `scripts/run_eval.py`
 ```
 
 ---
 
 - **Name**: Assertive Trigger Description
-- **Description**: Write a description in the YAML frontmatter that lists exact trigger keywords, commands, target files, and negative constraints to ensure high trigger precision.
+- **Description**: Write the YAML frontmatter description as one clause naming what the skill does and one clause naming when to use it, choosing specific trigger terms over generic ones and landing the total between 200 and 500 characters — enough trigger cues for discovery without paying index cost in every session. Treat 1024 characters as a hard cap.
 - **When**: Defining the trigger contract in `SKILL.md` frontmatter.
 - **Example**:
 ```
@@ -105,7 +105,25 @@ This document defines the patterns and anti-patterns used by skill-creator.
 - **Name**: Standardized Skill Structure Pattern
 - **Description**: Output newly created skill files using standardized templates to ensure structured, consistent layout in `SKILL.md`, `references/patterns.md`, `references/sharp_edges.md`, and `references/validations.md`.
 - **When**: Drafting, writing, or editing any agent skill's files.
-- **Example**: Generate `SKILL.md` containing name/description frontmatter, a Level-1 title heading, and Level-2 headings for "Identity", "Principles", and "Reference System Usage" verbatim. Generate reference markdown files (`patterns.md`, `sharp_edges.md`, `validations.md`) with their standard heading layouts and required bullet key attributes.
+- **Example**: Generate `SKILL.md` containing name/description frontmatter, a Level-1 title heading, and Level-2 headings for "Mandate", "Principles", and "Reference System Usage" (verbatim), in that order. Generate reference markdown files (`patterns.md`, `sharp_edges.md`, `validations.md`, plus `interactions.md` when the skill has human-in-the-loop behavior) with their standard heading layouts and required bullet key attributes, so the result passes the structure rules in this file's companion `references/validations.md`.
+
+---
+
+- **Name**: Task-Criteria Mandate
+- **Description**: Frame the generated `SKILL.md`'s Mandate section as the task and its criteria — the unit of work, the decisions judged, the reference files those judgments ground in, and what a correct output contains — converting any implied role or expertise into those explicit criteria.
+- **When**: Drafting the Mandate section of any generated `SKILL.md`, or rewriting a passage that assigns the agent an identity.
+- **Example**:
+```
+    Before: "You are a seasoned release engineer who has shipped hundreds of changelogs."
+    After:  "Draft one changelog entry per invocation from the merged PRs since the last tag. Judge each PR's user-facing impact against references/patterns.md. A correct entry groups changes by type and links every PR."
+```
+
+---
+
+- **Name**: Conditional Interactions File
+- **Description**: Generate `references/interactions.md` from `templates/interactions_template.md` only when the requirements show human-in-the-loop behavior — mid-task prompts, multi-turn confirmation, approval gates, or gated state transitions — and add its "For Interacting" bullet to Reference System Usage.
+- **When**: Deciding the generated skill's file set during Phase 4 drafting.
+- **Example**: A skill that presents a plan and waits for approval before editing files gets `interactions.md` with Plan and Apply phases; a skill that formats a document in one pass gets only the three core reference files.
 
 ---
 
@@ -114,7 +132,7 @@ This document defines the patterns and anti-patterns used by skill-creator.
 - **Name**: Fuzzy Trigger Description
 - **Description**: Using broad, generic, or conversational language in the YAML frontmatter description.
 - **Why**: Causes the router to trigger the skill for unrelated queries (false positives) or fail to activate it for relevant tasks (false negatives).
-- **Instead**: Use assertive, keyword-dense language specifying the exact tasks and commands this skill is optimized for.
+- **Instead**: Use specific, assertive language naming what the skill does and when to use it, held to the 200–500 character discovery band (Assertive Trigger Description).
 
 ---
 
@@ -164,3 +182,17 @@ This document defines the patterns and anti-patterns used by skill-creator.
 - **Description**: Documenting implementation-specific choices (e.g. database schemas, column names, code paths) inside brainstorming scopes or requirements.
 - **Why**: Forces the user to make premature design decisions and complicates the requirements with unnecessary detail.
 - **Instead**: Focus on product shape and behavior; defer architectural design to the planning phase.
+
+---
+
+- **Name**: Persona Framing
+- **Description**: Opening a generated `SKILL.md` with an assigned identity, career history, or claimed expertise level in place of a Mandate.
+- **Why**: Implied competence gives the model nothing checkable to reason against, and personas measurably cost accuracy on the discriminative work — judging, classifying, verifying — most skills perform. `references/validations.md` flags it under `skill-persona-identity-language` and `skill-mandate-task-framed`.
+- **Instead**: Task-Criteria Mandate
+
+---
+
+- **Name**: Overstuffed Description
+- **Description**: Packing the frontmatter description with the skill's procedure, long keyword lists, or constraints until it runs past 500 characters.
+- **Why**: The description loads in every session's skill index, so extra length pays that cost everywhere without improving the trigger decision; past 1024 characters the skill stops registering at all.
+- **Instead**: Assertive Trigger Description
