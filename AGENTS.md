@@ -43,6 +43,7 @@ Limit your reading to the skill folders the request names. Open a sibling skill 
 
 ## Keep the root a source for installs elsewhere
 
-- Keep the root's directories limited to skill folders and existing repository infrastructure (`.git/`, `.claude/`). Install or mirror folders such as `.agents/`, `.claude/skills/`, or `skills/` belong in consuming projects, outside this repository.
+- Keep the root's directories limited to skill folders and existing repository infrastructure (`.git/`, `.claude/`, `.claude-plugin/`). Install or mirror folders such as `.agents/`, `.claude/skills/`, or `skills/` belong in consuming projects, outside this repository.
 - Run skill installers (such as `npx skills add`) only in consuming projects, outside this repository.
 - Create each new skill as a new top-level folder named for the skill, containing its `SKILL.md`.
+- `.claude-plugin/marketplace.json` lists every skill as its own Claude Code plugin. When a skill is added, renamed, removed, or its `description` changes, update its entry there (and its install line in `README.md`), then run `claude plugin validate .`.

@@ -1,0 +1,247 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "davidgolding-skills",
+  "owner": {
+    "name": "David Golding"
+  },
+  "metadata": {
+    "description": "A collection of agent skills for research, writing, teaching, language learning, and productivity.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "advanced-research-assistant",
+      "source": "./",
+      "strict": false,
+      "description": "Invoked by the user for a specific deep research query that generates a thorough report.",
+      "skills": [
+        "./advanced-research-assistant"
+      ]
+    },
+    {
+      "name": "anything-tutor",
+      "source": "./",
+      "strict": false,
+      "description": "Provide one-to-one, expert-level tutoring in any subject using science-of-learning methods to approach or exceed Bloom's 2-sigma effect. Use when the user wants to learn, study, review, drill, practice, or prepare for a quiz, test, course exam, certification, licensure exam, or comprehensive/qualifying exam in any subject; wants a personal tutor or study coach; wants a study plan or curriculum built from a syllabus, study guide, or exam blueprint they attach; or wants spaced review of material studied previously. Establishes an external criterion for expert performance before teaching, derives curriculum backward from it, and maintains a persistent TOON log of learner profile, mastery map, and review schedule across sessions and subjects. Not for one-off fact lookups, homework answer-checking with no instructional intent, or subjects requiring physical or hands-on observation as the sole evidence of skill.",
+      "skills": [
+        "./anything-tutor"
+      ]
+    },
+    {
+      "name": "apple-pages",
+      "source": "./",
+      "strict": false,
+      "description": "Create, read, update, delete, and export Apple Pages documents (.pages) on macOS by scripting Pages.app, backing up each file before editing it in place. Use when the user references a .pages file or asks to read, edit, restyle, add tables or images to, trash, or convert a Pages document to PDF, DOCX, EPUB, or plain text.",
+      "skills": [
+        "./apple-pages"
+      ]
+    },
+    {
+      "name": "campaign-builder",
+      "source": "./",
+      "strict": false,
+      "description": "Research a client, analyze local search demand, and plan a budget-fitted Google Ads Search account with a strategy brief, build sheet, Google Ads Editor import files, and landing page specs. Use when the user wants to plan or build Google Ads campaigns for a client, size demand across services, segments, or areas, find differentiators from reviews, or decide where ad traffic should land.",
+      "skills": [
+        "./campaign-builder"
+      ]
+    },
+    {
+      "name": "conlang-linguist",
+      "source": "./",
+      "strict": false,
+      "description": "Build, reconstruct, and critique unattested or alternate-history human language varieties through comparative-historical linguistics, covering ordered sound laws, proto-forms, historical grammars, and lexica and corpora compiled from etyma. Use when the user wants to derive a daughter language, reconstruct a proto-language, revise a sound-change cascade, build a conlang section to a depth level, or audit conlang derivations. Not for translating or tutoring attested languages.",
+      "skills": [
+        "./conlang-linguist"
+      ]
+    },
+    {
+      "name": "corpus-curator",
+      "source": "./",
+      "strict": false,
+      "description": "Convert PDF, DOCX, DOC, ODT, RTF, EPUB, HTML, TXT, MD, page-image, or TEI XML documents into source files that conform to the Markdown Source Corpus Specification, then validate and audit them. Use when the user wants to add, ingest, transcribe, curate, or import a document, a folder of documents, or a TEI edition such as the Joseph Smith Papers into a Markdown source corpus.",
+      "skills": [
+        "./corpus-curator"
+      ]
+    },
+    {
+      "name": "corpus-search",
+      "source": "./",
+      "strict": false,
+      "description": "Perform deep, iterative research, grep-driven corpus searching, and archivist inquiry across text, Markdown, PDF, and DOCX document sets. Use when users want to search a document corpus, extract historical evidence, decompose complex search queries, run multi-pass berrypicking search loops, or synthesize findings with source triangulation.",
+      "skills": [
+        "./corpus-search"
+      ]
+    },
+    {
+      "name": "critical-reader",
+      "source": "./",
+      "strict": false,
+      "description": "Analyze a single book or article (in Text, Markdown, or PDF format) and output a highly rigorous academic-grade analysis report covering Exigency, Response, Architecture, Speculation, and Evaluation. Use when the user requests a deep critical reading or scholarly analysis of a document in the workspace.",
+      "skills": [
+        "./critical-reader"
+      ]
+    },
+    {
+      "name": "data-scientist",
+      "source": "./",
+      "strict": false,
+      "description": "Apply a data scientist's professional standard of practice — not general-purpose reasoning — to any task touching data, statistics, causal inference, machine learning methodology, or data-system design. Use when the user attaches a dataset, database, spreadsheet, or files for analysis; asks a statistical, experimental-design, or causal question; asks to design, review, or refactor a data pipeline, feature store, experimentation platform, or model-serving system; or asks to evaluate, critique, or defend a data-related claim, paper, model choice, or metric. Escalates to executing real code against attached data when a question is empirical; verifies against current sources before asserting anything on the frontier (named libraries, model families, benchmark results, versioned tooling, recently-revised protocols) instead of answering from stale training-data priors; otherwise reasons from a bundled canon of statistical and methodological failure modes applied as a pre-flight and post-flight check. Not for general programming unrelated to data, and not a substitute for subfield specialists (bioinformatics, geospatial, clinical, NLP-pipeline-specific practice) beyond general data-science practice.",
+      "skills": [
+        "./data-scientist"
+      ]
+    },
+    {
+      "name": "educator",
+      "source": "./",
+      "strict": false,
+      "description": "Design lesson plans, course outlines, units, and activities, audit existing teaching materials or techniques, and answer evidence questions using the science of learning and developmental cognitive science. Use when the user asks for a lesson plan, syllabus, course outline, classroom activity, or curriculum review, or asks whether an instructional method works for a given age group.",
+      "skills": [
+        "./educator"
+      ]
+    },
+    {
+      "name": "expert-researcher",
+      "source": "./",
+      "strict": false,
+      "description": "Research a prompt as an expert-grade query - decompose it into discipline-anchored lines of inquiry, snowball each through scholarly and web sources until findings saturate, and present cited, certainty-marked results pitched to the reader. Use when the user explicitly invokes expert-researcher by name, such as /expert-researcher or asking to use expert-researcher.",
+      "skills": [
+        "./expert-researcher"
+      ]
+    },
+    {
+      "name": "frontend-designer",
+      "source": "./",
+      "strict": false,
+      "description": "Design and build runnable frontend interfaces at a professional design ceiling, committing a visual direction in writing before any component code. Use when the user wants to build or scaffold a UI, landing page, marketing site, dashboard shell, or component; set or revise visual direction or a design system; choose a frontend stack; write design tokens, type scales, color or spacing systems; or redesign a page that reads as generic or AI-generated.",
+      "skills": [
+        "./frontend-designer"
+      ]
+    },
+    {
+      "name": "german-practice",
+      "source": "./",
+      "strict": false,
+      "description": "Transition second-language German speakers to native-like C2 mastery through a structured 15-minute daily micro-immersion habit, phrasal vocabulary acquisition, receptive input, and frequency-tiered Duden-aligned verb conjugation and case declension routines. Use when the user wants to practice German, start a German learning session, run an ACTFL-aligned progressive onboarding diagnostic, trigger a halting error correction drill, run an on-demand verb conjugation drill, run an on-demand case declension drill, onboard their German regional preference (Germany, Austria, or Switzerland), or view/update their stats in the student profile.",
+      "skills": [
+        "./german-practice"
+      ]
+    },
+    {
+      "name": "gmeu-copyeditor",
+      "source": "./",
+      "strict": false,
+      "description": "Perform strict, voice-preserving copyediting and proofreading passes on user-provided text, judging usage against Garner's Modern English Usage and grammar against The Chicago Guide to Grammar, Usage, and Punctuation. Use when the user wants text proofread for typos and misspellings, or copyedited at a Light, Medium, or Heavy level with an inline citation on every usage and grammar suggestion. Scope it to copyediting and proofreading, routing content rewriting, formatting, and indexing away.",
+      "skills": [
+        "./gmeu-copyeditor"
+      ]
+    },
+    {
+      "name": "language-tutor",
+      "source": "./",
+      "strict": false,
+      "description": "Teach languages through natural conversation, onboard new learners, conduct CEFR calibrated lessons, manage learner vocabulary decks, and sequence a custom curriculum of grammar rules, conventions, idiomatic expressions, and irregularities via spaced repetition (SRS) using the SM-2 algorithm. Use when the user wants to practice a foreign language, start a language lesson, onboard as a new language learner, check scheduled mini-lessons, or update/retrieve language-learning progress stats in working-memory.toon.",
+      "skills": [
+        "./language-tutor"
+      ]
+    },
+    {
+      "name": "lit-review-compiler",
+      "source": "./",
+      "strict": false,
+      "description": "Compiles an Oxford-Bibliographies-style annotated scholarly bibliography for a research question, topic, field, or discipline, spanning a domain's foundational sources through its current frontier. Use when a user needs a comprehensive exam reading list, a dissertation-prospectus literature map, or an authoritative bibliographic guide to a scholarly topic. Every citation is mechanically verified against real scholarly databases (Crossref, OpenAlex, Semantic Scholar, Open Library) before inclusion, so every source in the report traces to a verified record rather than training-data recall alone.",
+      "skills": [
+        "./lit-review-compiler"
+      ]
+    },
+    {
+      "name": "meal-planner",
+      "source": "./",
+      "strict": false,
+      "description": "Suggest family dinners, plan meals for any interval with a shopping list, and score recipes on flavor, ease, cost, nutrition, and quality. Maintains a household profile in TOON format. Use when users ask what to make for dinner, want meal ideas for a family, want a meal plan for a day, week, or month, need a grocery list, ask about cheap or healthy family meals, want to know what to do with what is on hand, or want recipes found and rated.",
+      "skills": [
+        "./meal-planner"
+      ]
+    },
+    {
+      "name": "obsidian-assistant",
+      "source": "./",
+      "strict": false,
+      "description": "Work with an Obsidian vault through the `obsidian` CLI (notes, tasks, properties, tags, bases), research the vault by lexical search and link-graph traversal, write Obsidian Flavored Markdown (wikilinks, embeds, callouts), and develop plugins and themes. Use when the user asks to interact with their vault, research what their notes say on a subject, follow leads across linked notes, manage notes from the command line, develop an Obsidian plugin/theme, or write .md using OFM syntax.",
+      "skills": [
+        "./obsidian-assistant"
+      ]
+    },
+    {
+      "name": "obsidian-navigator",
+      "source": "./",
+      "strict": false,
+      "description": "Navigate an Obsidian vault using the obsidian-cli tool. Use this skill to answer questions, search notes, and traverse the vault by dynamically following Wikilinks and backlinks to gather context across multiple notes.",
+      "skills": [
+        "./obsidian-navigator"
+      ]
+    },
+    {
+      "name": "personal-trainer",
+      "source": "./",
+      "strict": false,
+      "description": "Maintain an individualized, evidence-grounded coaching relationship spanning strength, conditioning, and mobility programming. Maintain persistent user profile, program, workout log, and measurement history in TOON format, autoregulate sessions from reported performance, and coordinate integrated weekly loads while enforcing strict medical contraindication screening. Direct nutrition, food logging, and biomarker management queries to qualified specialists.",
+      "skills": [
+        "./personal-trainer"
+      ]
+    },
+    {
+      "name": "prose-fingerprinter",
+      "source": "./",
+      "strict": false,
+      "description": "Analyze a passage of text to extract and synthesize its unique stylistic, prosodic, etymological, and thematic patterns into a cohesive prose fingerprint profile. Use when the user requests a stylistic analysis, voice profiling, or author signature extraction from a text passage.",
+      "skills": [
+        "./prose-fingerprinter"
+      ]
+    },
+    {
+      "name": "reading-interlocutor",
+      "source": "./",
+      "strict": false,
+      "description": "Conduct an interview on a scholarly book or article to solidify the user's comprehension. Use when the user has read a monograph, article, or scholarly paper, and wants a dry-run colloquium or advanced seminar discussion that pushes them to generate novel critiques, utilizing the obsidian-cli skill (when available) for vault note structure analysis and output creation, while structured around a cognitive framework of active recall and elaborative encoding to maximize memory retention.",
+      "skills": [
+        "./reading-interlocutor"
+      ]
+    },
+    {
+      "name": "rhetorician",
+      "source": "./",
+      "strict": false,
+      "description": "Identify the rhetorical figures at work in a passage — tropes, schemes, figures of repetition, argument, and vices of speech — quoting each segment, naming the figure, and citing a catalog of 343 classical terms. Use when the user wants rhetorical analysis, wants a device named, or asks which figures a passage employs.",
+      "skills": [
+        "./rhetorician"
+      ]
+    },
+    {
+      "name": "skill-auditor",
+      "source": "./",
+      "strict": false,
+      "description": "Audit an existing agent skill against the Pattern-Edge-Validation Matrix (PEV-M) standard, scoring structural compliance, affirmative-language quality, identity-language freedom, description discoverability, and token efficiency, then migrate it to full PEV-M compliance after approval. Use when the user wants to audit a skill, check PEV-M compliance, review a skill folder for best practices, or refactor an existing skill into the PEV-M architecture.",
+      "skills": [
+        "./skill-auditor"
+      ]
+    },
+    {
+      "name": "skill-creator",
+      "source": "./",
+      "strict": false,
+      "description": "Create new agentic skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.",
+      "skills": [
+        "./skill-creator"
+      ]
+    },
+    {
+      "name": "spanish-practice",
+      "source": "./",
+      "strict": false,
+      "description": "Transition second-language Spanish speakers to native-like C2 mastery through a structured 15-minute daily micro-immersion habit, phrasal vocabulary acquisition, receptive input, and an Oxford-aligned 31-transformation-group verb routine. Use when the user wants to practice Spanish, start a Spanish learning session, run an ACTFL-aligned progressive onboarding diagnostic, trigger a halting error correction drill, run an on-demand verb conjugation drill, onboard their Spanish dialect preferences, or view/update their stats in the student profile.",
+      "skills": [
+        "./spanish-practice"
+      ]
+    }
+  ]
+}
