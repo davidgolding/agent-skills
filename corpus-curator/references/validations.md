@@ -288,3 +288,81 @@ Rules marked as checked by the validator are enforced by `scripts/validate_corpu
 - **Fix Action**: Rebuild the report from the manifest and the per-source drafts, adding the missing rows and sections.
 - **Applies To**:
     - run report
+
+---
+
+## TEI Witness Holds Only the Transcription
+
+- **Id**: corpus-tei-witness-only
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A witness file converted from TEI that contains text from the edition's source note, historical introduction, or footnotes, or an `[^e]` note carrying edition annotation.
+- **Message**: Edition apparatus belongs in the editorial companion so collection choice can separate sources from editorial content.
+- **Fix Action**: Move the apparatus to the companion in the parallel editorial collection and reconvert or edit the witness.
+- **Applies To**:
+    - */*.md
+
+---
+
+## Editorial Companion Pairing
+
+- **Id**: corpus-tei-companion-paired
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A companion file in an editorial collection whose `[[key]]` references name no existing witness, or whose referenced lines fall outside the witness; a companion written while its witness was skipped (the validator reports unresolved cross-references).
+- **Message**: Every editorial companion annotates a witness that exists in the corpus.
+- **Fix Action**: Write the witness and companion together, or remove the companion when its witness is skipped.
+- **Applies To**:
+    - */*.md
+
+---
+
+## TEI Fidelity Against Baseline
+
+- **Id**: corpus-tei-fidelity
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: Any unexplained difference reported by `tei_convert.py audit` (the fidelity check in strict mode against the document's TEI baseline) for a written witness.
+- **Message**: The witness view of the file must match the source text drawn from the TEI transcription word for word.
+- **Fix Action**: Fix the converter when the difference repeats across files, or the written file when it is isolated, then re-run the audit.
+- **Applies To**:
+    - */*.md
+
+---
+
+## Pilot Before Bulk
+
+- **Id**: corpus-tei-pilot-first
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A bulk TEI `write` for a series whose collection held no TEI imports before the run, without a pilot the user reviewed and approved in this or an earlier session.
+- **Message**: A series enters the corpus only after its pilot sample is approved.
+- **Fix Action**: Run `convert --pilot 12`, present the sample, apply corrections, and write the bulk run after approval.
+- **Applies To**:
+    - run plan
+
+---
+
+## Causes Settled Before Write
+
+- **Id**: corpus-tei-causes-settled
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A TEI `write` while any `review`-level cause in `causes.json` or any per-file key collision has no recorded decision (accept, skip, option, or edit).
+- **Message**: Every grouped uncertainty and collision needs one decision before files enter the corpus.
+- **Fix Action**: Present the cause table and collisions, record each decision, rerun `convert` for option changes, then write.
+- **Applies To**:
+    - run plan
+
+---
+
+## TEI Responsibility Statement
+
+- **Id**: corpus-tei-resp
+- **Severity**: error
+- **Type**: semantic
+- **Pattern**: A TEI-derived file whose `resp` omits that the text is the edition's transcription converted by corpus-curator in a stated month, or claims a check other than the TEI diff (witness) or validation (companion).
+- **Message**: `resp` must credit the edition's transcription and state the conversion and the check actually run.
+- **Fix Action**: Write `resp` as `corpus-curator YYYY-MM; converted from <edition> TEI transcription by tei_convert.py, diffed against TEI text`.
+- **Applies To**:
+    - */*.md

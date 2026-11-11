@@ -18,10 +18,13 @@ This corpus follows the Markdown Source Corpus Specification (David Golding, Oct
 
 ## Frontmatter
 
-Flat YAML, one `key: value` per line, in this order: `title`, `author`, `date`, `source`, `type`, `lang`, `mode`, `hands`, `resp`. Unused optional keys are omitted (F1, F2).
+Flat YAML, one `key: value` per line, in this order: `title`, `author`, `date`, `source`, `type`, `lang`, `mode`, `layer`, `verified`, `images`, `hands`, `resp`. Unused optional keys are omitted; a required key whose fact is unknown says `unknown`, so a missing key means only that nothing was recorded (F1, F2).
 
 - `date` is EDTF: `1832-02-16`, `1832-06`, `1840~` (approximate), `1840?` (uncertain), `184X`, `1839/1843`. Read it as a string (F3).
 - `mode` is `diplomatic` (one source line per file line) or `prose` (one paragraph per file line).
+- `layer` says what the text is: `edition` (a verified documentary edition), `transcription`, `typescript`, `ocr`, `hwr` (uncorrected handwriting recognition), `model` (a model's reading), `publication` (a born-digital published text), or `editorial` (an editor's apparatus or notes, not the source's words).
+- `verified` says how the text was checked against its witness: `unknown`, `unchecked`, `checked` (against another text of it) or `collated` (against the image or original), optionally followed by `; ` who and when.
+- `images` (optional) is a URL template for page images: `{page}` is a page milestone's label without `@`, `{n}` its ordinal, `{id}` its parameter. Tools build each page's link; never build one yourself.
 - `hands` labels the hands named in marks: `h1 Hyde; h2 later pencil annotator`.
 - `resp` says who transcribed, when, and how the text was checked.
 
@@ -32,11 +35,11 @@ Flat YAML, one `key: value` per line, in this order: `title`, `author`, `date`, 
 ## Body
 
 - One file line is one citable unit; text is never hard-wrapped (B1). One blank line marks a structural break (B3).
-- `@p12`, `@f4r`, `@col2`, `@t00:14:05` on their own lines mark pages, folios, columns and times (B2).
+- `@p12`, `@f4r`, `@col2`, `@t00:14:05` on their own lines mark pages, folios, columns and times (B2). A page or folio milestone may name its image: `@p2 =X11897-2`.
 - `#` headings appear only where the source prints them (B4). Speakers are bold as printed: `**Ham.**` (B5).
 - Source notes are `[^1]`, editorial notes `[^e1]`, variants `[^a1]: lemma] reading B`. All definitions follow one `@notes` line at the end (B7).
 - Cross-references `[[key]]` or `[[key]]:line` appear only in editorial notes.
-- Cite as `{key}:{line}` or `{key}:{start}-{end}` with the exact quoted words (B8).
+- Cite as `{key}:{line}` or `{key}:{start}-{end}` with the exact quoted words and the file's `rev` as the tools report it: `{key}:{line} (rev 0392070a)` (B8).
 
 ## Transcription Marks
 
@@ -61,8 +64,12 @@ Square brackets are the editor; curly braces are a hand in the source. The first
 
 - An editorial mark may sit inside a source-hand mark; no other nesting (M3). No mark crosses a line end (M4).
 - Literal `[ ] { } | \` and a line-opening `#` or `@` are backslash-escaped (M5).
-- Search view: apply the reading of each mark, remove escapes, join split words. It is computed, never stored (M6).
+- Search view: apply the reading of each mark, remove escapes, join split words. In diplomatic files a word split across a line end is joined and stands on both lines, so line numbers don't move. It is computed, never stored (M6).
 
 ## Encoding
 
-UTF-8 without BOM, LF endings, a final newline, no trailing whitespace, NFC throughout (E1). Source characters are kept exactly (E2). No HTML, XML or JSON in source files (E4). Lines never begin with whitespace (E5).
+UTF-8 without BOM, LF endings, a final newline, no trailing whitespace, NFC throughout (E1). Source characters are kept exactly (E2). No HTML, XML or JSON in source files (E4). Lines never begin with whitespace (E5). Nothing derived (indexes, manifests, lexicons, embeddings) is stored in the corpus; derivatives live outside the root (D4, E6).
+
+## Reporting
+
+Name each cited source's collection and `layer`, and keep `editorial` text apart from the sources' own words (A9). Report the queries run and their counts. A search that finds nothing names the collections searched, and a miss is never evidence of absence (A12).

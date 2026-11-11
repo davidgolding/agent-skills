@@ -195,6 +195,8 @@ def main():
         entry = {"input": path}
         if os.path.isdir(path):
             entry.update(status="skipped", reason="subfolder (only top-level files are read)")
+        elif ext == ".xml":
+            entry.update(status="skipped", reason="XML (convert TEI with tei_convert.py)")
         elif ext not in SUPPORTED:
             entry.update(status="skipped", reason=f"unsupported format '{ext or 'none'}'")
         else:

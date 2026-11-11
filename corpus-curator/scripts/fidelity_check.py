@@ -3,6 +3,7 @@
 
 Usage:
     python3 fidelity_check.py SOURCE_MD EXTRACT_TXT [--prose] [--loose]
+                              [--strict]
                               [--allow-deletion TEXT ...]
 
 The corpus file is reduced to its witness view: what the original shows,
@@ -14,6 +15,7 @@ Both sides are NFC-normalized and split into words, then aligned.
     --prose            rejoin words hyphenated across extraction line ends
     --loose            compare letters and digits only (for existing transcriptions
                        whose bracket conventions were translated into the spec's marks)
+    --strict           no page-number or running-head allowances (for TEI baselines)
     --allow-deletion   extraction text the agent deliberately left out (repeatable);
                        each use is printed so it can be reported
 
@@ -39,18 +41,22 @@ def nfc(s):
     return unicodedata.normalize("NFC", s)
 
 
+BRACKET = r"(?:\\.|[^\]\\])*"     # bracket-mark content, honoring escapes
+BRACE = r"(?:\\.|[^}@\\])*"        # brace-mark content up to its @ value
+
+
 def witness_line(line):
     """Reduce one corpus body line to the text the witness shows."""
     line = re.sub(r"\[\^[^\]]+\]", "", line)                      # note references
     line = re.sub(r"^#{1,6} ", "", line)                          # printed headings
-    line = re.sub(r"(?<!\\)\[(?:\.(?:\d+|\?)|\?\.(?:\d+|\?)|_\d+|=[^\]]*)\]", " ", line)
-    line = re.sub(r"(?<!\\)\[!([^\]>]*)>[^\]]*\]", r"\1", line)  # sic>corr -> sic
-    line = re.sub(r"(?<!\\)\[[!?-]([^\]]*)\]", r"\1", line)       # sic, unclear, surplus
-    line = re.sub(r"(?<!\\)\[\+[^\]]*\]", "", line)               # supplied omission
-    line = re.sub(r"(?<!\\)\[[^\]]*\]", "", line)                 # supplied lost text
+    line = re.sub(r"(?<!\\)\[(?:\.(?:\d+|\?)|\?\.(?:\d+|\?)|_\d+|=" + BRACKET + r")\]", " ", line)
+    line = re.sub(r"(?<!\\)\[!((?:\\.|[^\]>\\])*)>" + BRACKET + r"\]", r"\1", line)  # sic>corr -> sic
+    line = re.sub(r"(?<!\\)\[[!?-](" + BRACKET + r")\]", r"\1", line)  # sic, unclear, surplus
+    line = re.sub(r"(?<!\\)\[\+" + BRACKET + r"\]", "", line)     # supplied omission
+    line = re.sub(r"(?<!\\)\[" + BRACKET + r"\]", "", line)       # supplied lost text
     line = re.sub(r"(?<!\\)\{@[^}]*\}", "", line)                 # hand shift
-    line = re.sub(r"(?<!\\)\{-([^}+@]*)\+([^}@]*)(?:@[^}]*)?\}", r"\1 \2", line)
-    line = re.sub(r"(?<!\\)\{[+-]?([^}@]*)(?:@[^}]*)?\}", r"\1", line)
+    line = re.sub(r"(?<!\\)\{-((?:\\.|[^}+@\\])*)\+(" + BRACE + r")(?:@[^}]*)?\}", r"\1 \2", line)
+    line = re.sub(r"(?<!\\)\{[+-]?(" + BRACE + r")(?:@[^}]*)?\}", r"\1", line)
     line = re.sub(r"(?<=[^\W\d_])\((?:[^\W\d_]+|---)\)", "", line)  # expansions
     line = re.sub(r"(?<!\\)\*+", "", line)                        # emphasis, speakers
     line = re.sub(r"(?<!\\) ?\| ?", " ", line)                     # prose line breaks, tables
@@ -108,25 +114,16 @@ def key(word, loose):
     return re.sub(r"[\W_]+", "", word) if loose else word
 
 
-def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("source")
-    ap.add_argument("extract")
-    ap.add_argument("--prose", action="store_true")
-    ap.add_argument("--loose", action="store_true")
-    ap.add_argument("--allow-deletion", action="append", default=[])
-    args = ap.parse_args()
+def compare(corpus_text, extract_text, prose=False, loose=False, allowed=(), strict=False):
+    """Diff a corpus file against its extraction. Return (unexplained count, report lines).
 
-    with open(args.source, encoding="utf-8") as fh:
-        corpus_text = fh.read()
-    with open(args.extract, encoding="utf-8") as fh:
-        extract_text = fh.read()
-
+    strict turns off the page-number and running-head allowances, for baselines (such as
+    TEI text) that contain neither."""
     out = corpus_tokens(corpus_text)
-    src = extract_tokens(extract_text, args.prose, corpus_text)
-    a = [key(w, args.loose) for w, _ in src]
-    b = [key(w, args.loose) for w, _ in out]
-    if args.loose:
+    src = extract_tokens(extract_text, prose, corpus_text)
+    a = [key(w, loose) for w, _ in src]
+    b = [key(w, loose) for w, _ in out]
+    if loose:
         src = [t for t, k in zip(src, a) if k]
         out = [t for t, k in zip(out, b) if k]
         a, b = [k for k in a if k], [k for k in b if k]
@@ -134,9 +131,9 @@ def main():
     ops = [op for op in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes() if op[0] != "equal"]
     deleted = [" ".join(a[i1:i2]) for tag, i1, i2, _, _ in ops if tag == "delete"]
     inserted = [" ".join(b[j1:j2]) for tag, _, _, j1, j2 in ops if tag == "insert"]
-    allowed = [nfc(" ".join(t.split())) for t in args.allow_deletion]
+    allowed = [nfc(" ".join(t.split())) for t in allowed]
 
-    failures, expected = 0, 0
+    report, failures, expected = [], 0, 0
     for tag, i1, i2, j1, j2 in ops:
         old = " ".join(w for w, _ in src[i1:i2])
         new = " ".join(w for w, _ in out[j1:j2])
@@ -147,30 +144,52 @@ def main():
             joined = " ".join(a[i1:i2])
             if joined in inserted:
                 label = "MOVED"
-            elif all(PAGE_NUMBER.match(w) for w in a[i1:i2]):
+            elif not strict and all(PAGE_NUMBER.match(w) for w in a[i1:i2]):
                 label = "EXPECTED"
-            elif deleted.count(joined) > 1:
+            elif not strict and deleted.count(joined) > 1:
                 label = "EXPECTED"
             elif nfc(old) in allowed:
                 label = "ALLOWED"
             else:
                 label = "DELETED"
-            print(f"{label:8} {where}: {old!r}")
+            report.append(f"{label:8} {where}: {old!r}")
         elif tag == "insert":
             label = "MOVED" if " ".join(b[j1:j2]) in deleted else "INSERTED"
-            print(f"{label:8} {where}: {new!r}")
+            report.append(f"{label:8} {where}: {new!r}")
         else:
             label = "CHANGED"
-            print(f"{label:8} {where}: {old!r} -> {new!r}")
+            report.append(f"{label:8} {where}: {old!r} -> {new!r}")
         if label in ("EXPECTED", "MOVED", "ALLOWED"):
             expected += 1
         else:
             failures += 1
+    report.append(f"{len(src)} extracted words, {len(out)} corpus words; "
+                  f"{failures} unexplained difference(s), {expected} expected/moved/allowed.")
+    return failures, report
 
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("source")
+    ap.add_argument("extract")
+    ap.add_argument("--prose", action="store_true")
+    ap.add_argument("--loose", action="store_true")
+    ap.add_argument("--strict", action="store_true")
+    ap.add_argument("--allow-deletion", action="append", default=[])
+    args = ap.parse_args()
+
+    with open(args.source, encoding="utf-8") as fh:
+        corpus_text = fh.read()
+    with open(args.extract, encoding="utf-8") as fh:
+        extract_text = fh.read()
+
+    failures, report = compare(corpus_text, extract_text, args.prose, args.loose,
+                               args.allow_deletion, args.strict)
+    for line in report[:-1]:
+        print(line)
     for text in args.allow_deletion:
         print(f"NOTE     allowed deletion requested: {text!r}")
-    print(f"\n{len(src)} extracted words, {len(out)} corpus words; "
-          f"{failures} unexplained difference(s), {expected} expected/moved/allowed.")
+    print("\n" + report[-1])
     return 1 if failures else 0
 
 

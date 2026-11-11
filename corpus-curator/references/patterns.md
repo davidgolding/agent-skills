@@ -8,7 +8,7 @@ The governing standard is the Markdown Source Corpus Specification (David Goldin
 
 - **Name**: Deterministic Extraction Workspace
 - **Description**: Run `scripts/extract.py` on the input into a fresh temporary directory outside the corpus. It writes `extract.txt` (the file's own characters; PDF pages split by form feeds), `structure.md` (pandoc GFM keeping headings, emphasis, and notes), page images for image-only pages, and `info.json` with a classification hint per input, plus a `manifest.json` listing skipped files.
-- **When**: At the start of every run, before reading any input.
+- **When**: At the start of every run whose input is not TEI XML, before reading any input. TEI input follows TEI Routing instead.
 - **Example**:
 ```
     WORK=$(mktemp -d)
@@ -179,6 +179,106 @@ The governing standard is the Markdown Source Corpus Specification (David Goldin
 
 ---
 
+- **Name**: TEI Routing
+- **Description**: Treat input as TEI when it is an `.xml` file, or a folder tree of them, whose root element is `TEI`. Route it to `scripts/tei_convert.py` and leave `scripts/extract.py` for other formats (it lists `.xml` files as skipped). The converter picks the `jsp` profile when the root `TEI` element carries `pm:` or `lds:` attributes and the `generic` profile otherwise. It reads nested folders, skips each profile's non-document folders (JSP: `collated/`, `paratext/`), and lists every skip in the manifest.
+- **When**: In preflight, whenever the input holds `.xml` files.
+- **Example**:
+```
+    head -c 600 "Joseph Smith Papers/Documents/1 - 1825–1831 Jun/002_X4968.xml"
+    # <TEI pm:title="JSPPD1" ... lds:ResourceType=...>  -> TEI, jsp profile
+```
+
+---
+
+- **Name**: TEI Pilot Sample
+- **Description**: The first time a series enters the corpus (its collection folder is absent or holds no file whose `source` names a TEI id), run `convert` with `--pilot 12`. The converter still converts every input, so keys and suffixes match the later bulk run, but writes drafts only for a sample chosen to cover the elements, note kinds, modes, page layouts, and causes present. Show the user each pilot witness and companion in full, apply their corrections as converter options or skips, then rerun `convert` without `--pilot` for the bulk run.
+- **When**: Before any bulk TEI conversion of a series the corpus has not received before.
+- **Example**:
+```
+    WORK=$(mktemp -d)
+    python3 corpus-curator/scripts/tei_convert.py convert "Joseph Smith Papers/Documents" "$WORK" --corpus "$CORPUS" --pilot 12
+    ls "$WORK"/drafts/*/   # witness.md, editorial.md, baseline.txt per sampled document
+```
+
+---
+
+- **Name**: TEI Mark Mapping
+- **Description**: The converter maps TEI to the specification's marks deterministically. Read the mapping to explain a draft, and route anything outside it through review. `lb` gives a new line (`diplomatic` mode when any `lb` exists, otherwise `prose`). `pb` gives `@p{n}`. `del` gives `{-…}` (`@erasure` for wipe-out or knife-erase), and `add` gives `{+…@hand place}`. A `del` directly followed by an `add`, or a `subst` holding one of each, gives `{-old+new}`. A `formfill` addition gives `{…@formfill}` (or `{+…}` with `--formfill addition`). `addSpan`…`anchor` gives `{+…}`, closed and reopened on each line. `supplied` gives `[…]` (`[+…]` for reason omitted, `[…?]` for low certainty). `unclear` gives `[?…]`, and `sic` gives `[!…]`. `choice` of sic and corr gives `[!sic>corr]`; of orig and reg, or abbr and expan, it gives the source form; of JSP's two `reg` readings, it gives the `Expanded` one. A standalone `reg` or `expan` is the editor's text and gives `[…]`. `gap` gives `[?.n]` for illegible characters and `[.n]` for other reasons (`?` when the extent is not in characters). `space` gives `[_n]` or a blank line. `handShift` gives `{@hN}`, with `hands` naming each scribe. `hi` superscript, underline, and small caps give `{…@sup}`, `{…@underline}`, `{…@sc}`. Italic and bold give `*…*` and `**…**`. Catchwords give `{…@catchword}` and shorthand `{…@shorthand}`. Tables become GFM tables. Names, dates, and refs are unwrapped. A mark inside an editorial mark is absorbed into it, because its text is the editor's (`<supplied><hi>th</hi></supplied>` gives `[th]`). A hand mark or rendition inside a hand mark or rendition splits the enclosing mark around it, so both survive (`{+a}{-b}{+c}`).
+- **When**: When reading or explaining a TEI draft, and when deciding whether a review cause needs an option change.
+- **Example**:
+```
+    TEI:   Saying the <del>words</del> <add>works</add> <del>of</del> &amp; designs ... doth not wa<supplied>l</supplied>k
+    line:  Saying the {-words+works} {-of} & designs ... doth not wa[l]k
+```
+
+---
+
+- **Name**: JSP Profile
+- **Description**: For Joseph Smith Papers XML, the converter declares the undeclared `pm:` and `lds:` prefixes before parsing. It takes the witness from `div2[@type=docbody]`, and moves each page break so `@p1` opens page 1, because JSP's `pb n="N"` follows page N. It builds the frontmatter from the header. `title` is `pm:docDesc` with staff prefixes such as `LIVE FILE IN D13_` removed. `author` comes from `listPerson` role author, then the title's `Type, A to B` or `X from A`, then `--default-author`. `date` is EDTF from the title's date phrase, falling back to the JSP date fields. `source` combines manuscript name, call number, repository, the JSP print reference, and the TEI id. `type` follows the title word and the series. Keys follow Key Construction; a colliding key dated by a year range falls back to its start year, which can take an N6 suffix (`Journal (1832b)`), because a range cannot. Collections are `JSP {Series}` and `JSP {Series} Editorial`. A document that is wholly JSP's writing (a legal case introduction or calendar of documents, marked by `lds:EventGroup` or a title beginning "Introduction to" or "Calendar of Documents") is written to the editorial collection alone, with no witness. Notes split by type. `editorial-footnote`, `-scribe`, and `-text`, `toe-note`, and `intratextual-note` go to the companion. `authorial-footnote` notes are the source's own notes and become `[^n]` notes in the witness. `editorial-comment` and journal-entry dividers become `[=comment: …]` and `[=entry: …]` descriptions in the witness. `internal-note`, `formatting-note`, `errata`, `comment-external`, and `annotative` notes, and `lds:EventGroup` case metadata, are dropped and counted.
+- **When**: Whenever the jsp profile is selected.
+- **Example**:
+```
+    title: Revelation, July 1828 [D&C 3]
+    key:   Smith - Revelation (1828 Jul)          collection: JSP Documents
+    companion key: Revelation 1828 Jul Editorial (2013)   collection: JSP Documents Editorial
+```
+
+---
+
+- **Name**: Witness and Editorial Companion
+- **Description**: Write each TEI document as a witness file holding only the transcription and its source-hand features. When the edition supplies apparatus, also write a companion file in the parallel editorial collection, modeled as a secondary source. The companion has no author in the key (an institutional work), the witness's short title and date plus `Editorial` as its title words, and the edition's publication year as its date (JSP: the print volume's year, then the posting year, then `--editorial-date`). Its `type` is `chapter` and its mode `prose`. Its body holds the edition's printed sections (`# Source Note`, `# Historical Introduction`) with their footnotes as `[^n]`. A `# Footnotes` section follows, holding each transcription footnote with an `[^eN]` note whose definition reads `Annotates [[witness key]]:line.` Write no companion for a document without apparatus.
+- **When**: For every TEI document; the companion only when apparatus exists.
+- **Example**:
+```
+    # Footnotes
+
+    John Whitmer likely created this heading when he copied the text into Revelation Book 1.[^e1]
+
+    @notes
+    [^e1]: Annotates [[Smith - Revelation (1828 Jul)]]:16.
+```
+
+---
+
+- **Name**: Cause-Grouped Review
+- **Description**: After a TEI conversion, read `causes.json` and present one table holding the causes at level `review`, each with its count and up to three example files. Below it, list each key collision with an existing corpus file as its own row. Settle each cause with one decision for every file it covers. The decision is accept as drafted, skip (`write --skip-cause "<cause>"`), or rerun `convert` with an option: `--default-author "Smith, Joseph, Jr."` for "author not stated", `--edition-year D11=2020` for an unknown volume year, `--editorial-date YYYY` for an unknown editorial date, `--formfill addition`, or `--collection NAME`. Correct a cause covering a handful of files by editing those drafts in the work directory. Report `info` causes without asking.
+- **When**: After every TEI `convert`, before `write`.
+- **Example**:
+```
+    | Cause                                    | Files | Examples                    | Proposed decision           |
+    | author not stated (key will omit author) |    29 | 003_X12122.xml, 017_x4197… | --default-author for JS docs |
+    | type inferred as manuscript              |   137 | 002_X4968.xml, …           | accept                       |
+    | editorial date unknown; companion held   |    16 | 001_X83190.xml, …          | --editorial-date 2013        |
+    Collision: Smith - Letter to Oliver Cowdery (1829 Oct 22) exists (not a TEI import) -> skip, replace, or suffix?
+```
+
+---
+
+- **Name**: TEI Bulk Write and Audit
+- **Description**: Place approved drafts with `write`, which creates `CONVENTIONS.md` when absent, refuses to overwrite existing files, skips TEI ids already in the corpus (unless `--replace` names them), and lists written files in `written.txt`. Then run `audit`, which runs the validator on the written files and the fidelity check (strict mode, against each document's TEI baseline) on every witness, printing only failures. Fix a failure in the converter when it repeats across files, or in the written file when it is isolated, then re-run `audit` until clean.
+- **When**: After the cause review for a TEI series, and after the pilot review for a pilot.
+- **Example**:
+```
+    python3 corpus-curator/scripts/tei_convert.py write "$WORK" "$CORPUS" --skip-cause "no usable title words; 'Untitled' used"
+    python3 corpus-curator/scripts/tei_convert.py audit "$WORK" "$CORPUS"
+    # validator: 0 error(s) ... fidelity: 0 witness file(s) with unexplained differences
+```
+
+---
+
+- **Name**: TEI Run Report
+- **Description**: For a TEI run, replace the per-input table of the Verbose Run Report with counts by status (written, already imported, duplicate input, held, skipped, failed), files and companions per collection, and each settled cause with its file count and decision. Add the dropped note types with counts and the audit outcome. Give per-file rows only for exceptions: held, skipped, failed, collisions, and files fixed during audit. Close with the reminder that changes are uncommitted.
+- **When**: At the end of every TEI run, including runs that stop early.
+- **Example**:
+```
+    JSP Documents: 3,861 witnesses, 3,102 companions (JSP Documents Editorial); 127 held (no date: 4; editorial date unknown: 123)
+    Causes settled: author not stated 412 -> --default-author "Smith, Joseph, Jr."; type inferred as manuscript 2,210 -> accepted
+    Dropped notes: annotative 2,169; formatting-note 1,827; internal-note 585; errata 426; comment-external 426
+    Audit: validator 0 errors; fidelity clean for 3,861 witnesses. Changes are uncommitted.
+```
+
+---
+
 ## Anti-Patterns
 
 - **Name**: Retyped Text
@@ -234,3 +334,31 @@ The governing standard is the Markdown Source Corpus Specification (David Goldin
 - **Description**: Running git commands, or renaming an existing corpus file to make room for a new key.
 - **Why**: The user reviews and commits changes; issued keys are permanent (N6, D7).
 - **Instead**: Leave changes uncommitted and use Collision Judgment.
+
+---
+
+- **Name**: Reading TEI as Text
+- **Description**: Opening TEI files with the model's reader, running them through `extract.py` or pandoc, or retyping their transcription into the corpus.
+- **Why**: It discards the edition's exact encoding of lines, deletions, additions, and hands, replaces deterministic characters with model output, and cannot scale to an edition of thousands of files.
+- **Instead**: TEI Routing and `scripts/tei_convert.py`, reading the manifest and `causes.json` in place of the files.
+
+---
+
+- **Name**: Apparatus in the Witness
+- **Description**: Putting an edition's historical introduction, source note, or footnotes into the witness file as body text or `[^e]` notes.
+- **Why**: It mixes editorial prose into the primary-source collection, so a sources-only search returns the editors' words.
+- **Instead**: Witness and Editorial Companion.
+
+---
+
+- **Name**: Bulk Before Pilot
+- **Description**: Converting and writing an entire TEI series the first time it enters a corpus without inspecting a pilot.
+- **Why**: A single mapping error repeats across thousands of files and must then be found and undone in all of them.
+- **Instead**: TEI Pilot Sample.
+
+---
+
+- **Name**: Row-by-Row TEI Review
+- **Description**: Presenting every uncertain TEI file as its own review row, or hand-editing hundreds of drafts one at a time.
+- **Why**: Bulk runs produce hundreds of uncertain files that share a few causes; per-file review buries the decisions and invites inconsistent answers.
+- **Instead**: Cause-Grouped Review, with converter options for decisions that cover many files.

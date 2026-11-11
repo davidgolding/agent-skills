@@ -3,9 +3,10 @@
 Markdown Source Corpus Specification (D, N, F, B, M, E rules).
 
 Usage:
-    python3 validate_corpus.py CORPUS_ROOT [--files FILE ...]
+    python3 validate_corpus.py CORPUS_ROOT [--files FILE ...] [--files-from LIST]
 
-With --files, per-file findings are reported only for the named source files,
+With --files (or --files-from, a file listing one path per line), per-file
+findings are reported only for the named source files,
 while corpus-wide checks (key uniqueness, suffix siblings, cross-references)
 still read every key in the corpus. Standard library only.
 
@@ -29,8 +30,12 @@ KEY_RE = re.compile(
     r"(?: (?P<d>[1-9]|[12]\d|3[01]))?)?(?P<sfx>[b-z]|[a-z]{2})?)\)$"
 )
 
-FM_KEYS = ["title", "author", "date", "source", "type", "lang", "mode", "hands", "resp"]
-FM_REQUIRED = {"title", "date", "source", "type", "lang", "mode", "resp"}
+FM_KEYS = ["title", "author", "date", "source", "type", "lang", "mode", "layer", "verified", "images",
+           "hands", "resp"]
+FM_REQUIRED = {"title", "date", "source", "type", "lang", "mode", "layer", "verified", "resp"}
+LAYERS = {"edition", "transcription", "typescript", "ocr", "hwr", "model", "publication", "editorial"}
+VERIFIED = {"unknown", "unchecked", "checked", "collated"}
+IMAGE_FIELDS_RE = re.compile(r"\{([a-z]+)\}")
 TYPES = {"book", "chapter", "article", "newspaper", "letter", "diary", "minutes",
          "record", "legal", "manuscript", "transcript", "inscription"}
 
@@ -40,7 +45,7 @@ EDTF_RE = re.compile(rf"^(?P<a>{EDTF_SINGLE})(?:/(?P<b>{EDTF_SINGLE}))?$")
 BCP47_RE = re.compile(r"^[a-z]{2,3}(?:-[A-Za-z0-9]{1,8})*$")
 HTML_RE = re.compile(r"(?<!\\)<(?:/?[A-Za-z][A-Za-z0-9-]*(?:\s[^>]*)?/?|!--)>?")
 NOTE_LABEL_RE = re.compile(r"^(?:\d+|e\d+|a\d+)$")
-MILESTONE_RE = re.compile(r"^@(?:notes|[A-Za-z][A-Za-z0-9:.\-]*)$")
+MILESTONE_RE = re.compile(r"^@(?:notes|[A-Za-z][A-Za-z0-9:.\-]*(?: =[!-~]+)?)$")
 
 
 class Report:
@@ -149,8 +154,8 @@ def parse_frontmatter(lines, rep, path):
         rep.error("F2", path, 2, f"keys out of order: {', '.join(known)}")
     for k in sorted(FM_REQUIRED - fm.keys()):
         rep.error("F2", path, 1, f"required key '{k}' is missing")
-    if end - 1 > 12:
-        rep.warn("F4", path, 1, f"frontmatter is {end - 1} lines; keep it within about 12")
+    if end - 1 > 14:
+        rep.warn("F4", path, 1, f"frontmatter is {end - 1} lines; keep it within about 14")
     return fm, end + 1
 
 
@@ -169,6 +174,16 @@ def check_frontmatter_values(fm, rep, path, types):
         rep.error("F2", path, 1, f"type {fm['type']!r} is not listed in the spec or CONVENTIONS.md")
     if "mode" in fm and fm["mode"] not in ("diplomatic", "prose"):
         rep.error("F2", path, 1, f"mode {fm['mode']!r} must be 'diplomatic' or 'prose'")
+    if "layer" in fm and fm["layer"] not in LAYERS:
+        rep.error("F2", path, 1, f"layer {fm['layer']!r} is not one of {', '.join(sorted(LAYERS))}")
+    if "verified" in fm and fm["verified"].split(";")[0].strip() not in VERIFIED:
+        rep.error("F2", path, 1, f"verified {fm['verified']!r} must start with one of {', '.join(sorted(VERIFIED))}")
+    if "images" in fm:
+        if not re.match(r"^https?://\S+$", fm["images"]):
+            rep.error("F2", path, 1, f"images {fm['images']!r} is not an http(s) URL template")
+        bad = set(IMAGE_FIELDS_RE.findall(fm["images"])) - {"page", "n", "id"}
+        if bad:
+            rep.error("F2", path, 1, f"images template uses unknown fields: {', '.join(sorted(bad))}")
     if "lang" in fm:
         for tag in re.split(r"\s*;\s*", fm["lang"]):
             if not BCP47_RE.match(tag):
@@ -427,13 +442,18 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("root")
     ap.add_argument("--files", nargs="*", help="limit per-file findings to these source files")
+    ap.add_argument("--files-from", help="file listing source files to check, one path per line")
     args = ap.parse_args()
     root = os.path.abspath(args.root)
     if not os.path.isdir(root):
         print(f"not a directory: {root}", file=sys.stderr)
         return 2
     rep = Report()
-    scope = {os.path.abspath(f) for f in args.files} if args.files else None
+    named = list(args.files or [])
+    if args.files_from:
+        with open(args.files_from, encoding="utf-8") as fh:
+            named += [line.strip() for line in fh if line.strip()]
+    scope = {os.path.abspath(f) for f in named} if (args.files or args.files_from) else None
 
     if not os.path.isfile(os.path.join(root, "CONVENTIONS.md")):
         rep.error("D4", root, 0, "corpus root has no CONVENTIONS.md")
