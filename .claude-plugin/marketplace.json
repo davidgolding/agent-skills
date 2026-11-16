@@ -46,6 +46,15 @@
       ]
     },
     {
+      "name": "car-purchaser",
+      "source": "./",
+      "strict": false,
+      "description": "Plan and coach a US car purchase - interview the buyer, research live prices and rules, write a tailored plan, draft out-the-door quote requests, decode dealer tactics, and check signing paperwork. Use when the user wants to buy or lease a new or used car from a dealer or private seller, compare quotes or monthly-payment offers, value a trade-in, or judge extended warranties, GAP, and add-ons offered with a purchase. Not for selling, repairing, or insuring a car already owned outside a trade-in.",
+      "skills": [
+        "./car-purchaser"
+      ]
+    },
+    {
       "name": "conlang-linguist",
       "source": "./",
       "strict": false,

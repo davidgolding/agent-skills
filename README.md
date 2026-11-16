@@ -23,6 +23,7 @@ Then install any skill:
 /plugin install anything-tutor --marketplace davidgolding/agent-skills
 /plugin install apple-pages --marketplace davidgolding/agent-skills
 /plugin install campaign-builder --marketplace davidgolding/agent-skills
+/plugin install car-purchaser --marketplace davidgolding/agent-skills
 /plugin install conlang-linguist --marketplace davidgolding/agent-skills
 /plugin install corpus-curator --marketplace davidgolding/agent-skills
 /plugin install corpus-search --marketplace davidgolding/agent-skills
